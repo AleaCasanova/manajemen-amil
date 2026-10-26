@@ -37,6 +37,7 @@
                         <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 animate-pulse">
                             Belum Absen Masuk
                         </span>
+                    @endif
                 </div>
 
                 <!-- MODE PRESENSI SELECTOR (KANTOR VS TUGAS LUAR) -->

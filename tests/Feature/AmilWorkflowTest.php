@@ -271,6 +271,17 @@ class AmilWorkflowTest extends TestCase
     }
 
     /**
+     * Uji Halaman Presensi Amil Berhasil Dimuat (Render Blade OK)
+     */
+    public function test_amil_can_view_absensi_page(): void
+    {
+        $response = $this->actingAs($this->user)->get(route('amil.absensi.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Tipe Presensi Saat Ini');
+        $response->assertSee('Tugas Lapangan / Luar');
+    }
+
+    /**
      * Uji Presensi Kantor Ditolak Jika di Luar Radius
      */
     public function test_amil_clock_in_office_mode_rejected_when_outside_radius(): void
