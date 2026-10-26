@@ -35,7 +35,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased pb-28 sm:pb-32 lg:pb-8">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased pb-20 lg:pb-6">
 
     <!-- Top Navigation Bar (Header Modern) -->
     <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-40 border-b border-emerald-700/60">
@@ -199,11 +199,11 @@
                             <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-950 text-emerald-200 font-extrabold text-xs flex items-center justify-center uppercase shadow-inner shrink-0">
                                 {{ substr(Auth::user()->amil?->nama ?? Auth::user()->name, 0, 2) }}
                             </div>
-                            <div class="text-left leading-tight max-w-[90px] xs:max-w-[110px] sm:max-w-[130px]">
-                                <span class="text-xs font-bold block truncate">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
-                                <span class="text-[10px] text-emerald-200 block font-mono truncate">{{ Auth::user()->amil?->nip ?? 'Amil' }}</span>
+                            <div class="hidden sm:block text-left leading-tight">
+                                <span class="text-xs font-bold block max-w-[120px] truncate">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
+                                <span class="text-[10px] text-emerald-200 block font-mono">{{ Auth::user()->amil?->nip ?? 'Amil' }}</span>
                             </div>
-                            <svg id="profileDropdownChevron" class="w-3.5 h-3.5 opacity-70 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg id="profileDropdownChevron" class="w-3.5 h-3.5 opacity-70 transition-transform duration-200 shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
@@ -335,9 +335,6 @@
         @endif
 
         @yield('content')
-
-        <!-- Spacer Khusus Mobile agar scroll bagian terbawah tidak tertutup Floating Bottom Nav -->
-        <div class="h-20 sm:h-24 lg:hidden pointer-events-none" aria-hidden="true"></div>
     </main>
 
     <!-- Mobile Floating Bottom Navigation Bar (5 Menu Inti Lapangan) -->
