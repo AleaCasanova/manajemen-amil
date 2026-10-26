@@ -277,12 +277,34 @@
                         <span class="font-bold text-slate-700">{{ $jamKerja?->toleransi_menit ?? 15 }} Menit</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span>Lokasi Kantor:</span>
-                        <span class="font-bold text-slate-700 truncate max-w-[140px] text-right">{{ $kantor?->nama_lokasi ?? 'Kantor Pusat GSC' }}</span>
+                        <span>Titik Kantor Sah:</span>
+                        <span class="font-bold text-slate-800 text-right truncate max-w-[150px]">Kantor Terdekat ({{ $kantorAktif->count() }} Lokasi)</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span>Radius Geofencing:</span>
-                        <span class="font-bold text-emerald-700">{{ $kantor?->radius_meter ?? 100 }} Meter</span>
+                        <span>Radius Geofence:</span>
+                        <span class="font-bold text-emerald-700 text-right">Otomatis Tiap Kantor (50 - 150m)</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px]">
+                        <span>Kantor Terdekat Anda:</span>
+                        <span id="labelNearestOfficeLive" class="font-bold text-slate-500 truncate max-w-[150px] text-right">Menunggu GPS...</span>
+                    </div>
+                </div>
+
+                <div class="pt-1.5 border-t border-slate-100">
+                    <button type="button" onclick="document.getElementById('listOfficesBox').classList.toggle('hidden')" class="w-full text-left text-[10px] text-emerald-700 font-bold hover:underline flex items-center justify-between cursor-pointer">
+                        <span>Daftar Kantor Cabang yang Sah ({{ $kantorAktif->count() }})</span>
+                        <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="listOfficesBox" class="hidden mt-2 p-2 rounded-xl bg-slate-50 border border-slate-100 space-y-1.5 text-[10px]">
+                        @foreach($kantorAktif as $k)
+                            <div class="flex items-start justify-between gap-1 pb-1 border-b border-slate-200/50 last:border-0 last:pb-0">
+                                <div class="min-w-0">
+                                    <span class="font-bold text-slate-800 block truncate">{{ $k->nama_lokasi }}</span>
+                                    <span class="text-slate-400 block text-[9px] truncate">{{ $k->alamat ?? 'Titik Koordinat Resmi' }}</span>
+                                </div>
+                                <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[9px] shrink-0 font-bold">R: {{ $k->radius_meter }}m</span>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -567,6 +589,16 @@
             }
         } else {
             if (officeCheckResult) {
+                const nearestLive = document.getElementById('labelNearestOfficeLive');
+                if (nearestLive) {
+                    nearestLive.textContent = `${officeCheckResult.office_name} (${Math.round(officeCheckResult.distance_meters)}m)`;
+                    if (officeCheckResult.valid) {
+                        nearestLive.className = 'font-extrabold text-emerald-700 truncate max-w-[150px] text-right';
+                    } else {
+                        nearestLive.className = 'font-bold text-rose-600 truncate max-w-[150px] text-right';
+                    }
+                }
+
                 if (officeCheckResult.valid) {
                     hasValidLocation = true;
                     gpsIndicator.className = 'w-3 h-3 rounded-full bg-emerald-500';
@@ -575,8 +607,8 @@
                 } else {
                     hasValidLocation = false;
                     gpsIndicator.className = 'w-3 h-3 rounded-full bg-rose-500';
-                    gpsText.innerText = 'Di luar radius kantor!';
-                    gpsSubText.innerText = `Jarak ${Math.round(officeCheckResult.distance_meters)} meter (Batas: ${officeCheckResult.max_radius}m). Beralih ke "Tugas Luar" jika sedang dinas lapangan.`;
+                    gpsText.innerText = `Di luar radius kantor!`;
+                    gpsSubText.innerText = `Jarak ${Math.round(officeCheckResult.distance_meters)} meter dari ${officeCheckResult.office_name} (Batas: ${officeCheckResult.max_radius}m). Beralih ke "Tugas Luar" jika sedang dinas lapangan.`;
                 }
             } else {
                 hasValidLocation = true;
