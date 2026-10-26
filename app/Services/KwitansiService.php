@@ -33,8 +33,8 @@ class KwitansiService
             'qrCode' => $qrCodeData,
             'terbilang' => $terbilang,
             'app_name' => Setting::get('app_name', 'Sistem Manajemen Amil GSC'),
-            'institution_name' => Setting::get('app_institution', 'Yayasan Gerakan Sedekah Cepat (GSC)'),
-            'address' => Setting::get('app_address', 'Jl. Gerakan Sedekah Cepat No. 01, Jawa Barat'),
+            'institution_name' => Setting::get('app_institution', 'Yayasan Gerak Sedekah Cilacap (GSC)'),
+            'address' => Setting::get('app_address', 'Jl. Gerak Sedekah Cilacap No. 01, Cilacap, Jawa Tengah'),
             'phone' => Setting::get('app_phone', '081234567890'),
             'email' => Setting::get('app_email', 'info@amilgsc.com'),
         ];

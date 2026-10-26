@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">Riwayat Donasi Saya</h1>
-            <p class="text-sm text-slate-500">Semua donasi yang telah Anda himpun untuk Gerakan Sedekah Cepat</p>
+            <p class="text-sm text-slate-500">Semua donasi yang telah Anda himpun untuk Gerak Sedekah Cilacap</p>
         </div>
         <a href="{{ route('amil.donasi.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition self-start sm:self-auto">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

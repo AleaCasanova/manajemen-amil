@@ -6,7 +6,7 @@
     <meta name="HandheldFriendly" content="true">
     <meta name="MobileOptimized" content="width">
     <meta name="format-detection" content="telephone=no">
-    <title>Masuk Portal Amil - Gerakan Sedekah Cepat</title>
+    <title>Masuk Portal Amil - Gerak Sedekah Cilacap</title>
     <link rel="icon" type="image/png" href="{{ asset('logo_gsc.png') }}">
     <link rel="shortcut icon" href="{{ asset('logo_gsc.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
         LokasiKantor::firstOrCreate(
             ['nama_lokasi' => 'Kantor Pusat GSC'],
             [
-                'alamat' => 'Jl. Gerakan Sedekah Cepat No. 01, Jawa Barat',
+                'alamat' => 'Jl. Gerak Sedekah Cilacap No. 01, Cilacap, Jawa Tengah',
                 'lat' => -6.20876340,
                 'lng' => 106.84559900,
                 'radius_meter' => 100,
@@ -201,10 +201,10 @@ class DatabaseSeeder extends Seeder
         // 8. Default Settings
         $settings = [
             ['key' => 'app_name', 'value' => 'Sistem Manajemen Amil GSC', 'grup' => 'general', 'deskripsi' => 'Nama Aplikasi'],
-            ['key' => 'app_institution', 'value' => 'Yayasan Gerakan Sedekah Cepat (GSC)', 'grup' => 'general', 'deskripsi' => 'Nama Lembaga'],
+            ['key' => 'app_institution', 'value' => 'Yayasan Gerak Sedekah Cilacap (GSC)', 'grup' => 'general', 'deskripsi' => 'Nama Lembaga'],
             ['key' => 'app_phone', 'value' => '081234567890', 'grup' => 'contact', 'deskripsi' => 'No Telepon / WhatsApp Resmi'],
             ['key' => 'app_email', 'value' => 'info@amilgsc.com', 'grup' => 'contact', 'deskripsi' => 'Email Resmi Lembaga'],
-            ['key' => 'app_address', 'value' => 'Jl. Gerakan Sedekah Cepat No. 01, Jawa Barat', 'grup' => 'contact', 'deskripsi' => 'Alamat Kantor'],
+            ['key' => 'app_address', 'value' => 'Jl. Gerak Sedekah Cilacap No. 01, Cilacap, Jawa Tengah', 'grup' => 'contact', 'deskripsi' => 'Alamat Kantor'],
             ['key' => 'default_annual_leave_days', 'value' => '12', 'grup' => 'hrd', 'deskripsi' => 'Jatah Cuti Tahunan Amil per Tahun'],
             ['key' => 'receipt_prefix', 'value' => 'KWT-GSC', 'grup' => 'donation', 'deskripsi' => 'Prefix Nomor Kwitansi'],
         ];

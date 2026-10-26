@@ -6,7 +6,7 @@
     <meta name="HandheldFriendly" content="true">
     <meta name="MobileOptimized" content="width">
     <meta name="format-detection" content="telephone=no">
-    <title>@yield('title', 'Portal Amil') - Gerakan Sedekah Cepat</title>
+    <title>@yield('title', 'Portal Amil') - Gerak Sedekah Cilacap</title>
     <link rel="icon" type="image/png" href="{{ asset('logo_gsc.png') }}">
     <link rel="shortcut icon" href="{{ asset('logo_gsc.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,7 +48,7 @@
                         <img src="{{ asset('logo_gsc.png') }}" alt="Logo GSC" class="w-12 h-12 object-contain rounded-xl bg-white p-1 shadow-md group-hover:scale-105 transition">
                         <div class="leading-tight">
                             <span class="font-extrabold text-sm sm:text-base tracking-tight block text-white">Portal Amil</span>
-                            <span class="text-[10px] text-emerald-200 block font-medium">Gerakan Sedekah Cepat</span>
+                            <span class="text-[10px] text-emerald-200 block font-medium">Gerak Sedekah Cilacap</span>
                         </div>
                     </a>
                 </div>

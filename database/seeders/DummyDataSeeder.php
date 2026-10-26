@@ -64,7 +64,7 @@ class DummyDataSeeder extends Seeder
 
         // 3. LOKASI KANTOR (Minimal 5)
         $lokasiData = [
-            ['nama_lokasi' => 'Kantor Pusat GSC', 'alamat' => 'Jl. Gerakan Sedekah Cepat No. 01, Jawa Barat', 'lat' => -6.20876340, 'lng' => 106.84559900, 'radius_meter' => 100, 'is_active' => true],
+            ['nama_lokasi' => 'Kantor Pusat GSC', 'alamat' => 'Jl. Gerak Sedekah Cilacap No. 01, Cilacap, Jawa Tengah', 'lat' => -6.20876340, 'lng' => 106.84559900, 'radius_meter' => 100, 'is_active' => true],
             ['nama_lokasi' => 'Kantor Cabang Bandung', 'alamat' => 'Jl. Asia Afrika No. 45, Bandung', 'lat' => -6.92147700, 'lng' => 107.60749000, 'radius_meter' => 100, 'is_active' => true],
             ['nama_lokasi' => 'Pos Layanan Umat Bekasi', 'alamat' => 'Jl. Ir. H. Juanda No. 88, Bekasi', 'lat' => -6.23827000, 'lng' => 106.97557100, 'radius_meter' => 150, 'is_active' => true],
             ['nama_lokasi' => 'Gerai Donasi Mall Kelapa Gading', 'alamat' => 'Mall Kelapa Gading Lt. Ground, Jakarta Utara', 'lat' => -6.15783300, 'lng' => 106.90833300, 'radius_meter' => 80, 'is_active' => true],

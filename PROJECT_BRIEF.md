@@ -5,7 +5,7 @@ Dokumen ini adalah referensi utama dan memori proyek (system memory) untuk penge
 ---
 
 ## 1. Ringkasan Proyek
-- **Nama Aplikasi**: Sistem Manajemen Amil (GSC - Gerakan Sedekah Cepat)
+- **Nama Aplikasi**: Sistem Manajemen Amil (GSC - Gerak Sedekah Cilacap)
 - **Tujuan**: Mempermudah pengelolaan amil zakat/infak, pencatatan donatur & donasi, absensi berbasis lokasi, perizinan cuti, agenda kegiatan, mustahik, penyaluran dana, dan pelaporan keuangan ZISWAF secara transparan dan akuntabel.
 - **Database**: MySQL (`amilgsc`)
 - **Teknologi Stack**:

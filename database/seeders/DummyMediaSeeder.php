@@ -64,7 +64,7 @@ class DummyMediaSeeder extends Seeder
             $subText = imagecolorallocate($img, 100, 116, 139);
 
             // Header text
-            imagestring($img, 3, 15, 10, 'YAYASAN GERAKAN SEDEKAH CEPAT (GSC)', $white);
+            imagestring($img, 3, 15, 10, 'YAYASAN GERAK SEDEKAH CILACAP (GSC)', $white);
 
             // Main text centered vertically
             imagestring($img, 5, 20, ($h / 2) - 20, $title, $text);

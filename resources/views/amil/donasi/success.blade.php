@@ -138,7 +138,7 @@
 
         $waText = "Assalamu'alaikum Warahmatullahi Wabarakatuh,\n\n"
             . "Yth. *{$namaPenerima}*,\n"
-            . "Terima kasih atas kepercayaan Anda menyalurkan donasi melalui *Gerakan Sedekah Cepat (GSC)*.\n\n"
+            . "Terima kasih atas kepercayaan Anda menyalurkan donasi melalui *Gerak Sedekah Cilacap (GSC)*.\n\n"
             . "Berikut adalah rincian kwitansi elektronik Anda:\n"
             . "📄 *No. Kwitansi:* {$donasi->no_kwitansi}\n"
             . "📅 *Waktu Transaksi:* " . $waktuDonasi->translatedFormat('d F Y, H:i') . " WIB\n"
@@ -148,7 +148,7 @@
             . "🔗 *Cek & Verifikasi Keaslian Kwitansi Resmi:*\n"
             . "{$verifyUrl}\n\n"
             . "Semoga Allah SWT membalas dengan pahala berlipat ganda, membersihkan harta, dan melimpahkan keberkahan bagi Anda dan keluarga. Aamiin ya Rabbal 'Alamin.\n\n"
-            . "_Salam hangat,_\n*Gerakan Sedekah Cepat*";
+            . "_Salam hangat,_\n*Gerak Sedekah Cilacap*";
 
         $waLink = "https://wa.me/{$cleanPhone}?text=" . urlencode($waText);
     @endphp

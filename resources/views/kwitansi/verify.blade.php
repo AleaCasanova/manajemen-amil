@@ -153,7 +153,7 @@
             <div class="status-badge">
                 ✓ KWITANSI VALID & ASLI
             </div>
-            <h1>Gerakan Sedekah Cepat (GSC)</h1>
+            <h1>Gerak Sedekah Cilacap (GSC)</h1>
             <p>Sistem Manajemen Amil & Donasi ZISWAF</p>
         </div>
 
@@ -220,7 +220,7 @@
             <div class="not-found-icon">⚠️</div>
             <h2 style="font-size: 18px; color: #1e293b; margin-bottom: 8px;">Kwitansi Tidak Ditemukan</h2>
             <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
-                Nomor kwitansi <strong>{{ $no_kwitansi }}</strong> tidak terdaftar di basis data resmi Gerakan Sedekah Cepat (GSC). Harap pastikan kembali keaslian dokumen Anda.
+                Nomor kwitansi <strong>{{ $no_kwitansi }}</strong> tidak terdaftar di basis data resmi Gerak Sedekah Cilacap (GSC). Harap pastikan kembali keaslian dokumen Anda.
             </p>
         </div>
     @endif
