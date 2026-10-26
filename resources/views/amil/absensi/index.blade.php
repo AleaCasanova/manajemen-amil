@@ -374,9 +374,9 @@
 
                         <!-- Foto Masuk Thumbnail -->
                         @if ($h->foto_masuk)
-                            <a href="{{ asset('storage/' . $h->foto_masuk) }}" target="_blank" class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 shrink-0 shadow-2xs block">
-                                <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Selfie">
-                            </a>
+                            <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}')" class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi">
+                                <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Selfie" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_masuk }}';">
+                            </button>
                         @endif
                     </div>
                 @endforeach
@@ -428,9 +428,9 @@
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     @if ($h->foto_masuk)
-                                        <a href="{{ asset('storage/' . $h->foto_masuk) }}" target="_blank" class="inline-block w-8 h-8 rounded-lg overflow-hidden border border-slate-200">
-                                            <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Foto">
-                                        </a>
+                                        <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}')" class="inline-block w-8 h-8 rounded-lg overflow-hidden border border-slate-200 hover:scale-110 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi">
+                                            <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Foto" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_masuk }}';">
+                                        </button>
                                     @else
                                         <span class="text-slate-300">-</span>
                                     @endif
@@ -441,6 +441,61 @@
                 </table>
             </div>
         @endif
+    </div>
+
+    <!-- Modal Detail Foto Absensi (Mobile & Desktop) -->
+    <div id="modalPhotoPreview" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200" onclick="closeAttendancePhoto(event)">
+        <div class="bg-white rounded-3xl max-w-sm sm:max-w-md w-full overflow-hidden shadow-2xl border border-slate-100" onclick="event.stopPropagation()">
+            <!-- Header Modal -->
+            <div class="p-4 bg-emerald-800 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-700 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-extrabold text-sm">Foto Presensi Kehadiran</h4>
+                </div>
+                <button type="button" onclick="closeAttendancePhoto()" class="w-7 h-7 rounded-lg bg-emerald-700/60 hover:bg-emerald-700 text-emerald-200 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Body Modal: Image -->
+            <div class="p-4 bg-slate-900 flex items-center justify-center min-h-[220px] max-h-[360px] overflow-hidden">
+                <img id="modalPhotoImage" src="" alt="Foto Selfie Presensi" class="max-h-[340px] w-auto max-w-full rounded-2xl object-contain shadow-md">
+            </div>
+
+            <!-- Footer Modal: Info & Aksi -->
+            <div class="p-4 bg-slate-50 border-t border-slate-100 space-y-3">
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="p-2 rounded-xl bg-white border border-slate-200/80">
+                        <span class="text-[10px] text-slate-400 block font-semibold">Tanggal & Jam</span>
+                        <span id="modalPhotoTime" class="font-bold text-slate-800 text-[11px] block mt-0.5"></span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-white border border-slate-200/80">
+                        <span class="text-[10px] text-slate-400 block font-semibold">Status Presensi</span>
+                        <span id="modalPhotoStatus" class="font-extrabold text-emerald-700 text-[11px] block mt-0.5"></span>
+                    </div>
+                </div>
+
+                <div id="modalPhotoKetContainer" class="hidden p-2 rounded-xl bg-white border border-slate-200/80 text-[11px] text-slate-600">
+                    <span class="text-[10px] text-slate-400 block font-semibold mb-0.5">Keterangan:</span>
+                    <span id="modalPhotoKet" class="italic"></span>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                    <a id="modalPhotoLink" href="#" target="_blank" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs text-center transition flex items-center justify-center gap-1.5 shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        <span>Buka File Asli</span>
+                    </a>
+                    <button type="button" onclick="closeAttendancePhoto()" class="py-2 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition cursor-pointer">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -793,5 +848,41 @@
         if (inKetIn) inKetIn.addEventListener('input', checkSubmitState);
         if (inKetOut) inKetOut.addEventListener('input', checkSubmitState);
     });
+
+    // Modal Foto Presensi
+    function showAttendancePhoto(url, tanggal, jam, status, keterangan) {
+        const modal = document.getElementById('modalPhotoPreview');
+        const img = document.getElementById('modalPhotoImage');
+        const time = document.getElementById('modalPhotoTime');
+        const statusEl = document.getElementById('modalPhotoStatus');
+        const ketContainer = document.getElementById('modalPhotoKetContainer');
+        const ket = document.getElementById('modalPhotoKet');
+        const link = document.getElementById('modalPhotoLink');
+
+        if (modal && img) {
+            img.src = url;
+            if (time) time.textContent = `${tanggal} - ${jam}`;
+            if (statusEl) statusEl.textContent = status;
+            if (link) link.href = url;
+
+            if (keterangan && keterangan.trim() !== '') {
+                if (ket) ket.textContent = keterangan;
+                if (ketContainer) ketContainer.classList.remove('hidden');
+            } else {
+                if (ketContainer) ketContainer.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeAttendancePhoto(event) {
+        const modal = document.getElementById('modalPhotoPreview');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
 </script>
 @endsection
