@@ -43,7 +43,7 @@
                 </button>
                 @if (request()->hasAny(['q', 'status']))
                     <a href="{{ route('amil.aktivitas.index') }}" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center" title="Reset Filter">
-                        ✕
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                     </a>
                 @endif
             </div>
@@ -52,7 +52,7 @@
 
     <!-- List Aktivitas -->
     @if ($aktivitas->isEmpty())
-        <div class="bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-sm">
+        <div class="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-10 text-center border border-slate-200 shadow-sm">
             <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -65,45 +65,50 @@
             </a>
         </div>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
             @foreach ($aktivitas as $a)
-                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition">
+                <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition">
                     <div>
                         <!-- Header Card -->
-                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 text-xs">
-                            <span class="font-semibold text-slate-500">
-                                📅 {{ $a->tanggal ? $a->tanggal->translatedFormat('l, d F Y') : '-' }}
+                        <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 text-xs">
+                            <span class="font-semibold text-slate-500 inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>{{ $a->tanggal ? $a->tanggal->translatedFormat('d M Y') : '-' }}</span>
                             </span>
                             @if ($a->status === 'disetujui')
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
                                     Disetujui
                                 </span>
                             @elseif ($a->status === 'ditolak')
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
                                     Ditolak
                                 </span>
                             @else
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
                                     Menunggu Review
                                 </span>
                             @endif
                         </div>
 
                         <!-- Title & Location -->
-                        <h3 class="font-bold text-slate-800 text-base mb-1">{{ $a->judul }}</h3>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base mb-1">{{ $a->judul }}</h3>
                         @if ($a->lokasi)
                             <div class="text-xs text-emerald-700 font-semibold flex items-center flex-wrap gap-1 mb-2">
-                                <span>📍 {{ $a->lokasi }}</span>
+                                <span class="inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <span>{{ $a->lokasi }}</span>
+                                </span>
                                 @if ($a->lat && $a->lng)
                                     <a href="https://www.google.com/maps?q={{ $a->lat }},{{ $a->lng }}" target="_blank" class="text-[11px] text-blue-600 hover:text-blue-800 underline font-normal inline-flex items-center gap-0.5 ml-1" title="Lihat Peta Google Maps">
-                                        (Buka Peta ↗)
+                                        (Peta ↗)
                                     </a>
                                 @endif
                             </div>
                         @elseif ($a->lat && $a->lng)
                             <div class="text-xs text-blue-700 font-semibold mb-2">
                                 <a href="https://www.google.com/maps?q={{ $a->lat }},{{ $a->lng }}" target="_blank" class="hover:underline inline-flex items-center gap-1">
-                                    📍 Titik Koordinat: {{ $a->lat }}, {{ $a->lng }} ↗
+                                    <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <span>Titik Koordinat: {{ $a->lat }}, {{ $a->lng }} (Peta ↗)</span>
                                 </a>
                             </div>
                         @endif

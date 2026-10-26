@@ -27,24 +27,25 @@
                 @php
                     $isRead = $p->pembacaUsers->contains($user->id);
                 @endphp
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:border-emerald-300 transition group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 {{ !$isRead ? 'ring-2 ring-emerald-500/20' : '' }}">
-                    <div class="space-y-2 flex-1">
-                        <div class="flex items-center gap-2">
+                <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-200 hover:border-emerald-300 transition group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 {{ !$isRead ? 'ring-2 ring-emerald-500/20' : '' }}">
+                    <div class="space-y-1.5 sm:space-y-2 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
                             @if (!$isRead)
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-600 text-white animate-pulse">
+                                <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-emerald-600 text-white animate-pulse">
                                     BARU
                                 </span>
                             @else
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
+                                <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-slate-100 text-slate-500">
                                     Sudah Dibaca
                                 </span>
                             @endif
-                            <span class="text-xs text-slate-400">
-                                📅 {{ $p->published_at ? $p->published_at->translatedFormat('d F Y, H:i') : '-' }} WIB
+                            <span class="text-xs text-slate-400 inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>{{ $p->published_at ? $p->published_at->translatedFormat('d F Y, H:i') : '-' }} WIB</span>
                             </span>
                         </div>
 
-                        <h3 class="font-extrabold text-slate-800 text-base group-hover:text-emerald-700 transition">
+                        <h3 class="font-extrabold text-slate-800 text-sm sm:text-base group-hover:text-emerald-700 transition">
                             <a href="{{ route('amil.pengumuman.show', $p->id) }}">{{ $p->judul }}</a>
                         </h3>
 
@@ -53,14 +54,15 @@
                         </p>
 
                         @if ($p->lampiran)
-                            <div class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg">
-                                <span>📎 Lampiran Berkas Tersedia</span>
+                            <div class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg">
+                                <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                <span>Lampiran Berkas Tersedia</span>
                             </div>
                         @endif
                     </div>
 
                     <div class="sm:self-center">
-                        <a href="{{ route('amil.pengumuman.show', $p->id) }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 font-bold text-xs transition">
+                        <a href="{{ route('amil.pengumuman.show', $p->id) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 font-bold text-xs transition">
                             <span>Baca Selengkapnya</span>
                             <span>→</span>
                         </a>

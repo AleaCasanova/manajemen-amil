@@ -35,7 +35,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased pb-20 md:pb-0">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased pb-24 lg:pb-6">
 
     <!-- Top Navigation Bar (Header Modern) -->
     <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-40 border-b border-emerald-700/60">
@@ -78,15 +78,21 @@
                         <div class="absolute left-0 top-full pt-1.5 w-56 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                             <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
                                 <a href="{{ route('amil.donasi.create') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-emerald-50 text-emerald-800 font-extrabold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">+</span>
+                                    <span class="w-6 h-6 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                    </span>
                                     <span>Input Donasi Baru</span>
                                 </a>
                                 <a href="{{ route('amil.donasi.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">📋</span>
+                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </span>
                                     <span>Riwayat Donasi Saya</span>
                                 </a>
                                 <a href="{{ route('amil.donatur.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">👥</span>
+                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    </span>
                                     <span>Database Donatur</span>
                                 </a>
                             </div>
@@ -108,21 +114,27 @@
                         <div class="absolute left-0 top-full pt-1.5 w-60 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                             <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
                                 <a href="{{ route('amil.absensi.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">🕒</span>
+                                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </span>
                                     <div>
                                         <span class="block text-slate-800 font-bold">Presensi Kehadiran</span>
                                         <span class="text-[10px] text-slate-400">Absen GPS & Foto Selfie</span>
                                     </div>
                                 </a>
                                 <a href="{{ route('amil.aktivitas.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">📝</span>
+                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                    </span>
                                     <div>
                                         <span class="block text-slate-800 font-bold">Laporan Aktivitas</span>
                                         <span class="text-[10px] text-slate-400">Dokumentasi Tugas Lapangan</span>
                                     </div>
                                 </a>
                                 <a href="{{ route('amil.izin-cuti.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">🏖️</span>
+                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </span>
                                     <div>
                                         <span class="block text-slate-800 font-bold">Izin & Cuti</span>
                                         <span class="text-[10px] text-slate-400">Pengajuan & Sisa Kuota Cuti</span>
@@ -155,11 +167,15 @@
                         <div class="absolute left-0 top-full pt-1.5 w-52 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                             <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
                                 <a href="{{ route('amil.agenda.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">📅</span>
+                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </span>
                                     <span>Agenda Penugasan</span>
                                 </a>
                                 <a href="{{ route('amil.pengumuman.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">📢</span>
+                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                    </span>
                                     <span>Pengumuman Lembaga</span>
                                 </a>
                             </div>
@@ -233,34 +249,44 @@
     <div id="mobileDrawer" class="hidden lg:hidden bg-emerald-900 border-b border-emerald-800 text-white px-4 py-4 space-y-3 z-30 shadow-xl">
         <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
             <a href="{{ route('amil.dashboard') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>🏠</span> Dashboard
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Dashboard</span>
             </a>
             <a href="{{ route('amil.donasi.create') }}" class="p-2.5 rounded-xl bg-emerald-600 text-white font-bold flex items-center gap-2">
-                <span>➕</span> Input Donasi
+                <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                <span>Input Donasi</span>
             </a>
             <a href="{{ route('amil.donasi.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>📋</span> Riwayat Donasi
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Riwayat Donasi</span>
             </a>
             <a href="{{ route('amil.donatur.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>👥</span> Database Donatur
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Database Donatur</span>
             </a>
             <a href="{{ route('amil.absensi.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>🕒</span> Presensi Kehadiran
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Presensi Kehadiran</span>
             </a>
             <a href="{{ route('amil.aktivitas.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>📝</span> Laporan Aktivitas
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span>Laporan Aktivitas</span>
             </a>
             <a href="{{ route('amil.penyaluran.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>🤝</span> Penyaluran ZISWAF
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span>Penyaluran ZISWAF</span>
             </a>
             <a href="{{ route('amil.izin-cuti.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>🏖️</span> Izin & Cuti
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>Izin & Cuti</span>
             </a>
             <a href="{{ route('amil.agenda.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>📅</span> Agenda Kerja
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>Agenda Kerja</span>
             </a>
             <a href="{{ route('amil.pengumuman.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
-                <span>📢</span> Pengumuman
+                <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                <span>Pengumuman</span>
             </a>
         </div>
     </div>
@@ -341,16 +367,19 @@
                 <h4 class="text-xs font-extrabold text-white">Pasang Aplikasi Amil GSC</h4>
                 <p class="text-[11px] text-slate-300 mt-0.5 leading-snug">Pasang di layar utama HP Anda agar akses lebih cepat tanpa perlu membuka browser.</p>
                 <div class="flex items-center gap-2 mt-3">
-                    <button type="button" id="btnPwaInstall" class="py-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs shadow-md transition cursor-pointer">
-                        📲 Install Sekarang
+                    <button type="button" id="btnPwaInstall" class="py-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs shadow-md transition cursor-pointer flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Install Sekarang</span>
                     </button>
                     <button type="button" id="btnPwaDismiss" class="py-1.5 px-3 rounded-xl text-slate-400 hover:text-white font-semibold text-xs transition cursor-pointer">
                         Nanti Saja
                     </button>
                 </div>
             </div>
-            <button type="button" id="btnPwaClose" class="text-slate-400 hover:text-white text-sm -mr-1 -mt-1 p-1" title="Tutup">
-                ✕
+            <button type="button" id="btnPwaClose" class="text-slate-400 hover:text-white p-1 rounded-lg transition" title="Tutup">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
             </button>
         </div>
     </div>

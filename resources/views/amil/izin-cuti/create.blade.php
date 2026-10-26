@@ -14,39 +14,47 @@
     </div>
 
     <!-- Saldo Cuti Info Banner -->
-    <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs flex items-center justify-between text-emerald-900">
-        <div class="flex items-center gap-2">
-            <span class="text-lg">🏖️</span>
-            <div>
-                <span class="font-bold block">Sisa Saldo Cuti Anda: {{ $sisaCuti }} Hari</span>
-                <span class="text-emerald-700 text-[11px]">Tahun {{ $saldoCuti->tahun }} (Total jatah {{ $saldoCuti->jatah }} hari, terpakai {{ $saldoCuti->terpakai }} hari)</span>
+    <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs flex items-center justify-between text-emerald-900">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="min-w-0">
+                <span class="font-bold block truncate">Sisa Saldo Cuti Anda: {{ $sisaCuti }} Hari</span>
+                <span class="text-emerald-700 text-[11px] block truncate">Tahun {{ $saldoCuti->tahun }} (Total kuota {{ $saldoCuti->jatah }} hari, terpakai {{ $saldoCuti->terpakai }} hari)</span>
             </div>
         </div>
     </div>
 
-    <form action="{{ route('amil.izin-cuti.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-5">
+    <form action="{{ route('amil.izin-cuti.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-200 space-y-4 sm:space-y-5">
         @csrf
 
         <!-- Jenis Permohonan -->
         <div>
             <label class="block text-xs font-bold text-slate-700 mb-2">Jenis Permohonan <span class="text-rose-500">*</span></label>
-            <div class="grid grid-cols-3 gap-3">
-                <label class="cursor-pointer border border-slate-200 p-3 rounded-2xl flex flex-col items-center justify-center gap-1 hover:bg-slate-50 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/60 has-[:checked]:text-emerald-800 text-center">
+            <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                <label class="cursor-pointer border border-slate-200 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/60 has-[:checked]:text-emerald-800 text-center">
                     <input type="radio" name="jenis" value="cuti" {{ old('jenis', 'cuti') === 'cuti' ? 'checked' : '' }} onchange="toggleJenis(this.value)" class="sr-only">
-                    <span class="text-xl">🏖️</span>
-                    <span class="text-xs font-bold">Cuti Tahunan</span>
+                    <div class="w-7 h-7 rounded-lg bg-emerald-100/70 text-emerald-700 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-bold">Cuti</span>
                 </label>
 
-                <label class="cursor-pointer border border-slate-200 p-3 rounded-2xl flex flex-col items-center justify-center gap-1 hover:bg-slate-50 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/60 has-[:checked]:text-emerald-800 text-center">
+                <label class="cursor-pointer border border-slate-200 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/60 has-[:checked]:text-emerald-800 text-center">
                     <input type="radio" name="jenis" value="izin" {{ old('jenis') === 'izin' ? 'checked' : '' }} onchange="toggleJenis(this.value)" class="sr-only">
-                    <span class="text-xl">📋</span>
-                    <span class="text-xs font-bold">Izin Khusus</span>
+                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 text-blue-700 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-bold">Izin</span>
                 </label>
 
-                <label class="cursor-pointer border border-slate-200 p-3 rounded-2xl flex flex-col items-center justify-center gap-1 hover:bg-slate-50 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/60 has-[:checked]:text-emerald-800 text-center">
+                <label class="cursor-pointer border border-slate-200 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center gap-1.5 hover:bg-slate-50 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/60 has-[:checked]:text-emerald-800 text-center">
                     <input type="radio" name="jenis" value="sakit" {{ old('jenis') === 'sakit' ? 'checked' : '' }} onchange="toggleJenis(this.value)" class="sr-only">
-                    <span class="text-xl">🏥</span>
-                    <span class="text-xs font-bold">Sakit</span>
+                    <div class="w-7 h-7 rounded-lg bg-rose-100/70 text-rose-700 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-bold">Sakit</span>
                 </label>
             </div>
         </div>
@@ -86,7 +94,9 @@
             <div id="previewIzinBox" class="hidden mt-3 p-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/40 inline-block">
                 <img id="previewIzinImg" src="" alt="Preview Lampiran" class="hidden max-h-48 rounded-xl object-contain">
                 <div id="previewIzinPdf" class="hidden flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 text-xs font-bold text-slate-700">
-                    <span class="text-xl">📄</span>
+                    <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
                     <span id="previewIzinPdfName">Dokumen PDF Terpilih</span>
                 </div>
             </div>

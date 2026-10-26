@@ -43,7 +43,9 @@
                 </button>
                 @if (request()->hasAny(['q', 'status']))
                     <a href="{{ route('amil.donasi.index') }}" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center" title="Reset Filter">
-                        ✕
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </a>
                 @endif
             </div>

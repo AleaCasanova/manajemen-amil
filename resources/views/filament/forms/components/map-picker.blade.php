@@ -369,7 +369,7 @@
         <div class="gsc-map-header">
             <div>
                 <h4 class="gsc-map-title">
-                    <span style="color: #10b981; font-size: 16px;">📍</span>
+                    <svg style="width: 16px; height: 16px; color: #10b981; display: inline-block; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span>Titik Lokasi & Geofence Kantor</span>
                 </h4>
                 <p class="gsc-map-subtitle">
@@ -437,7 +437,8 @@
                                 @click="selectSearchResult(res)"
                                 class="gsc-search-item"
                             >
-                                📍 <span x-text="res.display_name"></span>
+                                <svg style="width: 12px; height: 12px; color: #10b981; display: inline-block; vertical-align: middle; margin-right: 4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span x-text="res.display_name"></span>
                             </button>
                         </template>
                     </div>
@@ -464,7 +465,7 @@
                                 <path opacity="0.75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                             </svg>
                         </template>
-                        <span x-text="isLocating ? 'Mendeteksi GPS...' : '📍 Gunakan Lokasi GPS Saya'"></span>
+                        <span x-text="isLocating ? 'Mendeteksi GPS...' : 'Gunakan Lokasi GPS Saya'"></span>
                     </button>
 
                     <template x-if="addressField">
@@ -475,7 +476,8 @@
                             class="gsc-btn-reverse-action"
                             title="Tarik teks alamat lengkap dari titik peta dan masukkan ke input Alamat"
                         >
-                            <span x-text="isReverseGeocoding ? 'Mengambil alamat...' : '🔄 Salin Alamat ke Kolom Form'"></span>
+                            <svg style="width: 13px; height: 13px; display: inline-block; vertical-align: middle; margin-right: 4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span x-text="isReverseGeocoding ? 'Mengambil alamat...' : 'Salin Alamat ke Kolom Form'"></span>
                         </button>
                     </template>
                 </div>

@@ -34,11 +34,12 @@
             <input type="hidden" name="lng" id="amilLngInput" value="{{ old('lng') }}">
 
             <!-- Square Interactive Map Picker -->
-            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-3.5 sm:p-4 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <span class="text-emerald-600">📍</span> Titik Peta Lokasi Kegiatan
+                            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span>Titik Peta Lokasi Kegiatan</span>
                         </span>
                         <p class="text-[11px] text-slate-500">
                             Klik peta atau geser pin untuk menentukan titik lokasi yang dikunjungi
@@ -95,7 +96,7 @@
                     <div 
                         id="mapAmilAktivitas" 
                         class="w-full max-w-[340px] aspect-square rounded-2xl border-2 border-emerald-500/30 overflow-hidden shadow-inner relative z-0"
-                        style="height: 320px; max-height: 320px;"
+                        style="height: 300px; max-height: 300px;"
                     ></div>
                 </div>
 
@@ -112,7 +113,8 @@
                         id="btnReverseAmil"
                         class="text-[11px] text-emerald-700 hover:underline font-semibold inline-flex items-center gap-1 cursor-pointer"
                     >
-                        🔄 Salin Alamat dari Titik Ini
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Salin Alamat dari Titik Ini</span>
                     </button>
                 </div>
             </div>
@@ -330,8 +332,8 @@
             data.forEach(item => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'w-full text-left px-2 py-1.5 rounded-lg hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 transition truncate block';
-                btn.innerHTML = `📍 ${item.display_name}`;
+                btn.className = 'w-full text-left px-2 py-1.5 rounded-lg hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 transition truncate flex items-center gap-1.5 text-xs';
+                btn.innerHTML = `<svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span class="truncate">${item.display_name}</span>`;
                 btn.onclick = function() {
                     resBox.classList.add('hidden');
                     input.value = item.display_name;

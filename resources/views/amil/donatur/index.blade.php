@@ -51,7 +51,9 @@
                 </button>
                 @if (request()->hasAny(['q', 'kategori_id']))
                     <a href="{{ route('amil.donatur.index') }}" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center" title="Reset Filter">
-                        ✕
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </a>
                 @endif
             </div>
@@ -73,7 +75,7 @@
             </a>
         </div>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             @foreach ($donaturs as $d)
                 @php
                     $cleanPhone = preg_replace('/[^0-9]/', '', $d->no_hp ?? '');
@@ -81,10 +83,10 @@
                         $cleanPhone = '62' . substr($cleanPhone, 1);
                     }
                 @endphp
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition group">
+                <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition group">
                     <div>
                         <!-- Header Card -->
-                        <div class="flex items-start justify-between gap-2 mb-3">
+                        <div class="flex items-start justify-between gap-2 mb-2.5">
                             <span class="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-mono font-bold">
                                 {{ $d->kode_donatur }}
                             </span>
@@ -94,20 +96,24 @@
                         </div>
 
                         <!-- Name & Contact -->
-                        <div class="mb-4">
-                            <a href="{{ route('amil.donatur.show', $d->id) }}" class="font-extrabold text-slate-800 text-base hover:text-emerald-700 transition block leading-tight">
+                        <div class="mb-3.5">
+                            <a href="{{ route('amil.donatur.show', $d->id) }}" class="font-extrabold text-slate-800 text-sm sm:text-base hover:text-emerald-700 transition block leading-tight truncate">
                                 {{ $d->is_anonim ? 'Hamba Allah (' . $d->nama . ')' : $d->nama }}
                             </a>
-                            <div class="flex items-center gap-2 mt-1.5">
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
                                 <span class="text-xs text-slate-500 font-medium">{{ $d->no_hp }}</span>
                                 @if ($cleanPhone)
-                                    <a href="https://wa.me/{{ $cleanPhone }}" target="_blank" class="text-emerald-600 hover:text-emerald-800 text-xs font-semibold inline-flex items-center gap-0.5" title="Chat WhatsApp">
-                                        <span>💬 Chat</span>
+                                    <a href="https://wa.me/{{ $cleanPhone }}" target="_blank" class="text-emerald-600 hover:text-emerald-800 text-xs font-semibold inline-flex items-center gap-1" title="Chat WhatsApp">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                        <span>Chat</span>
                                     </a>
                                 @endif
                             </div>
                             @if ($d->kota)
-                                <span class="text-[11px] text-slate-400 block mt-0.5">📍 {{ $d->kota }}</span>
+                                <span class="text-[11px] text-slate-400 inline-flex items-center gap-1 mt-0.5">
+                                    <svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <span>{{ $d->kota }}</span>
+                                </span>
                             @endif
                         </div>
 

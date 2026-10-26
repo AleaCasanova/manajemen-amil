@@ -32,7 +32,7 @@
             </button>
             @if (request()->filled('q'))
                 <a href="{{ route('amil.penyaluran.index') }}" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center">
-                    ✕
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </a>
             @endif
         </form>
@@ -40,7 +40,7 @@
 
     <!-- List Penyaluran -->
     @if ($penyalurans->isEmpty())
-        <div class="bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-sm">
+        <div class="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-10 text-center border border-slate-200 shadow-sm">
             <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -53,16 +53,17 @@
             </a>
         </div>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
             @foreach ($penyalurans as $p)
-                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition">
+                <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:border-emerald-300 transition">
                     <div>
                         <!-- Header -->
-                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 text-xs">
-                            <span class="font-semibold text-slate-500">
-                                📅 {{ $p->tgl_salur ? $p->tgl_salur->translatedFormat('d F Y') : '-' }}
+                        <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 text-xs">
+                            <span class="font-semibold text-slate-500 inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>{{ $p->tgl_salur ? $p->tgl_salur->translatedFormat('d F Y') : '-' }}</span>
                             </span>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">
                                 {{ $p->mustahik?->asnaf ?? 'Mustahik' }}
                             </span>
                         </div>
