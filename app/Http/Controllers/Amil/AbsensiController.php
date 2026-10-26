@@ -1,0 +1,214 @@
+<?php
+
+namespace App\Http\Controllers\Amil;
+
+use App\Http\Controllers\Controller;
+use App\Models\Absensi;
+use App\Models\JamKerja;
+use App\Models\LokasiKantor;
+use App\Services\AbsensiService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+class AbsensiController extends Controller
+{
+    public function __construct(
+        protected AbsensiService $absensiService
+    ) {}
+
+    /**
+     * Tampilan utama absensi amil
+     */
+    public function index()
+    {
+        $amil = Auth::user()->amil;
+
+        $today = Carbon::today('Asia/Jakarta');
+        $absensiToday = $this->absensiService->getTodayAbsensi($amil);
+
+        $jamKerja = JamKerja::where('is_active', true)->first();
+        $kantor = LokasiKantor::where('is_active', true)->first();
+
+        // Riwayat absensi 30 hari terakhir
+        $history = Absensi::where('amil_id', $amil->id)
+            ->latest('tanggal')
+            ->take(30)
+            ->get();
+
+        return view('amil.absensi.index', compact('amil', 'absensiToday', 'jamKerja', 'kantor', 'history'));
+    }
+
+    /**
+     * Clock In (Presensi Masuk)
+     */
+    public function clockIn(Request $request)
+    {
+        $amil = Auth::user()->amil;
+
+        // Cek apakah sudah absen hari ini
+        $existing = $this->absensiService->getTodayAbsensi($amil);
+        if ($existing && $existing->jam_masuk) {
+            return back()->with('error', 'Anda sudah melakukan presensi masuk hari ini pada pukul '.substr($existing->jam_masuk, 0, 5).' WIB.');
+        }
+
+        $request->validate([
+            'lat' => ['required', 'numeric'],
+            'lng' => ['required', 'numeric'],
+            'foto' => ['nullable'], // string base64 atau null jika file
+            'foto_file' => ['nullable', 'image', 'max:5120'], // file upload langsung
+            'keterangan' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        if (! $request->hasFile('foto_file') && ! $request->filled('foto')) {
+            return back()->with('error', 'Harap ambil foto selfie melalui kamera atau pilih file foto!');
+        }
+
+        $now = Carbon::now('Asia/Jakarta');
+
+        // 1. Validasi Geofencing
+        $locCheck = $this->absensiService->validateLocation((float) $request->lat, (float) $request->lng);
+        if (! $locCheck['valid']) {
+            $distMeters = round($locCheck['distance_meters']);
+            $maxRadius = $locCheck['nearest_office']?->radius_meter ?? 100;
+
+            return back()->with('error', "Presensi gagal! Anda berada di luar radius kantor ({$distMeters} meter dari kantor, batas maksimal {$maxRadius} meter).");
+        }
+
+        // 2. Simpan Foto Selfie (dari File atau Base64)
+        if ($request->hasFile('foto_file')) {
+            $fotoPath = $request->file('foto_file')->store('absensi/masuk', 'public');
+        } else {
+            $fotoPath = $this->storeBase64Image($request->foto, 'absensi/masuk');
+        }
+
+        // 3. Tentukan status terlambat / hadir
+        $status = $this->absensiService->determineStatus($now);
+
+        // 4. Simpan Record
+        if ($existing) {
+            $existing->update([
+                'jam_masuk' => $now->format('H:i:s'),
+                'lat_masuk' => $request->lat,
+                'lng_masuk' => $request->lng,
+                'foto_masuk' => $fotoPath,
+                'status' => $status,
+                'keterangan' => $request->keterangan ?? $existing->keterangan,
+            ]);
+        } else {
+            Absensi::create([
+                'amil_id' => $amil->id,
+                'tanggal' => $now->toDateString(),
+                'jam_masuk' => $now->format('H:i:s'),
+                'lat_masuk' => $request->lat,
+                'lng_masuk' => $request->lng,
+                'foto_masuk' => $fotoPath,
+                'status' => $status,
+                'keterangan' => $request->keterangan,
+            ]);
+        }
+
+        $pesan = $status === 'terlambat'
+            ? 'Presensi masuk berhasil dicatat, namun status Anda tercatat TERLAMBAT.'
+            : 'Alhamdulillah, presensi masuk tepat waktu berhasil dicatat!';
+
+        return redirect()->route('amil.absensi.index')->with('success', $pesan);
+    }
+
+    /**
+     * Clock Out (Presensi Pulang)
+     */
+    public function clockOut(Request $request)
+    {
+        $amil = Auth::user()->amil;
+
+        $existing = $this->absensiService->getTodayAbsensi($amil);
+        if (! $existing || ! $existing->jam_masuk) {
+            return back()->with('error', 'Anda belum melakukan presensi masuk hari ini!');
+        }
+
+        if ($existing->jam_pulang) {
+            return back()->with('error', 'Anda sudah melakukan presensi pulang hari ini pada pukul '.substr($existing->jam_pulang, 0, 5).' WIB.');
+        }
+
+        $request->validate([
+            'lat' => ['required', 'numeric'],
+            'lng' => ['required', 'numeric'],
+            'foto' => ['nullable'],
+            'foto_file' => ['nullable', 'image', 'max:5120'],
+        ]);
+
+        if (! $request->hasFile('foto_file') && ! $request->filled('foto')) {
+            return back()->with('error', 'Harap ambil foto selfie melalui kamera atau pilih file foto!');
+        }
+
+        $now = Carbon::now('Asia/Jakarta');
+
+        // Validasi Geofencing
+        $locCheck = $this->absensiService->validateLocation((float) $request->lat, (float) $request->lng);
+        if (! $locCheck['valid']) {
+            $distMeters = round($locCheck['distance_meters']);
+            $maxRadius = $locCheck['nearest_office']?->radius_meter ?? 100;
+
+            return back()->with('error', "Presensi pulang gagal! Anda berada di luar radius kantor ({$distMeters} meter dari kantor, batas maksimal {$maxRadius} meter).");
+        }
+
+        // Simpan Foto Selfie (dari File atau Base64)
+        if ($request->hasFile('foto_file')) {
+            $fotoPath = $request->file('foto_file')->store('absensi/pulang', 'public');
+        } else {
+            $fotoPath = $this->storeBase64Image($request->foto, 'absensi/pulang');
+        }
+
+        $existing->update([
+            'jam_pulang' => $now->format('H:i:s'),
+            'lat_pulang' => $request->lat,
+            'lng_pulang' => $request->lng,
+            'foto_pulang' => $fotoPath,
+        ]);
+
+        return redirect()->route('amil.absensi.index')
+            ->with('success', 'Alhamdulillah! Presensi pulang berhasil dicatat. Selamat beristirahat.');
+    }
+
+    /**
+     * API cek lokasi live realtime untuk frontend
+     */
+    public function checkLocation(Request $request)
+    {
+        $request->validate([
+            'lat' => ['required', 'numeric'],
+            'lng' => ['required', 'numeric'],
+        ]);
+
+        $result = $this->absensiService->validateLocation((float) $request->lat, (float) $request->lng);
+
+        return response()->json([
+            'valid' => $result['valid'],
+            'distance_meters' => $result['distance_meters'],
+            'office_name' => $result['nearest_office']?->nama_lokasi ?? 'Kantor Pusat',
+            'max_radius' => $result['nearest_office']?->radius_meter ?? 100,
+        ]);
+    }
+
+    /**
+     * Helper simpan foto base64 ke disk public storage
+     */
+    protected function storeBase64Image(string $base64Data, string $folder): string
+    {
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
+            $base64Data = substr($base64Data, strpos($base64Data, ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, webp
+        } else {
+            $type = 'jpg';
+        }
+
+        $image = base64_decode($base64Data);
+        $fileName = $folder.'/'.uniqid().'_'.time().'.'.$type;
+
+        Storage::disk('public')->put($fileName, $image);
+
+        return $fileName;
+    }
+}
