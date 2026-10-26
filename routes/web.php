@@ -108,6 +108,17 @@ Route::get('/storage-link', function () {
     }
 });
 
+// Helper untuk menjalankan migrasi database otomatis di hosting
+Route::get('/run-migrate', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+
+        return 'Migrasi Database Berhasil:<br>'.nl2br(Artisan::output());
+    } catch (Throwable $e) {
+        return 'Gagal migrasi: '.$e->getMessage();
+    }
+});
+
 // Fallback Route untuk memastikan file gambar di storage/app/public/ selalu dapat diakses di shared hosting
 Route::get('/storage/{path}', function (string $path) {
     $filePath = storage_path('app/public/'.$path);
