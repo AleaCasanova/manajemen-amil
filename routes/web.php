@@ -39,6 +39,7 @@ use App\Http\Controllers\Amil\DonaturController as AmilDonaturController;
 use App\Http\Controllers\Amil\IzinCutiController as AmilIzinCutiController;
 use App\Http\Controllers\Amil\PengumumanController;
 use App\Http\Controllers\Amil\PenyaluranController;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/login', [AmilAuthController::class, 'showLoginForm'])->name('login');
 Route::get('/amil/login', [AmilAuthController::class, 'showLoginForm'])->name('amil.login');
@@ -95,3 +96,27 @@ Route::middleware(['auth'])->prefix('amil')->name('amil.')->group(function () {
     Route::get('/penyaluran/create', [PenyaluranController::class, 'create'])->name('penyaluran.create');
     Route::post('/penyaluran', [PenyaluranController::class, 'store'])->name('penyaluran.store');
 });
+
+// Helper untuk membuat symlink storage di hosting
+Route::get('/storage-link', function () {
+    try {
+        Artisan::call('storage:link');
+
+        return 'Storage link berhasil dibuat: '.Artisan::output();
+    } catch (Throwable $e) {
+        return 'Gagal membuat symlink: '.$e->getMessage();
+    }
+});
+
+// Fallback Route untuk memastikan file gambar di storage/app/public/ selalu dapat diakses di shared hosting
+Route::get('/storage/{path}', function (string $path) {
+    $filePath = storage_path('app/public/'.$path);
+    $realBase = realpath(storage_path('app/public'));
+    $realPath = realpath($filePath);
+
+    if (! $realPath || ! str_starts_with($realPath, $realBase) || ! file_exists($realPath)) {
+        abort(404);
+    }
+
+    return response()->file($realPath);
+})->where('path', '.*');
