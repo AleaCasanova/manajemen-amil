@@ -353,4 +353,23 @@ class AmilWorkflowTest extends TestCase
             'keterangan' => 'Penugasan survei mustahik di Desa Cibogo',
         ]);
     }
+
+    /**
+     * Uji Command Otomatis Tandai Alpa
+     */
+    public function test_mark_alpa_command_marks_absent_amil_as_alpa(): void
+    {
+        // Pastikan amil ini tidak punya absensi pada tanggal pengujian
+        $testDate = '2026-11-05';
+        Absensi::where('amil_id', $this->amil->id)->whereDate('tanggal', $testDate)->delete();
+
+        $this->artisan('amil:mark-alpa', ['--date' => $testDate, '--include-weekend' => true])
+            ->assertExitCode(0);
+
+        $this->assertDatabaseHas('absensis', [
+            'amil_id' => $this->amil->id,
+            'tanggal' => $testDate,
+            'status' => 'alpa',
+        ]);
+    }
 }

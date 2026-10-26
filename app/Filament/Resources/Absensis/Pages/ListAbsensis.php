@@ -12,6 +12,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TimePicker;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Artisan;
 
 class ListAbsensis extends ListRecords
 {
@@ -87,6 +88,25 @@ class ListAbsensis extends ListRecords
                     Notification::make()
                         ->title('Presensi Tersimpan')
                         ->body("Presensi untuk {$amil?->nama} pada {$data['tanggal']} berhasil dicatat.")
+                        ->success()
+                        ->send();
+                }),
+
+            Action::make('mark_alpa_today')
+                ->label('Tandai Alpa Hari Ini')
+                ->icon('heroicon-o-user-minus')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Tandai Amil Alpa Hari Ini')
+                ->modalDescription('Semua amil aktif yang belum memiliki presensi dan tidak memiliki izin/cuti hari ini akan otomatis ditandai sebagai ALPA.')
+                ->modalSubmitActionLabel('Ya, Tandai Alpa Sekarang')
+                ->action(function (): void {
+                    Artisan::call('amil:mark-alpa', ['--include-weekend' => true]);
+                    $output = trim(Artisan::output());
+
+                    Notification::make()
+                        ->title('Proses Alpa Selesai')
+                        ->body($output ?: 'Pemeriksaan status alpa amil selesai dilakukan.')
                         ->success()
                         ->send();
                 }),

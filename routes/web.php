@@ -119,6 +119,17 @@ Route::get('/run-migrate', function () {
     }
 });
 
+// Helper untuk menjalankan proses Alpa otomatis di shared hosting / cron web
+Route::get('/run-alpa', function () {
+    try {
+        Artisan::call('amil:mark-alpa', ['--include-weekend' => true]);
+
+        return 'Proses Alpa Berhasil:<br>'.nl2br(Artisan::output());
+    } catch (Throwable $e) {
+        return 'Gagal memproses alpa: '.$e->getMessage();
+    }
+});
+
 // Fallback Route untuk memastikan file gambar di storage/app/public/ selalu dapat diakses di shared hosting
 Route::get('/storage/{path}', function (string $path) {
     $filePath = storage_path('app/public/'.$path);
