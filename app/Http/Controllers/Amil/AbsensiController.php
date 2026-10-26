@@ -53,13 +53,26 @@ class AbsensiController extends Controller
             return back()->with('error', 'Anda sudah melakukan presensi masuk hari ini pada pukul '.substr($existing->jam_masuk, 0, 5).' WIB.');
         }
 
-        $request->validate([
+        $tipePresensi = $request->input('tipe_presensi', 'kantor');
+        $isDinasLuar = $tipePresensi === 'dinas_luar';
+
+        $rules = [
             'lat' => ['required', 'numeric'],
             'lng' => ['required', 'numeric'],
             'foto' => ['nullable'], // string base64 atau null jika file
             'foto_file' => ['nullable', 'image', 'max:5120'], // file upload langsung
-            'keterangan' => ['nullable', 'string', 'max:255'],
-        ]);
+            'tipe_presensi' => ['nullable', 'in:kantor,dinas_luar'],
+            'keterangan' => $isDinasLuar
+                ? ['required', 'string', 'min:5', 'max:255']
+                : ['nullable', 'string', 'max:255'],
+        ];
+
+        $messages = [
+            'keterangan.required' => 'Untuk presensi Tugas Luar, Anda wajib mengisi rincian kegiatan / penugasan lapangan!',
+            'keterangan.min' => 'Rincian tugas lapangan minimal 5 karakter.',
+        ];
+
+        $request->validate($rules, $messages);
 
         if (! $request->hasFile('foto_file') && ! $request->filled('foto')) {
             return back()->with('error', 'Harap ambil foto selfie melalui kamera atau pilih file foto!');
@@ -67,13 +80,15 @@ class AbsensiController extends Controller
 
         $now = Carbon::now('Asia/Jakarta');
 
-        // 1. Validasi Geofencing
-        $locCheck = $this->absensiService->validateLocation((float) $request->lat, (float) $request->lng);
-        if (! $locCheck['valid']) {
-            $distMeters = round($locCheck['distance_meters']);
-            $maxRadius = $locCheck['nearest_office']?->radius_meter ?? 100;
+        // 1. Validasi Geofencing (Hanya jika di kantor)
+        if (! $isDinasLuar) {
+            $locCheck = $this->absensiService->validateLocation((float) $request->lat, (float) $request->lng);
+            if (! $locCheck['valid']) {
+                $distMeters = round($locCheck['distance_meters']);
+                $maxRadius = $locCheck['nearest_office']?->radius_meter ?? 100;
 
-            return back()->with('error', "Presensi gagal! Anda berada di luar radius kantor ({$distMeters} meter dari kantor, batas maksimal {$maxRadius} meter).");
+                return back()->with('error', "Presensi gagal! Anda berada di luar radius kantor ({$distMeters} meter dari kantor, batas maksimal {$maxRadius} meter). Jika sedang dinas luar, silakan aktifkan mode 'Tugas Luar'.");
+            }
         }
 
         // 2. Simpan Foto Selfie (dari File atau Base64)
@@ -93,6 +108,7 @@ class AbsensiController extends Controller
                 'lat_masuk' => $request->lat,
                 'lng_masuk' => $request->lng,
                 'foto_masuk' => $fotoPath,
+                'tipe_masuk' => $tipePresensi,
                 'status' => $status,
                 'keterangan' => $request->keterangan ?? $existing->keterangan,
             ]);
@@ -104,14 +120,16 @@ class AbsensiController extends Controller
                 'lat_masuk' => $request->lat,
                 'lng_masuk' => $request->lng,
                 'foto_masuk' => $fotoPath,
+                'tipe_masuk' => $tipePresensi,
                 'status' => $status,
                 'keterangan' => $request->keterangan,
             ]);
         }
 
+        $tipeLabel = $isDinasLuar ? ' (Mode Tugas Luar)' : '';
         $pesan = $status === 'terlambat'
-            ? 'Presensi masuk berhasil dicatat, namun status Anda tercatat TERLAMBAT.'
-            : 'Alhamdulillah, presensi masuk tepat waktu berhasil dicatat!';
+            ? "Presensi masuk{$tipeLabel} berhasil dicatat, namun status Anda tercatat TERLAMBAT."
+            : "Alhamdulillah, presensi masuk tepat waktu{$tipeLabel} berhasil dicatat!";
 
         return redirect()->route('amil.absensi.index')->with('success', $pesan);
     }
@@ -132,12 +150,26 @@ class AbsensiController extends Controller
             return back()->with('error', 'Anda sudah melakukan presensi pulang hari ini pada pukul '.substr($existing->jam_pulang, 0, 5).' WIB.');
         }
 
-        $request->validate([
+        $tipePresensi = $request->input('tipe_presensi', 'kantor');
+        $isDinasLuar = $tipePresensi === 'dinas_luar';
+
+        $rules = [
             'lat' => ['required', 'numeric'],
             'lng' => ['required', 'numeric'],
             'foto' => ['nullable'],
             'foto_file' => ['nullable', 'image', 'max:5120'],
-        ]);
+            'tipe_presensi' => ['nullable', 'in:kantor,dinas_luar'],
+            'keterangan_pulang' => $isDinasLuar
+                ? ['required', 'string', 'min:5', 'max:255']
+                : ['nullable', 'string', 'max:255'],
+        ];
+
+        $messages = [
+            'keterangan_pulang.required' => 'Untuk presensi pulang Tugas Luar, Anda wajib mengisi rincian kegiatan / catatan tugas!',
+            'keterangan_pulang.min' => 'Rincian tugas minimal 5 karakter.',
+        ];
+
+        $request->validate($rules, $messages);
 
         if (! $request->hasFile('foto_file') && ! $request->filled('foto')) {
             return back()->with('error', 'Harap ambil foto selfie melalui kamera atau pilih file foto!');
@@ -145,13 +177,15 @@ class AbsensiController extends Controller
 
         $now = Carbon::now('Asia/Jakarta');
 
-        // Validasi Geofencing
-        $locCheck = $this->absensiService->validateLocation((float) $request->lat, (float) $request->lng);
-        if (! $locCheck['valid']) {
-            $distMeters = round($locCheck['distance_meters']);
-            $maxRadius = $locCheck['nearest_office']?->radius_meter ?? 100;
+        // Validasi Geofencing (Hanya jika di kantor)
+        if (! $isDinasLuar) {
+            $locCheck = $this->absensiService->validateLocation((float) $request->lat, (float) $request->lng);
+            if (! $locCheck['valid']) {
+                $distMeters = round($locCheck['distance_meters']);
+                $maxRadius = $locCheck['nearest_office']?->radius_meter ?? 100;
 
-            return back()->with('error', "Presensi pulang gagal! Anda berada di luar radius kantor ({$distMeters} meter dari kantor, batas maksimal {$maxRadius} meter).");
+                return back()->with('error', "Presensi pulang gagal! Anda berada di luar radius kantor ({$distMeters} meter dari kantor, batas maksimal {$maxRadius} meter). Jika sedang dinas luar, silakan aktifkan mode 'Tugas Luar'.");
+            }
         }
 
         // Simpan Foto Selfie (dari File atau Base64)
@@ -166,10 +200,14 @@ class AbsensiController extends Controller
             'lat_pulang' => $request->lat,
             'lng_pulang' => $request->lng,
             'foto_pulang' => $fotoPath,
+            'tipe_pulang' => $tipePresensi,
+            'keterangan_pulang' => $request->keterangan_pulang,
         ]);
 
+        $tipeLabel = $isDinasLuar ? ' (Mode Tugas Luar)' : '';
+
         return redirect()->route('amil.absensi.index')
-            ->with('success', 'Alhamdulillah! Presensi pulang berhasil dicatat. Selamat beristirahat.');
+            ->with('success', "Alhamdulillah! Presensi pulang{$tipeLabel} berhasil dicatat. Selamat beristirahat.");
     }
 
     /**

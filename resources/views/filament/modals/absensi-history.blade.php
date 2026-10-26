@@ -322,6 +322,16 @@
             color: #fbbf24;
             border-color: rgba(251, 191, 36, 0.3);
         }
+        .gsc-badge-purple {
+            background: #f5f3ff;
+            color: #5b21b6;
+            border: 1px solid #ddd6fe;
+        }
+        .dark .gsc-badge-purple {
+            background: rgba(91, 33, 182, 0.35);
+            color: #c4b5fd;
+            border-color: rgba(196, 181, 253, 0.3);
+        }
 
         /* Empty State */
         .gsc-empty {
@@ -467,11 +477,25 @@
                                     </div>
                                     <div style="font-size: 11px; color: #64748b;">{{ $tgl->translatedFormat('l') }}</div>
                                 </td>
-                                <td style="white-space: nowrap; font-family: monospace; font-weight: 700;">
-                                    {{ $item->jam_masuk ? \Carbon\Carbon::parse($item->jam_masuk)->format('H:i') : '-' }}
+                                <td style="white-space: nowrap;">
+                                    <div style="font-family: monospace; font-weight: 700; color: #0f172a;">
+                                        {{ $item->jam_masuk ? \Carbon\Carbon::parse($item->jam_masuk)->format('H:i') : '-' }}
+                                    </div>
+                                    @if ($item->tipe_masuk === 'dinas_luar')
+                                        <div style="margin-top: 2px;">
+                                            <span class="gsc-badge gsc-badge-purple" style="font-size: 9px; padding: 1px 6px;">🚗 Luar</span>
+                                        </div>
+                                    @endif
                                 </td>
-                                <td style="white-space: nowrap; font-family: monospace; font-weight: 700;">
-                                    {{ $item->jam_pulang ? \Carbon\Carbon::parse($item->jam_pulang)->format('H:i') : '-' }}
+                                <td style="white-space: nowrap;">
+                                    <div style="font-family: monospace; font-weight: 700; color: #0f172a;">
+                                        {{ $item->jam_pulang ? \Carbon\Carbon::parse($item->jam_pulang)->format('H:i') : '-' }}
+                                    </div>
+                                    @if ($item->tipe_pulang === 'dinas_luar')
+                                        <div style="margin-top: 2px;">
+                                            <span class="gsc-badge gsc-badge-purple" style="font-size: 9px; padding: 1px 6px;">🚗 Luar</span>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td style="text-align: center; white-space: nowrap;">
                                     @if ($item->foto_masuk)
@@ -492,22 +516,53 @@
                                     @endif
                                 </td>
                                 <td style="white-space: nowrap;">
-                                    @if ($item->lat_masuk && $item->lng_masuk)
-                                        <a href="https://www.google.com/maps?q={{ $item->lat_masuk }},{{ $item->lng_masuk }}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: #10b981; font-weight: 600; text-decoration: none; font-size: 11px;">
-                                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                                            Peta GPS
-                                        </a>
-                                    @else
-                                        <span style="color: #94a3b8; font-size: 11px;">-</span>
-                                    @endif
+                                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                                        @if ($item->lat_masuk && $item->lng_masuk)
+                                            <a href="https://www.google.com/maps?q={{ $item->lat_masuk }},{{ $item->lng_masuk }}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: #10b981; font-weight: 600; text-decoration: none; font-size: 10px;">
+                                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                                Peta Masuk
+                                            </a>
+                                        @endif
+                                        @if ($item->lat_pulang && $item->lng_pulang)
+                                            <a href="https://www.google.com/maps?q={{ $item->lat_pulang }},{{ $item->lng_pulang }}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; color: #3b82f6; font-weight: 600; text-decoration: none; font-size: 10px;">
+                                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                                Peta Pulang
+                                            </a>
+                                        @endif
+                                        @if (!$item->lat_masuk && !$item->lat_pulang)
+                                            <span style="color: #94a3b8; font-size: 11px;">-</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td style="white-space: nowrap;">
-                                    <span class="gsc-badge {{ $badgeClass }}">
-                                        {{ $statusLabel }}
-                                    </span>
+                                    <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
+                                        <span class="gsc-badge {{ $badgeClass }}">
+                                            {{ $statusLabel }}
+                                        </span>
+                                        @if ($item->tipe_masuk === 'dinas_luar' || $item->tipe_pulang === 'dinas_luar')
+                                            <span class="gsc-badge gsc-badge-purple">
+                                                🚗 Tugas Lapangan
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
-                                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #64748b;" title="{{ $item->keterangan }}">
-                                    {{ $item->keterangan ?: '-' }}
+                                <td style="max-width: 220px; font-size: 11px; color: #475569;">
+                                    @if ($item->keterangan && $item->keterangan_pulang)
+                                        <div style="white-space: normal; line-height: 1.3;">
+                                            <div><strong>Masuk:</strong> {{ $item->keterangan }}</div>
+                                            <div style="margin-top: 2px;"><strong>Pulang:</strong> {{ $item->keterangan_pulang }}</div>
+                                        </div>
+                                    @elseif ($item->keterangan)
+                                        <div style="white-space: normal; line-height: 1.3;" title="{{ $item->keterangan }}">
+                                            {{ $item->keterangan }}
+                                        </div>
+                                    @elseif ($item->keterangan_pulang)
+                                        <div style="white-space: normal; line-height: 1.3;" title="{{ $item->keterangan_pulang }}">
+                                            <strong>Pulang:</strong> {{ $item->keterangan_pulang }}
+                                        </div>
+                                    @else
+                                        <span style="color: #94a3b8;">-</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

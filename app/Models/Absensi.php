@@ -21,8 +21,11 @@ class Absensi extends Model
         'lng_pulang',
         'foto_masuk',
         'foto_pulang',
+        'tipe_masuk',
+        'tipe_pulang',
         'status',
         'keterangan',
+        'keterangan_pulang',
     ];
 
     protected function casts(): array

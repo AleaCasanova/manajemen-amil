@@ -37,8 +37,33 @@
                         <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 animate-pulse">
                             Belum Absen Masuk
                         </span>
-                    @endif
                 </div>
+
+                <!-- MODE PRESENSI SELECTOR (KANTOR VS TUGAS LUAR) -->
+                @if (!$absensiToday || !$absensiToday->jam_pulang)
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Tipe Presensi Saat Ini:</label>
+                        <div class="p-1 bg-slate-100 rounded-2xl border border-slate-200 grid grid-cols-2 gap-1">
+                            <button type="button" id="btnModeKantor" onclick="switchPresenceMode('kantor')" class="py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-emerald-800 shadow-xs">
+                                <span>🏢 Hadir di Kantor</span>
+                            </button>
+                            <button type="button" id="btnModeDinasLuar" onclick="switchPresenceMode('dinas_luar')" class="py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-800">
+                                <span>🚗 Tugas Lapangan / Luar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Info banner jika Mode Tugas Luar aktif -->
+                    <div id="bannerDinasLuar" class="hidden mb-4 p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 space-y-1">
+                        <div class="flex items-center gap-2 font-extrabold text-indigo-950">
+                            <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Mode Tugas Lapangan / Luar Kantor Aktif</span>
+                        </div>
+                        <p class="text-[11px] text-indigo-700">Radius kantor dilewati untuk dinas luar. Pastikan GPS HP tetap aktif & wajib mengisi rincian tugas/kegiatan Anda.</p>
+                    </div>
+                @endif
 
                 <!-- GPS & Geofencing Status Box -->
                 <div id="gpsStatusBox" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs mb-4 flex items-center justify-between">
@@ -158,13 +183,23 @@
                         <input type="hidden" name="lat" id="inputLat">
                         <input type="hidden" name="lng" id="inputLng">
                         <input type="hidden" name="foto" id="inputFoto">
+                        <input type="hidden" name="tipe_presensi" id="inputTipePresensiIn" value="kantor">
                         <input type="file" name="foto_file" id="formClockInFile" class="hidden" accept="image/*">
+
+                        <!-- Field Keterangan Tugas Lapangan (Wajib jika mode dinas luar) -->
+                        <div id="boxKeteranganIn" class="hidden mb-3 text-left">
+                            <label for="inputKeteranganIn" class="block text-xs font-bold text-slate-700 mb-1">
+                                Rincian Kegiatan / Tugas Lapangan <span class="text-rose-500">*</span>
+                            </label>
+                            <textarea name="keterangan" id="inputKeteranganIn" rows="2" class="w-full text-xs rounded-xl border border-slate-300 p-2.5 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200" placeholder="Contoh: Jemput mustahik sakit di RSUD / Survei calon penerima manfaat di desa..."></textarea>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Wajib diisi jika presensi di luar kantor (minimal 5 karakter).</span>
+                        </div>
 
                         <button type="submit" id="btnClockIn" disabled class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-extrabold text-sm shadow-md transition flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                             </svg>
-                            <span>Clock In (Masuk Kerja)</span>
+                            <span id="btnClockInText">Clock In (Masuk Kerja)</span>
                         </button>
                     </form>
                 @elseif (!$absensiToday->jam_pulang)
@@ -174,13 +209,23 @@
                         <input type="hidden" name="lat" id="inputLat">
                         <input type="hidden" name="lng" id="inputLng">
                         <input type="hidden" name="foto" id="inputFoto">
+                        <input type="hidden" name="tipe_presensi" id="inputTipePresensiOut" value="kantor">
                         <input type="file" name="foto_file" id="formClockOutFile" class="hidden" accept="image/*">
+
+                        <!-- Field Keterangan Tugas Pulang (Wajib jika mode dinas luar) -->
+                        <div id="boxKeteranganOut" class="hidden mb-3 text-left">
+                            <label for="inputKeteranganOut" class="block text-xs font-bold text-slate-700 mb-1">
+                                Rincian Kegiatan Lapangan Saat Pulang <span class="text-rose-500">*</span>
+                            </label>
+                            <textarea name="keterangan_pulang" id="inputKeteranganOut" rows="2" class="w-full text-xs rounded-xl border border-slate-300 p-2.5 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200" placeholder="Contoh: Selesai pendampingan di lokasi bencana langsung pulang / Selesai rapat eksternal..."></textarea>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Wajib diisi jika presensi pulang di luar kantor (minimal 5 karakter).</span>
+                        </div>
 
                         <button type="submit" id="btnClockOut" disabled class="w-full py-3.5 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 disabled:bg-slate-300 text-white font-extrabold text-sm shadow-md transition flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                             </svg>
-                            <span>Clock Out (Pulang Kerja)</span>
+                            <span id="btnClockOutText">Clock Out (Pulang Kerja)</span>
                         </button>
                     </form>
                 @endif
@@ -281,15 +326,23 @@
                                     {{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) . ' WIB' : '-' }}
                                 </td>
                                 <td class="py-3 px-4 text-center">
-                                    @if ($h->status === 'hadir')
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Tepat Waktu</span>
-                                    @elseif ($h->status === 'terlambat')
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">Terlambat</span>
-                                    @elseif ($h->status === 'izin' || $h->status === 'cuti')
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">{{ ucfirst($h->status) }}</span>
-                                    @else
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">{{ $h->status }}</span>
-                                    @endif
+                                    <div class="flex flex-col items-center gap-1">
+                                        @if ($h->status === 'hadir')
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Tepat Waktu</span>
+                                        @elseif ($h->status === 'terlambat')
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">Terlambat</span>
+                                        @elseif ($h->status === 'izin' || $h->status === 'cuti')
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">{{ ucfirst($h->status) }}</span>
+                                        @else
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">{{ $h->status }}</span>
+                                        @endif
+
+                                        @if ($h->tipe_masuk === 'dinas_luar' || $h->tipe_pulang === 'dinas_luar')
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-100 text-indigo-800" title="{{ $h->keterangan ?? $h->keterangan_pulang }}">
+                                                🚗 Tugas Luar
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     @if ($h->foto_masuk)
@@ -314,6 +367,85 @@
     let currentLng = null;
     let hasValidLocation = false;
     let hasSnapshot = false;
+    let currentPresenceMode = 'kantor'; // 'kantor' atau 'dinas_luar'
+    let officeCheckResult = null;
+
+    // Switch Mode Presensi (Kantor vs Tugas Luar)
+    function switchPresenceMode(mode) {
+        currentPresenceMode = mode;
+        const btnKantor = document.getElementById('btnModeKantor');
+        const btnDinasLuar = document.getElementById('btnModeDinasLuar');
+        const bannerDinasLuar = document.getElementById('bannerDinasLuar');
+        const inTipeIn = document.getElementById('inputTipePresensiIn');
+        const inTipeOut = document.getElementById('inputTipePresensiOut');
+        const boxKetIn = document.getElementById('boxKeteranganIn');
+        const boxKetOut = document.getElementById('boxKeteranganOut');
+        const txtIn = document.getElementById('btnClockInText');
+        const txtOut = document.getElementById('btnClockOutText');
+
+        if (mode === 'dinas_luar') {
+            if (btnDinasLuar) btnDinasLuar.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow-xs';
+            if (btnKantor) btnKantor.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-800';
+            if (bannerDinasLuar) bannerDinasLuar.classList.remove('hidden');
+            if (inTipeIn) inTipeIn.value = 'dinas_luar';
+            if (inTipeOut) inTipeOut.value = 'dinas_luar';
+            if (boxKetIn) boxKetIn.classList.remove('hidden');
+            if (boxKetOut) boxKetOut.classList.remove('hidden');
+            if (txtIn) txtIn.innerText = 'Clock In (Tugas Luar)';
+            if (txtOut) txtOut.innerText = 'Clock Out (Tugas Luar)';
+        } else {
+            if (btnKantor) btnKantor.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-emerald-800 shadow-xs';
+            if (btnDinasLuar) btnDinasLuar.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-800';
+            if (bannerDinasLuar) bannerDinasLuar.classList.add('hidden');
+            if (inTipeIn) inTipeIn.value = 'kantor';
+            if (inTipeOut) inTipeOut.value = 'kantor';
+            if (boxKetIn) boxKetIn.classList.add('hidden');
+            if (boxKetOut) boxKetOut.classList.add('hidden');
+            if (txtIn) txtIn.innerText = 'Clock In (Masuk Kerja)';
+            if (txtOut) txtOut.innerText = 'Clock Out (Pulang Kerja)';
+        }
+
+        updateGpsStatusUI();
+        checkSubmitState();
+    }
+
+    function updateGpsStatusUI() {
+        const gpsIndicator = document.getElementById('gpsIndicator');
+        const gpsText = document.getElementById('gpsText');
+        const gpsSubText = document.getElementById('gpsSubText');
+        if (!gpsIndicator || !gpsText || !gpsSubText) return;
+
+        if (currentLat === null || currentLng === null) {
+            return;
+        }
+
+        if (currentPresenceMode === 'dinas_luar') {
+            hasValidLocation = true;
+            gpsIndicator.className = 'w-3 h-3 rounded-full bg-indigo-500';
+            gpsText.innerText = 'Lokasi GPS Terkunci (Mode Tugas Luar)';
+            if (officeCheckResult) {
+                gpsSubText.innerText = `Jarak sekitar ${Math.round(officeCheckResult.distance_meters)} meter dari ${officeCheckResult.office_name} • Lokasi lapangan sah`;
+            } else {
+                gpsSubText.innerText = `Koordinat: ${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;
+            }
+        } else {
+            if (officeCheckResult) {
+                if (officeCheckResult.valid) {
+                    hasValidLocation = true;
+                    gpsIndicator.className = 'w-3 h-3 rounded-full bg-emerald-500';
+                    gpsText.innerText = `Lokasi Valid: Di dalam radius ${officeCheckResult.office_name}`;
+                    gpsSubText.innerText = `Jarak sekitar ${Math.round(officeCheckResult.distance_meters)} meter (Batas: ${officeCheckResult.max_radius}m)`;
+                } else {
+                    hasValidLocation = false;
+                    gpsIndicator.className = 'w-3 h-3 rounded-full bg-rose-500';
+                    gpsText.innerText = 'Di luar radius kantor!';
+                    gpsSubText.innerText = `Jarak ${Math.round(officeCheckResult.distance_meters)} meter (Batas: ${officeCheckResult.max_radius}m). Beralih ke "Tugas Luar" jika sedang dinas lapangan.`;
+                }
+            } else {
+                hasValidLocation = true;
+            }
+        }
+    }
 
     // 1. Geolocation API Browser
     function getLocation() {
@@ -345,21 +477,13 @@
                 fetch(`{{ route('amil.absensi.check-location') }}?lat=${currentLat}&lng=${currentLng}`)
                     .then(res => res.json())
                     .then(data => {
-                        if (data.valid) {
-                            hasValidLocation = true;
-                            gpsIndicator.className = 'w-3 h-3 rounded-full bg-emerald-500';
-                            gpsText.innerText = `Lokasi Valid: Di dalam radius ${data.office_name}`;
-                            gpsSubText.innerText = `Jarak sekitar ${Math.round(data.distance_meters)} meter (Batas: ${data.max_radius}m)`;
-                        } else {
-                            hasValidLocation = false;
-                            gpsIndicator.className = 'w-3 h-3 rounded-full bg-rose-500';
-                            gpsText.innerText = 'Di luar radius kantor!';
-                            gpsSubText.innerText = `Jarak Anda ${Math.round(data.distance_meters)} meter dari ${data.office_name} (Batas: ${data.max_radius}m)`;
-                        }
+                        officeCheckResult = data;
+                        updateGpsStatusUI();
                         checkSubmitState();
                     })
                     .catch(() => {
-                        hasValidLocation = true; // fallback
+                        officeCheckResult = { valid: true, office_name: 'Kantor', distance_meters: 0, max_radius: 100 };
+                        updateGpsStatusUI();
                         checkSubmitState();
                     });
             },
@@ -559,7 +683,18 @@
     }
 
     function checkSubmitState() {
-        const canSubmit = hasValidLocation && hasSnapshot;
+        let noteValid = true;
+        if (currentPresenceMode === 'dinas_luar') {
+            const inKetIn = document.getElementById('inputKeteranganIn');
+            const inKetOut = document.getElementById('inputKeteranganOut');
+            if (inKetIn && inKetIn.offsetParent !== null) {
+                noteValid = inKetIn.value.trim().length >= 5;
+            } else if (inKetOut && inKetOut.offsetParent !== null) {
+                noteValid = inKetOut.value.trim().length >= 5;
+            }
+        }
+
+        const canSubmit = hasValidLocation && hasSnapshot && noteValid;
         const btnIn = document.getElementById('btnClockIn');
         const btnOut = document.getElementById('btnClockOut');
 
@@ -567,9 +702,14 @@
         if (btnOut) btnOut.disabled = !canSubmit;
     }
 
-    // Jalankan deteksi GPS saat halaman dimuat
+    // Jalankan deteksi GPS & event listener saat halaman dimuat
     document.addEventListener('DOMContentLoaded', () => {
         getLocation();
+
+        const inKetIn = document.getElementById('inputKeteranganIn');
+        const inKetOut = document.getElementById('inputKeteranganOut');
+        if (inKetIn) inKetIn.addEventListener('input', checkSubmitState);
+        if (inKetOut) inKetOut.addEventListener('input', checkSubmitState);
     });
 </script>
 @endsection

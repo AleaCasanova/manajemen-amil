@@ -54,9 +54,17 @@ class ListAbsensis extends ListRecords
                         ])
                         ->default('hadir')
                         ->required(),
+                    Select::make('tipe_masuk')
+                        ->label('Tipe Presensi')
+                        ->options([
+                            'kantor' => '🏢 Hadir di Kantor',
+                            'dinas_luar' => '🚗 Tugas Luar / Lapangan',
+                        ])
+                        ->default('kantor')
+                        ->required(),
                     Textarea::make('keterangan')
                         ->label('Keterangan')
-                        ->placeholder('Catatan atau alasan jika terlambat/izin...')
+                        ->placeholder('Catatan atau alasan jika terlambat/izin/tugas luar...')
                         ->columnSpanFull(),
                 ])
                 ->action(function (array $data): void {
@@ -70,6 +78,7 @@ class ListAbsensis extends ListRecords
                         [
                             'jam_masuk' => $data['jam_masuk'],
                             'jam_pulang' => $data['jam_pulang'],
+                            'tipe_masuk' => $data['tipe_masuk'] ?? 'kantor',
                             'status' => $data['status'],
                             'keterangan' => $data['keterangan'] ?? 'Presensi dicatat admin',
                         ]

@@ -46,15 +46,27 @@ class AbsensisTable
                         }
 
                         $jam = $absen->jam_masuk ? Carbon::parse($absen->jam_masuk)->format('H:i') : null;
+                        $isDinas = $absen->tipe_masuk === 'dinas_luar' || $absen->tipe_pulang === 'dinas_luar';
+                        $suffix = $isDinas ? ' (Tugas Luar)' : '';
 
                         return match ($absen->status) {
-                            'hadir' => $jam ? "Hadir ({$jam})" : 'Hadir Tepat Waktu',
-                            'terlambat' => $jam ? "Terlambat ({$jam})" : 'Terlambat',
+                            'hadir' => $jam ? "Hadir {$jam}{$suffix}" : "Hadir Tepat Waktu{$suffix}",
+                            'terlambat' => $jam ? "Terlambat {$jam}{$suffix}" : "Terlambat{$suffix}",
                             'izin' => 'Izin',
                             'cuti' => 'Cuti',
                             'alpa' => 'Alpa',
                             default => ucfirst($absen->status),
                         };
+                    })
+                    ->description(function (Amil $record): ?string {
+                        $today = Carbon::today()->toDateString();
+                        $absen = $record->absensis->firstWhere('tanggal', $today);
+
+                        if ($absen && ($absen->keterangan || $absen->keterangan_pulang)) {
+                            return $absen->keterangan ?: $absen->keterangan_pulang;
+                        }
+
+                        return null;
                     })
                     ->badge()
                     ->color(function (Amil $record): string {
@@ -63,6 +75,10 @@ class AbsensisTable
 
                         if (! $absen) {
                             return 'gray';
+                        }
+
+                        if ($absen->tipe_masuk === 'dinas_luar' || $absen->tipe_pulang === 'dinas_luar') {
+                            return 'info';
                         }
 
                         return match ($absen->status) {
@@ -205,9 +221,17 @@ class AbsensisTable
                             ])
                             ->default('hadir')
                             ->required(),
+                        Select::make('tipe_masuk')
+                            ->label('Tipe Presensi')
+                            ->options([
+                                'kantor' => '🏢 Hadir di Kantor',
+                                'dinas_luar' => '🚗 Tugas Luar / Lapangan',
+                            ])
+                            ->default('kantor')
+                            ->required(),
                         Textarea::make('keterangan')
                             ->label('Keterangan')
-                            ->placeholder('Contoh: Presensi manual diinput oleh admin')
+                            ->placeholder('Contoh: Presensi manual diinput oleh admin / kegiatan dinas luar')
                             ->columnSpanFull(),
                     ])
                     ->action(function (Amil $record, array $data): void {
@@ -219,6 +243,7 @@ class AbsensisTable
                             [
                                 'jam_masuk' => $data['jam_masuk'],
                                 'jam_pulang' => $data['jam_pulang'],
+                                'tipe_masuk' => $data['tipe_masuk'] ?? 'kantor',
                                 'status' => $data['status'],
                                 'keterangan' => $data['keterangan'] ?? 'Presensi manual dicatat oleh admin',
                             ]

@@ -269,4 +269,77 @@ class AmilWorkflowTest extends TestCase
             'jumlah' => 500000,
         ]);
     }
+
+    /**
+     * Uji Presensi Kantor Ditolak Jika di Luar Radius
+     */
+    public function test_amil_clock_in_office_mode_rejected_when_outside_radius(): void
+    {
+        // Bersihkan absensi hari ini jika ada
+        Absensi::where('amil_id', $this->amil->id)->whereDate('tanggal', Carbon::today('Asia/Jakarta'))->delete();
+
+        // Titik sangat jauh (luar radius)
+        $farLat = -7.50000000;
+        $farLng = 110.50000000;
+
+        $response = $this->actingAs($this->user)->post(route('amil.absensi.masuk'), [
+            'lat' => $farLat,
+            'lng' => $farLng,
+            'foto' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+            'tipe_presensi' => 'kantor',
+        ]);
+
+        $response->assertSessionHas('error');
+        $this->assertDatabaseMissing('absensis', [
+            'amil_id' => $this->amil->id,
+            'tanggal' => Carbon::today('Asia/Jakarta')->toDateString(),
+        ]);
+    }
+
+    /**
+     * Uji Presensi Mode Tugas Luar Wajib Mengisi Keterangan
+     */
+    public function test_amil_dinas_luar_requires_task_description(): void
+    {
+        Absensi::where('amil_id', $this->amil->id)->whereDate('tanggal', Carbon::today('Asia/Jakarta'))->delete();
+
+        $response = $this->actingAs($this->user)->post(route('amil.absensi.masuk'), [
+            'lat' => -7.50000000,
+            'lng' => 110.50000000,
+            'foto' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+            'tipe_presensi' => 'dinas_luar',
+            'keterangan' => '', // kosong
+        ]);
+
+        $response->assertSessionHasErrors(['keterangan']);
+    }
+
+    /**
+     * Uji Presensi Mode Tugas Luar Berhasil Walau di Luar Radius Kantor
+     */
+    public function test_amil_can_clock_in_with_dinas_luar_mode_outside_radius(): void
+    {
+        Absensi::where('amil_id', $this->amil->id)->whereDate('tanggal', Carbon::today('Asia/Jakarta'))->delete();
+
+        $farLat = -7.50000000;
+        $farLng = 110.50000000;
+
+        $response = $this->actingAs($this->user)->post(route('amil.absensi.masuk'), [
+            'lat' => $farLat,
+            'lng' => $farLng,
+            'foto' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+            'tipe_presensi' => 'dinas_luar',
+            'keterangan' => 'Penugasan survei mustahik di Desa Cibogo',
+        ]);
+
+        $response->assertRedirect(route('amil.absensi.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('absensis', [
+            'amil_id' => $this->amil->id,
+            'tanggal' => Carbon::today('Asia/Jakarta')->toDateString(),
+            'tipe_masuk' => 'dinas_luar',
+            'keterangan' => 'Penugasan survei mustahik di Desa Cibogo',
+        ]);
+    }
 }
