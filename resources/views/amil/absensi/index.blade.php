@@ -236,6 +236,36 @@
                             <span class="text-[10px] text-slate-400 block mt-0.5">Wajib diisi jika presensi pulang di luar kantor (minimal 5 karakter).</span>
                         </div>
 
+                        @if (isset($clockOutEligibility) && ! $clockOutEligibility['can_clock_out'])
+                            <!-- Banner Kunci Jam Pulang (Belum 15:30) -->
+                            <div id="boxLockClockOut" class="mb-3 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-left">
+                                <div class="flex items-start gap-2.5">
+                                    <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="text-xs">
+                                        <p class="font-bold text-amber-950">Presensi Pulang Kantor Terkunci</p>
+                                        <p class="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
+                                            Presensi pulang kantor baru dibuka mulai pukul <strong>{{ $clockOutEligibility['min_clock_out_time'] }} WIB</strong> (30 menit sebelum jam {{ $clockOutEligibility['regular_end_time'] }}). Jika sedang penugasan di luar kantor, silakan beralih ke mode <strong>'Tugas Luar'</strong>.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif (isset($clockOutEligibility) && $clockOutEligibility['is_early'])
+                            <!-- Pemberitahuan Pulang Lebih Awal (15:30 - 15:59) -->
+                            <div id="boxEarlyNotice" class="mb-3 p-2.5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-900 text-left text-xs">
+                                <div class="flex items-center gap-1.5 font-bold text-amber-900">
+                                    <svg class="w-3.5 h-3.5 text-amber-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span>Pemberitahuan Pulang Lebih Awal</span>
+                                </div>
+                                <p class="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
+                                    Anda pulang {{ $clockOutEligibility['minutes_early'] }} menit lebih awal sebelum jam resmi kantor ({{ $clockOutEligibility['regular_end_time'] }} WIB). Presensi akan otomatis tercatat sebagai <strong>Pulang Lebih Awal</strong>.
+                                </p>
+                            </div>
+                        @endif
+
                         <button type="submit" id="btnClockOut" disabled class="w-full py-3.5 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 disabled:bg-slate-300 text-white font-extrabold text-sm shadow-md transition flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -334,6 +364,17 @@
                             {{ $absensiToday?->jam_pulang ? substr($absensiToday->jam_pulang, 0, 5) . ' WIB' : '--:--' }}
                         </span>
                     </div>
+                    @if ($absensiToday?->jam_pulang)
+                        @if ($absensiToday->isPulangAwal())
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                                PULANG LEBIH AWAL
+                            </span>
+                        @else
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                TEPAT WAKTU
+                            </span>
+                        @endif
+                    @endif
                 </div>
             </div>
         </div>
@@ -373,6 +414,12 @@
                                     <span class="px-2 py-0.5 rounded-md text-[9px] font-bold bg-slate-100 text-slate-700">{{ ucfirst($h->status) }}</span>
                                 @endif
 
+                                @if ($h->jam_pulang && $h->isPulangAwal())
+                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200/70">
+                                        Pulang Awal
+                                    </span>
+                                @endif
+
                                 @if ($h->tipe_masuk === 'dinas_luar' || $h->tipe_pulang === 'dinas_luar')
                                     <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60" title="{{ $h->keterangan ?? $h->keterangan_pulang }}">
                                         <svg class="w-2.5 h-2.5 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
@@ -388,9 +435,14 @@
                             </div>
 
                             @if ($h->keterangan || $h->keterangan_pulang)
-                                <p class="text-[10px] text-slate-500 bg-slate-50 p-1.5 rounded-lg border border-slate-100 line-clamp-2">
-                                    {{ $h->keterangan ?: $h->keterangan_pulang }}
-                                </p>
+                                <div class="text-[10px] text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-0.5">
+                                    @if ($h->keterangan)
+                                        <div class="line-clamp-1"><strong class="text-slate-700">Masuk:</strong> {{ $h->keterangan }}</div>
+                                    @endif
+                                    @if ($h->keterangan_pulang)
+                                        <div class="line-clamp-2"><strong class="text-slate-700">Pulang:</strong> {{ $h->keterangan_pulang }}</div>
+                                    @endif
+                                </div>
                             @endif
                         </div>
 
@@ -426,7 +478,12 @@
                                     {{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '-' }}
                                 </td>
                                 <td class="py-3 px-4 font-mono text-slate-800">
-                                    {{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) . ' WIB' : '-' }}
+                                    <div>{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) . ' WIB' : '-' }}</div>
+                                    @if ($h->jam_pulang && $h->isPulangAwal())
+                                        <span class="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 font-sans">
+                                            Pulang Lebih Awal
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     <div class="flex flex-col items-center gap-1">
@@ -438,6 +495,12 @@
                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">{{ ucfirst($h->status) }}</span>
                                         @else
                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">{{ $h->status }}</span>
+                                        @endif
+
+                                        @if ($h->jam_pulang && $h->isPulangAwal())
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-800">
+                                                Pulang Awal
+                                            </span>
                                         @endif
 
                                         @if ($h->tipe_masuk === 'dinas_luar' || $h->tipe_pulang === 'dinas_luar')
@@ -528,6 +591,7 @@
     let hasSnapshot = false;
     let currentPresenceMode = 'kantor'; // 'kantor' atau 'dinas_luar'
     let officeCheckResult = null;
+    const isClockOutLockedKantor = {{ (isset($clockOutEligibility) && ! $clockOutEligibility['can_clock_out']) ? 'true' : 'false' }};
 
     // Switch Mode Presensi (Kantor vs Tugas Luar)
     function switchPresenceMode(mode) {
@@ -541,11 +605,13 @@
         const boxKetOut = document.getElementById('boxKeteranganOut');
         const txtIn = document.getElementById('btnClockInText');
         const txtOut = document.getElementById('btnClockOutText');
+        const boxLockClockOut = document.getElementById('boxLockClockOut');
 
         if (mode === 'dinas_luar') {
             if (btnDinasLuar) btnDinasLuar.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow-xs';
             if (btnKantor) btnKantor.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-800';
             if (bannerDinasLuar) bannerDinasLuar.classList.remove('hidden');
+            if (boxLockClockOut) boxLockClockOut.classList.add('hidden');
             if (inTipeIn) inTipeIn.value = 'dinas_luar';
             if (inTipeOut) inTipeOut.value = 'dinas_luar';
             if (boxKetIn) boxKetIn.classList.remove('hidden');
@@ -556,6 +622,7 @@
             if (btnKantor) btnKantor.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-emerald-800 shadow-xs';
             if (btnDinasLuar) btnDinasLuar.className = 'py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-800';
             if (bannerDinasLuar) bannerDinasLuar.classList.add('hidden');
+            if (boxLockClockOut) boxLockClockOut.classList.remove('hidden');
             if (inTipeIn) inTipeIn.value = 'kantor';
             if (inTipeOut) inTipeOut.value = 'kantor';
             if (boxKetIn) boxKetIn.classList.add('hidden');
@@ -863,12 +930,26 @@
             }
         }
 
-        const canSubmit = hasValidLocation && hasSnapshot && noteValid;
+        let canClockOutByPolicy = true;
+        if (currentPresenceMode === 'kantor' && isClockOutLockedKantor) {
+            canClockOutByPolicy = false;
+        }
+
+        const canSubmitIn = hasValidLocation && hasSnapshot && noteValid;
+        const canSubmitOut = hasValidLocation && hasSnapshot && noteValid && canClockOutByPolicy;
+
         const btnIn = document.getElementById('btnClockIn');
         const btnOut = document.getElementById('btnClockOut');
 
-        if (btnIn) btnIn.disabled = !canSubmit;
-        if (btnOut) btnOut.disabled = !canSubmit;
+        if (btnIn) btnIn.disabled = !canSubmitIn;
+        if (btnOut) {
+            btnOut.disabled = !canSubmitOut;
+            if (currentPresenceMode === 'kantor' && isClockOutLockedKantor) {
+                btnOut.title = 'Presensi pulang kantor baru dibuka pukul {{ $clockOutEligibility['min_clock_out_time'] ?? '15:30' }} WIB';
+            } else {
+                btnOut.removeAttribute('title');
+            }
+        }
     }
 
     // Jalankan deteksi GPS & event listener saat halaman dimuat

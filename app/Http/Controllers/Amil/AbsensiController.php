@@ -38,7 +38,9 @@ class AbsensiController extends Controller
             ->take(30)
             ->get();
 
-        return view('amil.absensi.index', compact('amil', 'absensiToday', 'jamKerja', 'kantor', 'kantorAktif', 'history'));
+        $clockOutEligibility = $this->absensiService->checkClockOutEligibility(Carbon::now('Asia/Jakarta'));
+
+        return view('amil.absensi.index', compact('amil', 'absensiToday', 'jamKerja', 'kantor', 'kantorAktif', 'history', 'clockOutEligibility'));
     }
 
     /**
@@ -187,6 +189,12 @@ class AbsensiController extends Controller
 
         $now = Carbon::now('Asia/Jakarta');
 
+        // Validasi waktu buka presensi pulang (terkunci sebelum 15:30 untuk mode kantor)
+        $eligibility = $this->absensiService->checkClockOutEligibility($now, $isDinasLuar);
+        if (! $eligibility['can_clock_out']) {
+            return back()->with('error', $eligibility['message']);
+        }
+
         $nearestOfficeName = null;
         // Validasi Geofencing (Hanya jika di kantor)
         if (! $isDinasLuar) {
@@ -208,19 +216,29 @@ class AbsensiController extends Controller
             $fotoPath = $this->storeBase64Image($request->foto, 'absensi/pulang');
         }
 
+        $keteranganPulang = $request->keterangan_pulang;
+        if ($eligibility['is_early']) {
+            $prefixEarly = "Pulang Lebih Awal ({$eligibility['minutes_early']} menit sebelum jam {$eligibility['regular_end_time']} WIB)";
+            $keteranganPulang = $keteranganPulang ? "{$prefixEarly} - {$keteranganPulang}" : $prefixEarly;
+        }
+
         $existing->update([
             'jam_pulang' => $now->format('H:i:s'),
             'lat_pulang' => $request->lat,
             'lng_pulang' => $request->lng,
             'foto_pulang' => $fotoPath,
             'tipe_pulang' => $tipePresensi,
-            'keterangan_pulang' => $request->keterangan_pulang,
+            'keterangan_pulang' => $keteranganPulang,
         ]);
 
         $lokasiLabel = $isDinasLuar ? ' (Mode Tugas Luar)' : ($nearestOfficeName ? " di {$nearestOfficeName}" : '');
 
+        $pesanSukses = $eligibility['is_early']
+            ? "Presensi pulang{$lokasiLabel} berhasil dicatat dengan catatan Pulang Lebih Awal ({$eligibility['minutes_early']} menit sebelum jam {$eligibility['regular_end_time']} WIB). Selamat beristirahat."
+            : "Alhamdulillah! Presensi pulang{$lokasiLabel} berhasil dicatat tepat waktu. Selamat beristirahat.";
+
         return redirect()->route('amil.absensi.index')
-            ->with('success', "Alhamdulillah! Presensi pulang{$lokasiLabel} berhasil dicatat. Selamat beristirahat.");
+            ->with('success', $pesanSukses);
     }
 
     /**

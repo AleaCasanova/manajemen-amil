@@ -491,6 +491,11 @@
                                     <div style="font-family: monospace; font-weight: 700; color: #0f172a;">
                                         {{ $item->jam_pulang ? \Carbon\Carbon::parse($item->jam_pulang)->format('H:i') : '-' }}
                                     </div>
+                                    @if ($item->jam_pulang && $item->isPulangAwal())
+                                        <div style="margin-top: 2px;">
+                                            <span class="gsc-badge gsc-badge-warning" style="font-size: 9px; padding: 1px 6px;">⚠️ Pulang Awal</span>
+                                        </div>
+                                    @endif
                                     @if ($item->tipe_pulang === 'dinas_luar')
                                         <div style="margin-top: 2px;">
                                             <span class="gsc-badge gsc-badge-purple" style="font-size: 9px; padding: 1px 6px;">🚗 Luar</span>

@@ -182,7 +182,8 @@ class AmilWorkflowTest extends TestCase
         ]);
         $responseDouble->assertSessionHas('error');
 
-        // 2. Clock Out
+        // 2. Clock Out (Simulasi di atas jam 16:00 tepat waktu)
+        Carbon::setTestNow(Carbon::parse('2026-10-26 16:05:00', 'Asia/Jakarta'));
         $responseOut = $this->actingAs($this->user)->post(route('amil.absensi.pulang'), [
             'lat' => -6.20876340,
             'lng' => 106.84559900,
@@ -192,6 +193,71 @@ class AmilWorkflowTest extends TestCase
         $responseOut->assertRedirect(route('amil.absensi.index'));
         $absensi->refresh();
         $this->assertNotNull($absensi->jam_pulang);
+        $this->assertFalse($absensi->isPulangAwal());
+
+        Carbon::setTestNow(); // reset test now
+    }
+
+    /**
+     * Uji Kebijakan Jam Presensi Pulang (Terkunci Sebelum 15:30, Notasi Pulang Lebih Awal, & Bypass Tugas Luar)
+     */
+    public function test_clock_out_policy_and_early_departure_recording(): void
+    {
+        Absensi::where('amil_id', $this->amil->id)->whereDate('tanggal', Carbon::today())->delete();
+
+        // 1. Clock In pagi hari (08:00)
+        Carbon::setTestNow(Carbon::parse('2026-10-26 08:00:00', 'Asia/Jakarta'));
+        $this->actingAs($this->user)->post(route('amil.absensi.masuk'), [
+            'lat' => -6.20876340,
+            'lng' => 106.84559900,
+            'foto' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        ]);
+
+        $absensi = Absensi::where('amil_id', $this->amil->id)->whereDate('tanggal', Carbon::today())->first();
+        $this->assertNotNull($absensi);
+
+        // 2. Coba Clock Out di kantor sebelum jam 15:30 (misal 14:00) -> Harus DITOLAK / TERKUNCI
+        Carbon::setTestNow(Carbon::parse('2026-10-26 14:00:00', 'Asia/Jakarta'));
+        $resEarlyLocked = $this->actingAs($this->user)->post(route('amil.absensi.pulang'), [
+            'lat' => -6.20876340,
+            'lng' => 106.84559900,
+            'foto' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+            'tipe_presensi' => 'kantor',
+        ]);
+        $resEarlyLocked->assertSessionHas('error');
+        $this->assertStringContainsString('belum dibuka', session('error'));
+
+        // 3. Clock Out mode 'dinas_luar' sebelum jam 15:30 (misal 14:15) -> DIIZINKAN & tercatat Pulang Lebih Awal
+        Carbon::setTestNow(Carbon::parse('2026-10-26 14:15:00', 'Asia/Jakarta'));
+        $resDinasLuar = $this->actingAs($this->user)->post(route('amil.absensi.pulang'), [
+            'lat' => -6.20876340,
+            'lng' => 106.84559900,
+            'foto' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+            'tipe_presensi' => 'dinas_luar',
+            'keterangan_pulang' => 'Selesai pendampingan di lapangan',
+        ]);
+        $resDinasLuar->assertRedirect(route('amil.absensi.index'));
+        $absensi->refresh();
+        $this->assertNotNull($absensi->jam_pulang);
+        $this->assertTrue($absensi->isPulangAwal());
+        $this->assertStringContainsString('Pulang Lebih Awal', $absensi->keterangan_pulang);
+
+        // 4. Reset untuk uji Clock Out kantor di antara 15:30 s/d 15:59 (misal 15:45)
+        $absensi->update(['jam_pulang' => null, 'keterangan_pulang' => null]);
+        Carbon::setTestNow(Carbon::parse('2026-10-26 15:45:00', 'Asia/Jakarta'));
+        $resEarlyAllowed = $this->actingAs($this->user)->post(route('amil.absensi.pulang'), [
+            'lat' => -6.20876340,
+            'lng' => 106.84559900,
+            'foto' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+            'tipe_presensi' => 'kantor',
+        ]);
+        $resEarlyAllowed->assertRedirect(route('amil.absensi.index'));
+        $absensi->refresh();
+        $this->assertTrue($absensi->isPulangAwal());
+        $this->assertEquals(15, $absensi->pulangAwalMenit());
+        $this->assertStringContainsString('Pulang Lebih Awal (15 menit sebelum jam 16:00 WIB)', $absensi->keterangan_pulang);
+
+        Carbon::setTestNow(); // reset test now
     }
 
     /**

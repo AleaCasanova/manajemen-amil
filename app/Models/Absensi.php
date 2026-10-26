@@ -43,4 +43,39 @@ class Absensi extends Model
     {
         return $this->belongsTo(Amil::class);
     }
+
+    /**
+     * Cek apakah presensi pulang dicatat lebih awal dari jam kerja resmi (sebelum 16:00)
+     */
+    public function isPulangAwal(): bool
+    {
+        if (empty($this->jam_pulang)) {
+            return false;
+        }
+
+        if ($this->keterangan_pulang && str_contains($this->keterangan_pulang, 'Pulang Lebih Awal')) {
+            return true;
+        }
+
+        $jamKerja = JamKerja::where('is_active', true)->first();
+        $regularEnd = $jamKerja && $jamKerja->jam_pulang ? $jamKerja->jam_pulang : '16:00:00';
+
+        return $this->jam_pulang < $regularEnd;
+    }
+
+    /**
+     * Dapatkan rincian selisih menit pulang lebih awal jika ada
+     */
+    public function pulangAwalMenit(): ?int
+    {
+        if (! $this->isPulangAwal()) {
+            return null;
+        }
+
+        if ($this->keterangan_pulang && preg_match('/Pulang Lebih Awal \((\d+) menit/', $this->keterangan_pulang, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
+    }
 }

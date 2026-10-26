@@ -46,10 +46,11 @@ class AbsensisTable
                         }
 
                         $jam = $absen->jam_masuk ? Carbon::parse($absen->jam_masuk)->format('H:i') : null;
+                        $jamPulang = $absen->jam_pulang ? Carbon::parse($absen->jam_pulang)->format('H:i') : null;
                         $isDinas = $absen->tipe_masuk === 'dinas_luar' || $absen->tipe_pulang === 'dinas_luar';
                         $suffix = $isDinas ? ' (Tugas Luar)' : '';
 
-                        return match ($absen->status) {
+                        $statusText = match ($absen->status) {
                             'hadir' => $jam ? "Hadir {$jam}{$suffix}" : "Hadir Tepat Waktu{$suffix}",
                             'terlambat' => $jam ? "Terlambat {$jam}{$suffix}" : "Terlambat{$suffix}",
                             'izin' => 'Izin',
@@ -57,13 +58,30 @@ class AbsensisTable
                             'alpa' => 'Alpa',
                             default => ucfirst($absen->status),
                         };
+
+                        if ($jamPulang) {
+                            $pulangLabel = $absen->isPulangAwal() ? "Pulang Awal {$jamPulang}" : "Pulang {$jamPulang}";
+
+                            return "{$statusText} • {$pulangLabel}";
+                        }
+
+                        return $statusText;
                     })
                     ->description(function (Amil $record): ?string {
                         $today = Carbon::today()->toDateString();
                         $absen = $record->absensis->firstWhere('tanggal', $today);
 
-                        if ($absen && ($absen->keterangan || $absen->keterangan_pulang)) {
-                            return $absen->keterangan ?: $absen->keterangan_pulang;
+                        if ($absen) {
+                            $notes = [];
+                            if ($absen->keterangan) {
+                                $notes[] = $absen->keterangan;
+                            }
+                            if ($absen->keterangan_pulang) {
+                                $notes[] = $absen->keterangan_pulang;
+                            }
+                            if (! empty($notes)) {
+                                return implode(' | ', $notes);
+                            }
                         }
 
                         return null;
