@@ -35,7 +35,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased pb-24 lg:pb-6">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased pb-28 sm:pb-32 lg:pb-8">
 
     <!-- Top Navigation Bar (Header Modern) -->
     <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-40 border-b border-emerald-700/60">
@@ -193,36 +193,52 @@
                         <span>+ Donasi</span>
                     </a>
 
-                    <!-- User Profile Card & Dropdown -->
-                    <div class="relative group">
-                        <button type="button" class="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-700 text-white transition border border-emerald-600/50">
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-950 text-emerald-200 font-extrabold text-xs flex items-center justify-center uppercase shadow-inner">
+                    <!-- User Profile Card & Interactive Dropdown -->
+                    <div class="relative group" id="profileDropdownContainer">
+                        <button type="button" id="profileDropdownBtn" onclick="toggleProfileDropdown(event)" class="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-700 text-white transition border border-emerald-600/50 cursor-pointer select-none">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-950 text-emerald-200 font-extrabold text-xs flex items-center justify-center uppercase shadow-inner shrink-0">
                                 {{ substr(Auth::user()->amil?->nama ?? Auth::user()->name, 0, 2) }}
                             </div>
-                            <div class="hidden sm:block text-left leading-tight">
-                                <span class="text-xs font-bold block max-w-[120px] truncate">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
-                                <span class="text-[10px] text-emerald-200 block font-mono">{{ Auth::user()->amil?->nip ?? 'Amil' }}</span>
+                            <div class="text-left leading-tight max-w-[90px] xs:max-w-[110px] sm:max-w-[130px]">
+                                <span class="text-xs font-bold block truncate">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
+                                <span class="text-[10px] text-emerald-200 block font-mono truncate">{{ Auth::user()->amil?->nip ?? 'Amil' }}</span>
                             </div>
-                            <svg class="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg id="profileDropdownChevron" class="w-3.5 h-3.5 opacity-70 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
 
                         <!-- Profile Dropdown Popup -->
-                        <div class="absolute right-0 top-full pt-1.5 w-60 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                        <div id="profileDropdownMenu" class="absolute right-0 top-full pt-1.5 w-64 hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                             <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 text-slate-800 text-xs">
                                 <div class="pb-3 mb-3 border-b border-slate-100">
                                     <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Akun Terdaftar</span>
-                                    <span class="font-extrabold text-slate-900 text-sm block mt-0.5">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
+                                    <span class="font-extrabold text-slate-900 text-sm block mt-0.5 truncate">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
                                     <span class="text-slate-500 font-mono text-[11px] block">{{ Auth::user()->amil?->nip ?? '-' }}</span>
                                     <span class="inline-block mt-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold text-[10px]">
                                         {{ Auth::user()->amil?->divisi?->nama ?? 'Divisi Umum' }}
                                     </span>
                                 </div>
 
+                                <!-- Menu Profil Saya -->
+                                <div class="space-y-1 mb-2">
+                                    <a href="{{ route('amil.profile') }}" class="w-full py-2.5 px-3 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 font-bold text-xs transition flex items-center gap-2.5">
+                                        <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </span>
+                                        <div class="text-left">
+                                            <span class="block text-slate-900 font-extrabold">Profil Saya</span>
+                                            <span class="text-[10px] text-slate-400 font-normal">Edit Biodata & Password</span>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <!-- Tombol Keluar (Logout) -->
                                 <form action="{{ route('amil.logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin keluar dari sistem?')" class="w-full py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-2">
+                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin keluar dari sistem?')" class="w-full py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                         </svg>
@@ -288,6 +304,10 @@
                 <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                 <span>Pengumuman</span>
             </a>
+            <a href="{{ route('amil.profile') }}" class="p-2.5 rounded-xl bg-emerald-700 text-white font-bold flex items-center gap-2 col-span-2">
+                <svg class="w-4 h-4 text-emerald-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Profil & Akun Saya</span>
+            </a>
         </div>
     </div>
 
@@ -315,6 +335,9 @@
         @endif
 
         @yield('content')
+
+        <!-- Spacer Khusus Mobile agar scroll bagian terbawah tidak tertutup Floating Bottom Nav -->
+        <div class="h-20 sm:h-24 lg:hidden pointer-events-none" aria-hidden="true"></div>
     </main>
 
     <!-- Mobile Floating Bottom Navigation Bar (5 Menu Inti Lapangan) -->
@@ -432,6 +455,35 @@
             console.log('Aplikasi Amil GSC berhasil dipasang di perangkat!');
             if (pwaBanner) pwaBanner.classList.add('hidden');
             deferredPrompt = null;
+        });
+        // Dropdown Profil Amil Toggle
+        function toggleProfileDropdown(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            const menu = document.getElementById('profileDropdownMenu');
+            const chevron = document.getElementById('profileDropdownChevron');
+            if (menu) {
+                const isHidden = menu.classList.contains('hidden');
+                if (isHidden) {
+                    menu.classList.remove('hidden');
+                    if (chevron) chevron.classList.add('rotate-180');
+                } else {
+                    menu.classList.add('hidden');
+                    if (chevron) chevron.classList.remove('rotate-180');
+                }
+            }
+        }
+
+        // Close dropdown when clicked outside
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('profileDropdownContainer');
+            const menu = document.getElementById('profileDropdownMenu');
+            const chevron = document.getElementById('profileDropdownChevron');
+            if (container && menu && !container.contains(e.target)) {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
         });
     </script>
     @stack('scripts')

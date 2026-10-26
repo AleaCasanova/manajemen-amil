@@ -372,4 +372,72 @@ class AmilWorkflowTest extends TestCase
             'status' => 'alpa',
         ]);
     }
+
+    /**
+     * Uji Halaman Profil Amil dapat diakses
+     */
+    public function test_amil_can_view_profile_page(): void
+    {
+        $response = $this->actingAs($this->user)->get(route('amil.profile'));
+
+        $response->assertOk();
+        $response->assertSee('Profil & Akun Amil', false);
+        $response->assertSee('Ubah Data Diri & Kontak', false);
+        $response->assertSee('Rubah Kata Sandi');
+    }
+
+    /**
+     * Uji Amil dapat memperbarui data profil dirinya sendiri
+     */
+    public function test_amil_can_update_profile_info(): void
+    {
+        $response = $this->actingAs($this->user)->put(route('amil.profile.update'), [
+            'nama' => 'Nama Baru Amil',
+            'email' => $this->user->email,
+            'no_hp' => '081299998888',
+            'alamat' => 'Jl. Kebon Jeruk No. 5, Jakarta Barat',
+        ]);
+
+        $response->assertRedirect(route('amil.profile'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $this->user->id,
+            'name' => 'Nama Baru Amil',
+        ]);
+
+        $this->assertDatabaseHas('amils', [
+            'id' => $this->amil->id,
+            'nama' => 'Nama Baru Amil',
+            'no_hp' => '081299998888',
+            'alamat' => 'Jl. Kebon Jeruk No. 5, Jakarta Barat',
+        ]);
+    }
+
+    /**
+     * Uji Amil dapat merubah kata sandi akunnya
+     */
+    public function test_amil_can_change_password(): void
+    {
+        $this->user->password = bcrypt('rahasia123');
+        $this->user->save();
+
+        // 1. Gagal jika current_password salah
+        $failResponse = $this->actingAs($this->user)->put(route('amil.profile.password'), [
+            'current_password' => 'passwordsalah',
+            'password' => 'passwordbaru123',
+            'password_confirmation' => 'passwordbaru123',
+        ]);
+        $failResponse->assertSessionHasErrors('current_password');
+
+        // 2. Berhasil jika current_password valid
+        $successResponse = $this->actingAs($this->user)->put(route('amil.profile.password'), [
+            'current_password' => 'rahasia123',
+            'password' => 'passwordbaru123',
+            'password_confirmation' => 'passwordbaru123',
+        ]);
+
+        $successResponse->assertRedirect(route('amil.profile'));
+        $successResponse->assertSessionHas('success');
+    }
 }

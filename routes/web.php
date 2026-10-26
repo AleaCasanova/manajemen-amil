@@ -39,6 +39,7 @@ use App\Http\Controllers\Amil\DonaturController as AmilDonaturController;
 use App\Http\Controllers\Amil\IzinCutiController as AmilIzinCutiController;
 use App\Http\Controllers\Amil\PengumumanController;
 use App\Http\Controllers\Amil\PenyaluranController;
+use App\Http\Controllers\Amil\ProfileController as AmilProfileController;
 use Illuminate\Support\Facades\Artisan;
 
 Route::get('/login', [AmilAuthController::class, 'showLoginForm'])->name('login');
@@ -95,6 +96,11 @@ Route::middleware(['auth'])->prefix('amil')->name('amil.')->group(function () {
     Route::get('/penyaluran', [PenyaluranController::class, 'index'])->name('penyaluran.index');
     Route::get('/penyaluran/create', [PenyaluranController::class, 'create'])->name('penyaluran.create');
     Route::post('/penyaluran', [PenyaluranController::class, 'store'])->name('penyaluran.store');
+
+    // Profil Amil & Pengaturan Akun (Self-Service Profile & Password)
+    Route::get('/profile', [AmilProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [AmilProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [AmilProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 // Helper untuk membuat symlink storage di hosting
