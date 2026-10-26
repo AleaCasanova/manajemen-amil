@@ -136,6 +136,17 @@ Route::get('/run-alpa', function () {
     }
 });
 
+// Helper untuk membersihkan cache aplikasi via browser di shared hosting
+Route::get('/clear-cache', function () {
+    try {
+        Artisan::call('optimize:clear');
+
+        return 'Cache Berhasil Dibersihkan:<br>'.nl2br(Artisan::output());
+    } catch (Throwable $e) {
+        return 'Gagal membersihkan cache: '.$e->getMessage();
+    }
+});
+
 // Helper untuk men-generate dummy media (foto profil amil, selfie presensi, bukti donasi) di hosting
 Route::get('/run-seed-media', function () {
     try {
