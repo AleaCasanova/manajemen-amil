@@ -37,4 +37,23 @@ class AdminResourcesTableTest extends TestCase
         $response = $this->actingAs($this->admin)->get('/admin/aktivitas-harians');
         $response->assertStatus(200);
     }
+
+    public function test_storage_fallback_route_serves_files(): void
+    {
+        // Buat file uji sementara di storage/app/public
+        $testDir = storage_path('app/public/test');
+        if (! is_dir($testDir)) {
+            mkdir($testDir, 0755, true);
+        }
+        $testFile = $testDir.'/sample.txt';
+        file_put_contents($testFile, 'hello storage');
+
+        $response = $this->get('/storage/test/sample.txt');
+        $response->assertStatus(200);
+        $this->assertEquals('hello storage', $response->streamedContent());
+
+        // Hapus file uji
+        @unlink($testFile);
+        @rmdir($testDir);
+    }
 }
