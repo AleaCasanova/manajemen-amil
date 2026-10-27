@@ -42,21 +42,81 @@
 
             <input type="hidden" name="donatur_mode" id="donaturMode" value="{{ $selectedDonatur ? 'existing' : old('donatur_mode', 'existing') }}">
 
-            <!-- TAB 1: DONATUR SUDAH ADA -->
+            <!-- TAB 1: DONATUR SUDAH ADA (SEARCHABLE COMBOBOX) -->
             <div id="sectionExisting" class="{{ (!$selectedDonatur && old('donatur_mode') === 'new') ? 'hidden' : 'block' }}">
-                <div>
+                <input type="hidden" name="donatur_id" id="selectedDonaturIdInput" value="{{ $selectedDonatur?->id ?? old('donatur_id') }}">
+
+                <!-- 1. KARTU DONATUR TERPILIH (Aktif jika donatur sudah dipilih) -->
+                <div id="selectedDonaturCard" class="{{ $selectedDonatur ? 'block' : 'hidden' }} p-4 rounded-2xl bg-emerald-50/80 border-2 border-emerald-500 shadow-sm transition">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shadow shrink-0">
+                                <span id="selectedDonaturInitials">{{ substr($selectedDonatur?->nama ?? 'D', 0, 2) }}</span>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 id="selectedDonaturNama" class="text-sm font-extrabold text-slate-900 truncate">
+                                        {{ $selectedDonatur?->nama }}
+                                    </h4>
+                                    <span id="selectedDonaturKode" class="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-white text-emerald-800 border border-emerald-200">
+                                        {{ $selectedDonatur?->kode_donatur }}
+                                    </span>
+                                </div>
+                                <div class="text-xs text-slate-600 mt-1 flex items-center gap-3 flex-wrap">
+                                    <span class="flex items-center gap-1 font-mono">
+                                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                        <span id="selectedDonaturPhone">{{ $selectedDonatur?->no_hp }}</span>
+                                    </span>
+                                    <span id="selectedDonaturKotaWrapper" class="flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                                        <span id="selectedDonaturKota">{{ $selectedDonatur?->kota ?? 'Cilacap' }}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="clearSelectedDonatur()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 hover:border-rose-300 text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>Ganti Donatur</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. BOX PENCARIAN & DROPDOWN HASIL (Aktif jika belum ada donatur yang dipilih) -->
+                <div id="donaturSearchContainer" class="{{ $selectedDonatur ? 'hidden' : 'block' }} relative">
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">
-                        Pilih Donatur <span class="text-rose-500">*</span>
+                        Cari & Pilih Donatur Terdaftar <span class="text-rose-500">*</span>
                     </label>
-                    <select name="donatur_id" id="selectDonaturId" class="w-full rounded-xl border border-slate-300 py-2.5 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50">
-                        <option value="">-- Pilih dari database donatur binaan --</option>
-                        @foreach ($donaturList as $d)
-                            <option value="{{ $d->id }}" {{ ($selectedDonatur?->id == $d->id || old('donatur_id') == $d->id) ? 'selected' : '' }}>
-                                {{ $d->nama }} ({{ $d->no_hp }}) - {{ $d->kode_donatur }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <p class="text-[11px] text-slate-500 mt-1">Donatur tidak ditemukan? Klik tab <b>"+ Donatur Baru"</b> di atas untuk mendaftarkannya.</p>
+
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <input type="text" id="donaturSearchInput" placeholder="Ketik nama donatur, nomor HP / WhatsApp, atau kode DNT..." autocomplete="off" class="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-10 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white placeholder:text-slate-400">
+                        <div id="donaturSearchSpinner" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                        </div>
+                        <button type="button" id="donaturSearchClearBtn" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Dropdown Hasil Pencarian -->
+                    <div id="donaturDropdownResults" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 max-h-72 overflow-y-auto divide-y divide-slate-100">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1.5 px-0.5">
+                        <span>Bisa mencari seluruh donatur lembaga (lintas amil).</span>
+                        <button type="button" onclick="switchDonaturMode('new')" class="text-emerald-700 font-bold hover:underline">
+                            + Donatur Baru
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -356,6 +416,182 @@
             tabNew.className = 'px-3 py-1.5 rounded-lg transition bg-white text-emerald-700 shadow-sm';
             tabExisting.className = 'px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900';
         }
+    }
+
+    // ==========================================
+    // LIVE SEARCHABLE DONATUR COMBOBOX
+    // ==========================================
+    const initialDonaturs = @json($donaturList->map(function($d) use ($amil) {
+        return [
+            'id' => $d->id,
+            'nama' => $d->nama,
+            'no_hp' => $d->no_hp,
+            'kode_donatur' => $d->kode_donatur,
+            'kota' => $d->kota,
+            'alamat' => $d->alamat,
+            'is_binaan_saya' => $amil && ($d->amil_pic_id == $amil->id || $d->created_by == Auth::id()),
+        ];
+    }));
+
+    let donaturSearchTimeout = null;
+    const donaturSearchInput = document.getElementById('donaturSearchInput');
+    const donaturDropdown = document.getElementById('donaturDropdownResults');
+    const donaturSpinner = document.getElementById('donaturSearchSpinner');
+    const donaturClearBtn = document.getElementById('donaturSearchClearBtn');
+    const selectedDonaturCard = document.getElementById('selectedDonaturCard');
+    const donaturSearchContainer = document.getElementById('donaturSearchContainer');
+    const selectedDonaturIdInput = document.getElementById('selectedDonaturIdInput');
+
+    function renderDonaturList(list, query = '') {
+        donaturDropdown.innerHTML = '';
+        if (!list || list.length === 0) {
+            donaturDropdown.innerHTML = `
+                <div class="p-4 text-center">
+                    <p class="text-xs text-slate-500 font-medium">Tidak ditemukan donatur dengan kata kunci <b>"${query}"</b>.</p>
+                    <button type="button" onclick="switchDonaturMode('new'); if(document.getElementById('inputNamaDonatur')) document.getElementById('inputNamaDonatur').value = '${query}';" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition">
+                        <span>+ Daftarkan Sebagai Donatur Baru</span>
+                    </button>
+                </div>
+            `;
+            donaturDropdown.classList.remove('hidden');
+            return;
+        }
+
+        list.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'p-3 hover:bg-emerald-50/60 cursor-pointer transition flex items-center justify-between gap-3 text-left group';
+            row.onclick = () => selectDonatur(item);
+
+            const badge = item.is_binaan_saya
+                ? '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800">Binaan Anda</span>'
+                : '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-slate-100 text-slate-600">Donatur Lembaga</span>';
+
+            row.innerHTML = `
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-xs shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition">
+                        ${(item.nama || 'D').substring(0, 2).toUpperCase()}
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-xs text-slate-900 group-hover:text-emerald-800 transition truncate">${item.nama}</span>
+                            ${badge}
+                        </div>
+                        <div class="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5 truncate">
+                            <span class="font-mono text-emerald-700 font-medium">${item.no_hp || '-'}</span>
+                            <span>•</span>
+                            <span class="font-mono text-slate-400">${item.kode_donatur || ''}</span>
+                            ${item.kota ? `<span>•</span><span>${item.kota}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="shrink-0 text-slate-300 group-hover:text-emerald-600 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </div>
+            `;
+            donaturDropdown.appendChild(row);
+        });
+
+        donaturDropdown.classList.remove('hidden');
+    }
+
+    function selectDonatur(item) {
+        selectedDonaturIdInput.value = item.id;
+        document.getElementById('selectedDonaturNama').innerText = item.nama;
+        document.getElementById('selectedDonaturKode').innerText = item.kode_donatur || '-';
+        document.getElementById('selectedDonaturPhone').innerText = item.no_hp || '-';
+        document.getElementById('selectedDonaturInitials').innerText = (item.nama || 'D').substring(0, 2).toUpperCase();
+        document.getElementById('selectedDonaturKota').innerText = item.kota || item.alamat || '-';
+
+        selectedDonaturCard.classList.remove('hidden');
+        donaturSearchContainer.classList.add('hidden');
+        donaturDropdown.classList.add('hidden');
+    }
+
+    function clearSelectedDonatur() {
+        selectedDonaturIdInput.value = '';
+        selectedDonaturCard.classList.add('hidden');
+        donaturSearchContainer.classList.remove('hidden');
+        donaturSearchInput.value = '';
+        donaturClearBtn.classList.add('hidden');
+        donaturSearchInput.focus();
+        renderDonaturList(initialDonaturs);
+    }
+
+    function clearSearchInput() {
+        donaturSearchInput.value = '';
+        donaturClearBtn.classList.add('hidden');
+        renderDonaturList(initialDonaturs);
+        donaturSearchInput.focus();
+    }
+
+    if (donaturSearchInput) {
+        donaturSearchInput.addEventListener('focus', function() {
+            if (!this.value.trim()) {
+                renderDonaturList(initialDonaturs);
+            } else {
+                donaturDropdown.classList.remove('hidden');
+            }
+        });
+
+        donaturSearchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+
+        donaturSearchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+
+            if (query.length > 0) {
+                donaturClearBtn.classList.remove('hidden');
+            } else {
+                donaturClearBtn.classList.add('hidden');
+            }
+
+            // 1. Filter instan di memori lokal
+            const localMatches = initialDonaturs.filter(d => {
+                const qLower = query.toLowerCase();
+                return (d.nama && d.nama.toLowerCase().includes(qLower)) ||
+                       (d.no_hp && d.no_hp.includes(query)) ||
+                       (d.kode_donatur && d.kode_donatur.toLowerCase().includes(qLower));
+            });
+
+            renderDonaturList(localMatches, query);
+
+            // 2. Debounce fetch ke server jika query >= 2 karakter untuk cari seluruh database lembaga
+            clearTimeout(donaturSearchTimeout);
+            if (query.length >= 2) {
+                donaturSpinner.classList.remove('hidden');
+                donaturClearBtn.classList.add('hidden');
+
+                donaturSearchTimeout = setTimeout(() => {
+                    fetch(`{{ route('amil.donasi.search-donatur') }}?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            donaturSpinner.classList.add('hidden');
+                            if (donaturSearchInput.value.trim().length > 0) {
+                                donaturClearBtn.classList.remove('hidden');
+                            }
+                            if (data.donaturs) {
+                                renderDonaturList(data.donaturs, query);
+                            }
+                        })
+                        .catch(() => {
+                            donaturSpinner.classList.add('hidden');
+                            if (donaturSearchInput.value.trim().length > 0) {
+                                donaturClearBtn.classList.remove('hidden');
+                            }
+                        });
+                }, 300);
+            }
+        });
+
+        // Tutup dropdown jika klik di luar
+        document.addEventListener('click', function(e) {
+            if (donaturSearchContainer && !donaturSearchContainer.contains(e.target)) {
+                if (donaturDropdown) donaturDropdown.classList.add('hidden');
+            }
+        });
     }
 
     // Toggle Tampilan Transfer Bank

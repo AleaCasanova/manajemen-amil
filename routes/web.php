@@ -82,6 +82,7 @@ Route::middleware(['auth'])->prefix('amil')->name('amil.')->group(function () {
 
     // Modul Donasi
     Route::get('/donasi/check-phone', [AmilDonasiController::class, 'checkPhone'])->name('donasi.check-phone');
+    Route::get('/donasi/search-donatur', [AmilDonasiController::class, 'searchDonatur'])->name('donasi.search-donatur');
     Route::get('/donasi', [AmilDonasiController::class, 'index'])->name('donasi.index');
     Route::get('/donasi/create', [AmilDonasiController::class, 'create'])->name('donasi.create');
     Route::post('/donasi', [AmilDonasiController::class, 'store'])->name('donasi.store');

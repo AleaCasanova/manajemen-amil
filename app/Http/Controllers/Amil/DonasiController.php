@@ -77,17 +77,19 @@ class DonasiController extends Controller
         $jenisDanas = JenisDana::all();
         $programs = Program::where('status', 'aktif')->get();
 
-        // Donatur binaan amil untuk dropdown cepat
-        $donaturList = Donatur::where('amil_pic_id', $amil->id)
-            ->orWhere('created_by', Auth::id())
+        // Donatur untuk dropdown/selector: prioritaskan donatur binaan amil sendiri di atas, lalu donatur lembaga lainnya
+        $donaturList = Donatur::orderByRaw('CASE WHEN amil_pic_id = ? OR created_by = ? THEN 0 ELSE 1 END', [$amil->id, Auth::id()])
             ->orderBy('nama', 'asc')
+            ->limit(50)
             ->get();
 
-        // Jika ada parameter donatur_id dari tombol "Donasi Lagi"
+        // Jika ada parameter donatur_id dari tombol "Donasi Lagi" atau old input
         $selectedDonatur = null;
 
         if ($request->filled('donatur_id')) {
             $selectedDonatur = Donatur::find($request->donatur_id);
+        } elseif (old('donatur_id')) {
+            $selectedDonatur = Donatur::find(old('donatur_id'));
         }
 
         return view('amil.donasi.create', compact(
@@ -285,5 +287,47 @@ class DonasiController extends Controller
         }
 
         return response()->json(['exists' => false]);
+    }
+
+    /**
+     * Endpoint API internal untuk live search donatur (nama, no_hp, kode_donatur)
+     */
+    public function searchDonatur(Request $request)
+    {
+        $q = trim($request->query('q', ''));
+        $amil = Auth::user()->amil;
+
+        $query = Donatur::query();
+
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('nama', 'like', "%{$q}%")
+                    ->orWhere('no_hp', 'like', "%{$q}%")
+                    ->orWhere('kode_donatur', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%");
+            });
+        }
+
+        if ($amil) {
+            $query->orderByRaw('CASE WHEN amil_pic_id = ? OR created_by = ? THEN 0 ELSE 1 END', [$amil->id, Auth::id()]);
+        }
+
+        $donaturs = $query->orderBy('nama', 'asc')
+            ->limit(30)
+            ->get(['id', 'nama', 'no_hp', 'kode_donatur', 'kota', 'alamat', 'amil_pic_id', 'created_by']);
+
+        return response()->json([
+            'donaturs' => $donaturs->map(function ($d) use ($amil) {
+                return [
+                    'id' => $d->id,
+                    'nama' => $d->nama,
+                    'no_hp' => $d->no_hp,
+                    'kode_donatur' => $d->kode_donatur,
+                    'kota' => $d->kota,
+                    'alamat' => $d->alamat,
+                    'is_binaan_saya' => $amil && ($d->amil_pic_id == $amil->id || $d->created_by == Auth::id()),
+                ];
+            }),
+        ]);
     }
 }
