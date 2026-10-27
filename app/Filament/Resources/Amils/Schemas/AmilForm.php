@@ -31,7 +31,11 @@ class AmilForm
                                     ->label('Email Login')
                                     ->email()
                                     ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->unique('users', 'email', ignoreRecord: true)
+                                    ->unique(
+                                        table: 'users',
+                                        column: 'email',
+                                        ignorable: fn (?Amil $record) => $record?->user,
+                                    )
                                     ->placeholder('contoh: amil@amilgsc.com')
                                     ->helperText('Digunakan untuk login ke panel amil'),
                                 TextInput::make('password')
