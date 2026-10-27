@@ -169,6 +169,11 @@ Route::get('/clear-cache', function () {
             DB::table('lokasi_kantors')
                 ->where('alamat', 'LIKE', '%Cepat%')
                 ->update(['alamat' => 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224']);
+
+            // Hapus divisi lama dummy yang bukan 7 divisi resmi
+            DB::table('divisis')
+                ->whereNotIn('nama', ['Keuangan', 'Fundraising', 'Kesehatan', 'Program', 'Manajemen', 'Donasi', 'IT'])
+                ->delete();
         } catch (Throwable) {
             // Abaikan jika DB tidak dapat diakses
         }

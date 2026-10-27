@@ -74,19 +74,23 @@ class DatabaseSeeder extends Seeder
         );
         $admin->syncRoles([$adminRole]);
 
-        // 3. Default Divisi
-        $divisiPenghimpunan = Divisi::firstOrCreate(
-            ['nama' => 'Penghimpunan / Fundraising'],
-            ['deskripsi' => 'Divisi penghimpunan dana ZISWAF dan kemitraan donatur']
-        );
-        $divisiPenyaluran = Divisi::firstOrCreate(
-            ['nama' => 'Pendayagunaan & Penyaluran'],
-            ['deskripsi' => 'Divisi penyaluran manfaat dan program ke mustahik']
-        );
-        $divisiOperasional = Divisi::firstOrCreate(
-            ['nama' => 'Operasional & Keuangan'],
-            ['deskripsi' => 'Divisi administrasi operasional, SDM, dan keuangan']
-        );
+        // 3. Default Divisi Real GSC
+        $divisiDefs = [
+            ['nama' => 'Keuangan', 'deskripsi' => 'Divisi pengelolaan keuangan, akuntansi, dan pembukuan yayasan'],
+            ['nama' => 'Fundraising', 'deskripsi' => 'Divisi penghimpunan dana ZISWAF dan kemitraan donatur'],
+            ['nama' => 'Kesehatan', 'deskripsi' => 'Divisi pelayanan ambulans siaga dan kesehatan umat'],
+            ['nama' => 'Program', 'deskripsi' => 'Divisi pendistribusian, penyaluran program, dan pemberdayaan umat'],
+            ['nama' => 'Manajemen', 'deskripsi' => 'Divisi pimpinan eksekutif dan manajerial yayasan'],
+            ['nama' => 'Donasi', 'deskripsi' => 'Divisi penerimaan donasi dan relawan lapangan'],
+            ['nama' => 'IT', 'deskripsi' => 'Divisi teknologi informasi, sistem aplikasi, dan digitalisasi'],
+        ];
+
+        foreach ($divisiDefs as $d) {
+            Divisi::firstOrCreate(['nama' => $d['nama']], $d);
+        }
+
+        // Hapus divisi lama yang bukan bagian dari 7 divisi resmi
+        Divisi::whereNotIn('nama', array_column($divisiDefs, 'nama'))->delete();
 
         // 4. Default Jam Kerja & Lokasi Kantor
         JamKerja::firstOrCreate(

@@ -136,12 +136,17 @@ class RealDataSeeder extends Seeder
         ];
 
         $divisiModels = [];
+        $allowedNames = [];
         foreach ($divisiDefs as $key => $dData) {
+            $allowedNames[] = $dData['nama'];
             $divisiModels[$key] = Divisi::updateOrCreate(
                 ['nama' => $dData['nama']],
                 ['deskripsi' => $dData['deskripsi']]
             );
         }
+
+        // Hapus divisi lama dummy yang tidak ada di daftar 7 divisi real resmi
+        Divisi::whereNotIn('nama', $allowedNames)->delete();
 
         // 5. Data 24 Pegawai Real GSC
         $pegawaiList = [
