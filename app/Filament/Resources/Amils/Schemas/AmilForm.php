@@ -17,10 +17,12 @@ class AmilForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Akun Login Amil')
                     ->description('Akun sistem yang digunakan amil untuk masuk dan melakukan absensi/laporan')
                     ->icon('heroicon-o-user-circle')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -44,6 +46,7 @@ class AmilForm
                 Section::make('Biodata & Identitas Amil')
                     ->description('Informasi lengkap mengenai amil')
                     ->icon('heroicon-o-identification')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -96,6 +99,7 @@ class AmilForm
                 Section::make('Kepegawaian & Target Donasi')
                     ->description('Status operasional dan target penghimpunan donasi amil')
                     ->icon('heroicon-o-briefcase')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([

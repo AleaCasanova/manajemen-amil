@@ -16,9 +16,11 @@ class DonaturForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Identitas & Klasifikasi Donatur')
                     ->icon('heroicon-o-identification')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -64,6 +66,7 @@ class DonaturForm
 
                 Section::make('Kontak & Komunikasi')
                     ->icon('heroicon-o-phone')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -94,6 +97,7 @@ class DonaturForm
 
                 Section::make('Alamat Domisili')
                     ->icon('heroicon-o-map-pin')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -124,6 +128,7 @@ class DonaturForm
                     ->icon('heroicon-o-document-text')
                     ->collapsible()
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([

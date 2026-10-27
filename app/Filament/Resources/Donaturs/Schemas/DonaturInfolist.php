@@ -13,9 +13,11 @@ class DonaturInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Identitas Profil Donatur')
                     ->icon('heroicon-o-user')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -58,6 +60,7 @@ class DonaturInfolist
 
                 Section::make('Alamat & Domisili')
                     ->icon('heroicon-o-map-pin')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('alamat')
                             ->label('Alamat Lengkap')
@@ -82,6 +85,7 @@ class DonaturInfolist
                 Section::make('Identitas Kependudukan & Pajak')
                     ->icon('heroicon-o-identification')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -104,6 +108,7 @@ class DonaturInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

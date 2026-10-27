@@ -13,9 +13,11 @@ class DonasiInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Rincian Transaksi Donasi')
                     ->icon('heroicon-o-document-currency-dollar')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -63,6 +65,7 @@ class DonasiInfolist
 
                 Section::make('Pihak Terkait (Donatur & Petugas Amil)')
                     ->icon('heroicon-o-user-group')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -101,6 +104,7 @@ class DonasiInfolist
                 Section::make('Berkas Bukti Transaksi & Foto Dokumentasi')
                     ->icon('heroicon-o-photo')
                     ->description('Dokumentasi resmi transfer perbankan dan serah terima dana')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -119,6 +123,7 @@ class DonasiInfolist
 
                 Section::make('Niat, Doa, dan Catatan Transaksi')
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -138,6 +143,7 @@ class DonasiInfolist
                 Section::make('Informasi Verifikasi & Audit')
                     ->icon('heroicon-o-shield-check')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([

@@ -12,9 +12,11 @@ class MustahikInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Identitas Mustahik & Asnaf')
                     ->icon('heroicon-o-user')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -43,6 +45,7 @@ class MustahikInfolist
 
                 Section::make('Domisili & Kondisi Ekonomi Mustahik')
                     ->icon('heroicon-o-home')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('alamat')
                             ->label('Alamat Lengkap')
@@ -57,6 +60,7 @@ class MustahikInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

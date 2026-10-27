@@ -12,9 +12,11 @@ class ProgramInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Informasi Program & Campaign ZISWAF')
                     ->icon('heroicon-o-sparkles')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -50,6 +52,7 @@ class ProgramInfolist
 
                 Section::make('Deskripsi & Rincian Program')
                     ->icon('heroicon-o-document-text')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('deskripsi')
                             ->label('Uraian Lengkap Program')
@@ -60,6 +63,7 @@ class ProgramInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

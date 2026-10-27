@@ -13,10 +13,12 @@ class AmilInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Biodata & Identitas Petugas Amil')
                     ->icon('heroicon-o-user-circle')
                     ->description('Informasi kontak dan biodata resmi amil GSC')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -68,6 +70,7 @@ class AmilInfolist
 
                 Section::make('Status Kepegawaian & Target Donasi')
                     ->icon('heroicon-o-briefcase')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -97,6 +100,7 @@ class AmilInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

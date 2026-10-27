@@ -13,9 +13,11 @@ class IzinCutiInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Rincian Permohonan Izin / Cuti')
                     ->icon('heroicon-o-calendar-days')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -50,6 +52,7 @@ class IzinCutiInfolist
 
                 Section::make('Alasan & Catatan Persetujuan')
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -64,6 +67,7 @@ class IzinCutiInfolist
 
                 Section::make('Lampiran Berkas / Surat Dokter')
                     ->icon('heroicon-o-paper-clip')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -83,6 +87,7 @@ class IzinCutiInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

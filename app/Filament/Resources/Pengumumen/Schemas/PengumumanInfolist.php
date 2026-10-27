@@ -13,9 +13,11 @@ class PengumumanInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Informasi Pengumuman Resmi')
                     ->icon('heroicon-o-megaphone')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -39,6 +41,7 @@ class PengumumanInfolist
 
                 Section::make('Isi Pengumuman')
                     ->icon('heroicon-o-document-text')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('isi')
                             ->label('Uraian Pengumuman')
@@ -47,6 +50,7 @@ class PengumumanInfolist
 
                 Section::make('Poster & Berkas Banner')
                     ->icon('heroicon-o-photo')
+                    ->columnSpanFull()
                     ->components([
                         ImageEntry::make('lampiran')
                             ->label('Poster Resmi Pengumuman')
@@ -58,6 +62,7 @@ class PengumumanInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

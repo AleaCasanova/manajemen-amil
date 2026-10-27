@@ -13,9 +13,11 @@ class PenyaluranInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Rincian Bantuan Penyaluran ZISWAF')
                     ->icon('heroicon-o-gift')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -52,6 +54,7 @@ class PenyaluranInfolist
                 Section::make('Foto Berita Acara & Dokumentasi Penyerahan')
                     ->icon('heroicon-o-camera')
                     ->description('Dokumentasi langsung penyerahan amanah dana donatur kepada mustahik')
+                    ->columnSpanFull()
                     ->components([
                         ImageEntry::make('bukti')
                             ->label('Dokumentasi Serah Terima / Kwitansi Tanda Terima')
@@ -62,6 +65,7 @@ class PenyaluranInfolist
 
                 Section::make('Rincian Bantuan & Catatan Tambahan')
                     ->icon('heroicon-o-document-text')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('catatan')
                             ->label('Catatan Rincian Bantuan')
@@ -72,6 +76,7 @@ class PenyaluranInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

@@ -13,9 +13,11 @@ class AbsensiInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Informasi Kehadiran Amil')
                     ->icon('heroicon-o-check-badge')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -44,6 +46,7 @@ class AbsensiInfolist
 
                 Section::make('Waktu Kerja & Titik Koordinat GPS')
                     ->icon('heroicon-o-map-pin')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -81,6 +84,7 @@ class AbsensiInfolist
                 Section::make('Foto Selfie Bukti Kehadiran')
                     ->icon('heroicon-o-camera')
                     ->description('Foto selfie amil saat melakukan presensi masuk dan pulang')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -100,6 +104,7 @@ class AbsensiInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

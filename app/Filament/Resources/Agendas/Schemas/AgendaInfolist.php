@@ -12,9 +12,11 @@ class AgendaInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Informasi & Jadwal Kegiatan')
                     ->icon('heroicon-o-calendar-days')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -59,6 +61,7 @@ class AgendaInfolist
 
                 Section::make('Petugas Amil Terlibat')
                     ->icon('heroicon-o-users')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('amils.nama')
                             ->label('Daftar Petugas Amil yang Ditugaskan')
@@ -69,6 +72,7 @@ class AgendaInfolist
 
                 Section::make('Rincian Deskripsi Kegiatan')
                     ->icon('heroicon-o-document-text')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('deskripsi')
                             ->label('Catatan & Jadwal Acara')
@@ -79,6 +83,7 @@ class AgendaInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([

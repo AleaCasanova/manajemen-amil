@@ -17,9 +17,11 @@ class DonasiForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Informasi Transaksi Donasi')
                     ->icon('heroicon-o-document-currency-dollar')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([
@@ -47,6 +49,7 @@ class DonasiForm
 
                 Section::make('Penyetor (Donatur) & Penerima (Amil)')
                     ->icon('heroicon-o-user-group')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
@@ -68,6 +71,7 @@ class DonasiForm
 
                 Section::make('Rincian Dana & Alokasi')
                     ->icon('heroicon-o-banknotes')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(3)
                             ->components([

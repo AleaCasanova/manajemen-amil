@@ -13,9 +13,11 @@ class AktivitasHarianInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Rincian Kegiatan Lapangan Amil')
                     ->icon('heroicon-o-clipboard-document-check')
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(4)
                             ->components([
@@ -47,6 +49,7 @@ class AktivitasHarianInfolist
 
                 Section::make('Uraian Narasi & Hasil Kegiatan')
                     ->icon('heroicon-o-document-text')
+                    ->columnSpanFull()
                     ->components([
                         TextEntry::make('deskripsi')
                             ->label('Deskripsi Lengkap Laporan')
@@ -55,6 +58,7 @@ class AktivitasHarianInfolist
 
                 Section::make('Foto Dokumentasi Lapangan')
                     ->icon('heroicon-o-camera')
+                    ->columnSpanFull()
                     ->components([
                         ImageEntry::make('foto')
                             ->label('Dokumentasi Kunjungan / Tugas Lapangan')
@@ -66,6 +70,7 @@ class AktivitasHarianInfolist
                 Section::make('Informasi Log Sistem')
                     ->icon('heroicon-o-clock')
                     ->collapsed()
+                    ->columnSpanFull()
                     ->components([
                         Grid::make(2)
                             ->components([
