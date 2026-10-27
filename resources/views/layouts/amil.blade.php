@@ -548,120 +548,120 @@
 
     <!-- Mobile Floating Bottom Navigation Bar (Disesuaikan Per Role Amil) -->
     <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-2xl z-50 px-2 py-2">
-        <div class="flex justify-around items-center">
+        <div class="grid grid-cols-5 items-center w-full max-w-lg mx-auto">
             @if($isRelawan)
                 {{-- 1. Nav Khusus Relawan: Bentuk & Struktur Selaras Staff & Magang --}}
-                <a href="{{ route('amil.dashboard') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.dashboard') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.dashboard') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.dashboard') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span class="text-[10px]">Dashboard</span>
+                    <span class="text-[10px] tracking-tight leading-none">Dashboard</span>
                 </a>
 
-                <a href="{{ route('amil.donasi.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.donasi.index') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.donasi.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.donasi.index') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <span class="text-[10px]">Riwayat</span>
+                    <span class="text-[10px] tracking-tight leading-none">Riwayat</span>
                 </a>
 
-                <a href="{{ route('amil.donasi.create') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.donasi.create') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
-                    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(5, 150, 105, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150">
+                <a href="{{ route('amil.donasi.create') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center transition {{ request()->routeIs('amil.donasi.create') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(5, 150, 105, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150 mx-auto">
                         <svg class="w-6 h-6 text-white" style="color: #ffffff !important; stroke: #ffffff !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
-                    <span class="text-[10px] font-bold text-emerald-700">Donasi</span>
+                    <span class="text-[10px] font-bold text-emerald-700 tracking-tight leading-none">Donasi</span>
                 </a>
 
-                <a href="{{ route('amil.donatur.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.donatur.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.donatur.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.donatur.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <span class="text-[10px]">Donatur</span>
+                    <span class="text-[10px] tracking-tight leading-none">Donatur</span>
                 </a>
 
-                <a href="{{ route('amil.pengumuman.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.pengumuman.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.pengumuman.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.pengumuman.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
                     </svg>
-                    <span class="text-[10px]">Info</span>
+                    <span class="text-[10px] tracking-tight leading-none">Info</span>
                 </a>
             @elseif($isMagang)
                 {{-- 2. Nav Khusus Magang: Fokus Disiplin Absensi & Laporan Aktivitas Harian --}}
-                <a href="{{ route('amil.dashboard') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.dashboard') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.dashboard') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.dashboard') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span class="text-[10px]">Dashboard</span>
+                    <span class="text-[10px] tracking-tight leading-none">Dashboard</span>
                 </a>
 
-                <a href="{{ route('amil.absensi.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.absensi.*') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.absensi.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.absensi.*') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="text-[10px]">Presensi</span>
+                    <span class="text-[10px] tracking-tight leading-none">Presensi</span>
                 </a>
 
-                <a href="{{ route('amil.aktivitas.create') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.aktivitas.create') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
-                    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(13, 148, 136, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150">
+                <a href="{{ route('amil.aktivitas.create') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center transition {{ request()->routeIs('amil.aktivitas.create') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(13, 148, 136, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150 mx-auto">
                         <svg class="w-6 h-6 text-white" style="color: #ffffff !important; stroke: #ffffff !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
-                    <span class="text-[10px] font-bold text-teal-700">Aktivitas</span>
+                    <span class="text-[10px] font-bold text-teal-700 tracking-tight leading-none">Aktivitas</span>
                 </a>
 
-                <a href="{{ route('amil.aktivitas.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.aktivitas.*') && !request()->routeIs('amil.aktivitas.create') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.aktivitas.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.aktivitas.*') && !request()->routeIs('amil.aktivitas.create') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    <span class="text-[10px]">Logbook</span>
+                    <span class="text-[10px] tracking-tight leading-none">Logbook</span>
                 </a>
 
-                <a href="{{ route('amil.izin-cuti.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.izin-cuti.*') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.izin-cuti.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.izin-cuti.*') ? 'text-teal-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span class="text-[10px]">Izin Cuti</span>
+                    <span class="text-[10px] tracking-tight leading-none">Izin Cuti</span>
                 </a>
             @else
                 {{-- 3. Nav Reguler (Staff, Driver, Ketua): Lengkap Semua Fitur --}}
-                <a href="{{ route('amil.dashboard') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.dashboard') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.dashboard') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.dashboard') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span class="text-[10px]">Dashboard</span>
+                    <span class="text-[10px] tracking-tight leading-none">Dashboard</span>
                 </a>
 
-                <a href="{{ route('amil.absensi.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.absensi.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.absensi.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.absensi.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="text-[10px]">Absen</span>
+                    <span class="text-[10px] tracking-tight leading-none">Absen</span>
                 </a>
 
-                <a href="{{ route('amil.donasi.create') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.donasi.create') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
-                    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(5, 150, 105, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150">
+                <a href="{{ route('amil.donasi.create') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center transition {{ request()->routeIs('amil.donasi.create') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(5, 150, 105, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150 mx-auto">
                         <svg class="w-6 h-6 text-white" style="color: #ffffff !important; stroke: #ffffff !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
-                    <span class="text-[10px] font-bold text-emerald-700">Donasi</span>
+                    <span class="text-[10px] font-bold text-emerald-700 tracking-tight leading-none">Donasi</span>
                 </a>
 
-                <a href="{{ route('amil.aktivitas.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.aktivitas.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.aktivitas.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.aktivitas.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    <span class="text-[10px]">Aktivitas</span>
+                    <span class="text-[10px] tracking-tight leading-none">Aktivitas</span>
                 </a>
 
-                <a href="{{ route('amil.donatur.index') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.donatur.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+                <a href="{{ route('amil.donatur.index') }}" class="flex flex-col items-center justify-center gap-1 py-1 w-full text-center rounded-xl transition {{ request()->routeIs('amil.donatur.*') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <span class="text-[10px]">Donatur</span>
+                    <span class="text-[10px] tracking-tight leading-none">Donatur</span>
                 </a>
             @endif
         </div>
