@@ -421,17 +421,7 @@
     // ==========================================
     // LIVE SEARCHABLE DONATUR COMBOBOX
     // ==========================================
-    const initialDonaturs = @json($donaturList->map(function($d) use ($amil) {
-        return [
-            'id' => $d->id,
-            'nama' => $d->nama,
-            'no_hp' => $d->no_hp,
-            'kode_donatur' => $d->kode_donatur,
-            'kota' => $d->kota,
-            'alamat' => $d->alamat,
-            'is_binaan_saya' => $amil && ($d->amil_pic_id == $amil->id || $d->created_by == Auth::id()),
-        ];
-    }));
+    const initialDonaturs = @json($initialDonaturs ?? []);
 
     let donaturSearchTimeout = null;
     const donaturSearchInput = document.getElementById('donaturSearchInput');
