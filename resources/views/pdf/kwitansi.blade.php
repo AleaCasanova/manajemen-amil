@@ -5,7 +5,7 @@
     <title>Kwitansi Donasi - {{ $donasi->no_kwitansi }}</title>
     <style>
         @page {
-            margin: 6mm 8mm 5mm 8mm;
+            margin: 6mm 8mm;
             size: a5 landscape;
         }
         * {
@@ -13,28 +13,28 @@
         }
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 10px;
+            font-size: 10.5px;
             color: #1e293b;
-            line-height: 1.3;
+            line-height: 1.35;
             margin: 0;
             padding: 0;
             background-color: #ffffff;
         }
         .container {
             border: 2px solid #0f766e;
-            border-radius: 10px;
-            padding: 8px 12px;
+            border-radius: 12px;
+            padding: 14px 18px;
             position: relative;
             background-color: #ffffff;
         }
         .header-table {
             width: 100%;
             border-bottom: 1.5px solid #0f766e;
-            padding-bottom: 5px;
-            margin-bottom: 6px;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
         }
         .institution-title {
-            font-size: 14.5px;
+            font-size: 15.5px;
             font-weight: bold;
             color: #0f766e;
             letter-spacing: 0.3px;
@@ -43,17 +43,17 @@
         .institution-subtitle {
             font-size: 8.5px;
             color: #475569;
-            line-height: 1.3;
+            line-height: 1.35;
         }
         .receipt-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
             color: #0f766e;
             letter-spacing: 0.5px;
             text-align: right;
         }
         .receipt-no {
-            font-size: 11px;
+            font-size: 11.5px;
             font-weight: bold;
             color: #0f172a;
             text-align: right;
@@ -61,9 +61,9 @@
         }
         .badge-status {
             display: inline-block;
-            font-size: 8px;
+            font-size: 8.5px;
             font-weight: bold;
-            padding: 2.5px 7px;
+            padding: 3px 8px;
             border-radius: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -86,12 +86,12 @@
             margin-bottom: 8px;
         }
         .content-table td {
-            padding: 3px 0;
+            padding: 4.5px 0;
             vertical-align: top;
-            font-size: 10px;
+            font-size: 10.5px;
         }
         .label {
-            width: 150px;
+            width: 160px;
             color: #334155;
             font-weight: 600;
         }
@@ -107,26 +107,26 @@
         .amount-box {
             border: 1.5px dashed #0f766e;
             border-radius: 8px;
-            padding: 5px 10px;
-            margin: 4px 0 6px 0;
+            padding: 8px 14px;
+            margin: 8px 0 10px 0;
             background-color: #ffffff;
         }
         .amount-box table {
             width: 100%;
         }
         .amount-num {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             color: #047857;
-            margin-top: 1px;
+            margin-top: 2px;
         }
         .amount-terbilang {
-            font-size: 10px;
+            font-size: 11px;
             font-style: italic;
             font-weight: bold;
             color: #0f172a;
-            margin-top: 1px;
-            line-height: 1.25;
+            margin-top: 2px;
+            line-height: 1.3;
         }
         .footer-table {
             width: 100%;
@@ -136,77 +136,77 @@
             vertical-align: top;
         }
         .qr-section {
-            width: 65px;
+            width: 72px;
             text-align: center;
         }
         .qr-image {
-            width: 58px;
-            height: 58px;
+            width: 65px;
+            height: 65px;
         }
         .qr-caption {
-            font-size: 7px;
+            font-size: 7.5px;
             color: #64748b;
-            margin-top: 2px;
+            margin-top: 3px;
         }
         .doa-box {
-            border-left: 2px solid #0f766e;
+            border-left: 2.5px solid #0f766e;
             background-color: #f8fafc;
-            padding: 4px 7px;
+            padding: 6px 10px;
             border-radius: 0 4px 4px 0;
-            margin-left: 5px;
+            margin-left: 8px;
         }
         .doa-title {
-            font-size: 8px;
+            font-size: 8.5px;
             font-weight: bold;
             color: #0f766e;
             margin-bottom: 2px;
         }
         .doa-text {
-            font-size: 7.5px;
+            font-size: 8px;
             font-style: italic;
             color: #334155;
-            line-height: 1.25;
+            line-height: 1.3;
         }
         .sign-col {
             text-align: center;
         }
         .sign-title {
-            font-size: 8.5px;
+            font-size: 9px;
             font-weight: bold;
             color: #1e293b;
         }
         .sign-date {
-            font-size: 8.5px;
+            font-size: 9px;
             color: #475569;
             margin-bottom: 2px;
         }
         .sign-placeholder {
-            height: 48px;
-            line-height: 48px;
+            height: 52px;
+            line-height: 52px;
             color: #94a3b8;
-            font-size: 8px;
+            font-size: 8.5px;
             font-style: italic;
         }
         .sign-name-solid {
             display: inline-block;
-            font-size: 9px;
+            font-size: 9.5px;
             font-weight: bold;
             color: #0f172a;
             border-bottom: 1.5px solid #1e293b;
-            padding-bottom: 1.5px;
-            min-width: 135px;
+            padding-bottom: 2px;
+            min-width: 140px;
         }
         .sign-name-dotted {
             display: inline-block;
-            font-size: 9px;
+            font-size: 9.5px;
             font-weight: bold;
             color: #0f172a;
             border-bottom: 1px dotted #94a3b8;
-            padding-bottom: 1.5px;
-            min-width: 130px;
+            padding-bottom: 2px;
+            min-width: 135px;
         }
         .sign-role {
-            font-size: 7.5px;
+            font-size: 8px;
             color: #64748b;
             margin-top: 3px;
         }
@@ -221,11 +221,11 @@
             <td style="width: 62%; vertical-align: middle;">
                 <table style="width: auto;">
                     <tr>
-                        <td style="width: 54px; vertical-align: middle; padding-right: 10px;">
+                        <td style="width: 58px; vertical-align: middle; padding-right: 12px;">
                             @if(!empty($logoKop))
-                                <img src="{{ $logoKop }}" style="width: 48px; height: 48px; object-fit: contain;">
+                                <img src="{{ $logoKop }}" style="width: 50px; height: 50px; object-fit: contain;">
                             @else
-                                <img src="{{ public_path('logo_gsc.png') }}" style="width: 48px; height: 48px; object-fit: contain;">
+                                <img src="{{ public_path('logo_gsc.png') }}" style="width: 50px; height: 50px; object-fit: contain;">
                             @endif
                         </td>
                         <td style="vertical-align: middle;">
@@ -374,26 +374,26 @@
             <td class="sign-col" style="width: 28%; vertical-align: top;">
                 <div class="sign-date">Cilacap, {{ \Carbon\Carbon::parse($donasi->tgl_donasi)->locale('id')->translatedFormat('d F Y') }}</div>
                 <div class="sign-title">Petugas Penerima / Bendahara,</div>
-                <div style="height: 54px; text-align: center; margin: 0 auto; margin-bottom: -6px; position: relative; z-index: 2;">
+                <div style="height: 58px; text-align: center; margin: 0 auto; margin-bottom: -6px; position: relative; z-index: 2;">
                     @if(!empty($ttdCapResmi))
-                        <img src="{{ $ttdCapResmi }}" style="height: 54px; width: auto; object-fit: contain;">
+                        <img src="{{ $ttdCapResmi }}" style="height: 58px; width: auto; object-fit: contain;">
                     @elseif(!empty($capGsc) || !empty($ttdBendahara))
                         <table style="margin: 0 auto; width: auto;">
                             <tr>
                                 @if(!empty($capGsc))
                                     <td style="vertical-align: middle; padding-right: 4px;">
-                                        <img src="{{ $capGsc }}" style="height: 48px; width: auto; object-fit: contain;">
+                                        <img src="{{ $capGsc }}" style="height: 50px; width: auto; object-fit: contain;">
                                     </td>
                                 @endif
                                 @if(!empty($ttdBendahara))
                                     <td style="vertical-align: middle;">
-                                        <img src="{{ $ttdBendahara }}" style="height: 48px; width: auto; object-fit: contain;">
+                                        <img src="{{ $ttdBendahara }}" style="height: 50px; width: auto; object-fit: contain;">
                                     </td>
                                 @endif
                             </tr>
                         </table>
                     @else
-                        <div style="height: 54px;"></div>
+                        <div style="height: 58px;"></div>
                     @endif
                 </div>
                 <div style="position: relative; z-index: 1;">
