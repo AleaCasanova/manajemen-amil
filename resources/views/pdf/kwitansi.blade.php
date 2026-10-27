@@ -221,11 +221,11 @@
             <td style="width: 62%; vertical-align: middle;">
                 <table style="width: auto;">
                     <tr>
-                        <td style="width: 72px; vertical-align: middle; padding-right: 14px;">
+                        <td style="width: 76px; vertical-align: middle; padding-right: 14px;">
                             @if(!empty($logoKop))
-                                <img src="{{ $logoKop }}" style="width: 64px; height: 64px; object-fit: contain;">
+                                <img src="{{ $logoKop }}" style="width: 72px; height: 72px; object-fit: contain;">
                             @else
-                                <img src="{{ public_path('logo_gsc.png') }}" style="width: 64px; height: 64px; object-fit: contain;">
+                                <img src="{{ public_path('image/logo_kop.png') }}" style="width: 72px; height: 72px; object-fit: contain;">
                             @endif
                         </td>
                         <td style="vertical-align: middle;">
