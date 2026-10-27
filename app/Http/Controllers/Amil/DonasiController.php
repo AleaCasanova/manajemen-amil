@@ -35,7 +35,7 @@ class DonasiController extends Controller
         }
 
         $query = Donasi::where('amil_id', $amil->id)
-            ->with(['donatur', 'jenisDana', 'program'])
+            ->with(['donatur', 'jenisDana', 'program', 'donasiBarangs'])
             ->latest('tgl_donasi');
 
         if ($request->filled('status')) {
@@ -264,7 +264,7 @@ class DonasiController extends Controller
             abort(403);
         }
 
-        $donasi->load(['donatur', 'jenisDana', 'program', 'amil']);
+        $donasi->load(['donatur', 'jenisDana', 'program', 'amil', 'donasiBarangs']);
 
         return view('amil.donasi.success', compact('donasi', 'amil'));
     }

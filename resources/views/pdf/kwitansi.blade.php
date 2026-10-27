@@ -313,6 +313,20 @@
                 {{ $metodeBayarText }} | Tgl: {{ $tglLengkap }} {{ $jamFormatted }} WIB
             </td>
         </tr>
+        @if($donasi->donasiBarangs && $donasi->donasiBarangs->count() > 0)
+            @foreach($donasi->donasiBarangs as $itemBarang)
+                <tr>
+                    <td class="label">Donasi Barang / Natura</td>
+                    <td class="colon">:</td>
+                    <td class="value">
+                        <strong style="color: #047857;">{{ $itemBarang->deskripsi }}</strong>
+                        @if($itemBarang->estimasi_nilai > 0)
+                            <span style="color: #475569; font-size: 9.5px;">(Estimasi Nilai: Rp {{ number_format($itemBarang->estimasi_nilai, 0, ',', '.') }})</span>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+        @endif
     </table>
 
     <!-- Kotak Jumlah Nominal & Terbilang -->

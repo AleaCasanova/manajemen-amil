@@ -16,7 +16,7 @@ class KwitansiService
     public function generatePdf(Donasi $donasi)
     {
         try {
-            $donasi->loadMissing(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser']);
+            $donasi->loadMissing(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser', 'donasiBarangs']);
         } catch (\Throwable) {
             // Abaikan jika database tidak tersedia atau relasi sudah dimuat
         }

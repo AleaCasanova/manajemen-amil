@@ -370,13 +370,21 @@
             </div>
 
             <div id="sectionBarang" class="{{ old('ada_barang') ? 'block' : 'hidden' }} mt-4 pt-4 border-t border-slate-100 space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Deskripsi Barang (Nama, Jumlah, Kondisi)</label>
-                    <textarea name="barang_deskripsi" rows="2" placeholder="cth: 5 Kardus Al-Quran Wakaf, kondisi baru bersegel..." class="w-full rounded-xl border border-slate-300 py-2 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">{{ old('barang_deskripsi') }}</textarea>
+                <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-800 leading-relaxed">
+                    💡 <strong>Pencatatan Donasi Natura / Barang:</strong> Informasi rincian barang otomatis tersimpan ke sistem database, tercatat dalam riwayat himpunan, dan dicantumkan pada Kwitansi Resmi PDF. Apabila donasi ini berupa barang bernilai (tanpa tambahan uang tunai), Anda dapat mengisikan <em>Estimasi Nilai Barang</em> di bawah lalu klik tombol <em>Salin ke Nominal Donasi</em> agar nilai nominal terisi otomatis.
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Estimasi Nilai Barang (Rp)</label>
-                    <input type="number" name="barang_estimasi" value="{{ old('barang_estimasi') }}" placeholder="cth: 2500000" class="w-full rounded-xl border border-slate-300 py-2.5 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Deskripsi Barang (Nama, Jumlah, Kondisi) <span class="text-rose-500">*</span></label>
+                    <textarea name="barang_deskripsi" id="barang_deskripsi" rows="2" placeholder="cth: 5 Kardus Al-Quran Wakaf, kondisi baru bersegel..." class="w-full rounded-xl border border-slate-300 py-2 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">{{ old('barang_deskripsi') }}</textarea>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold text-slate-700">Estimasi Nilai Barang (Rp)</label>
+                        <button type="button" onclick="copyEstimasiToNominal()" class="text-[11px] text-teal-700 hover:text-teal-900 font-bold underline">
+                            Salin ke Nominal Donasi ↑
+                        </button>
+                    </div>
+                    <input type="number" name="barang_estimasi" id="barang_estimasi" value="{{ old('barang_estimasi') }}" placeholder="cth: 2500000" class="w-full rounded-xl border border-slate-300 py-2.5 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                 </div>
             </div>
         </div>
@@ -700,6 +708,18 @@
         } else {
             img.src = '';
             box.classList.add('hidden');
+        }
+    }
+
+    // Salin estimasi nilai barang ke nominal donasi
+    function copyEstimasiToNominal() {
+        const est = document.getElementById('barang_estimasi')?.value;
+        if (est && parseInt(est) > 0) {
+            const inputJumlah = document.getElementById('inputJumlah');
+            if (inputJumlah) {
+                inputJumlah.value = est;
+                inputJumlah.dispatchEvent(new Event('input'));
+            }
         }
     }
 </script>

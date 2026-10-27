@@ -102,7 +102,12 @@
                             </td>
                             <td class="py-3.5 px-4">
                                 <span class="font-semibold text-slate-700 block">{{ $d->jenisDana?->nama ?? '-' }}</span>
-                                <span class="text-[11px] text-slate-400">{{ $d->program?->nama ?? 'Umum' }}</span>
+                                <span class="text-[11px] text-slate-400 block">{{ $d->program?->nama ?? 'Umum' }}</span>
+                                @if ($d->donasiBarangs && $d->donasiBarangs->isNotEmpty())
+                                    <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200" title="{{ $d->donasiBarangs->pluck('deskripsi')->join(', ') }}">
+                                        📦 Natura: {{ Str::limit($d->donasiBarangs->first()->deskripsi, 22) }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="py-3.5 px-4 text-right font-extrabold text-slate-800 text-sm">
                                 Rp {{ number_format($d->jumlah, 0, ',', '.') }}
@@ -165,7 +170,12 @@
                             <span class="font-bold text-slate-800 text-sm block">
                                 {{ $d->donatur?->is_anonim ? 'Hamba Allah' : ($d->donatur?->nama ?? 'Donatur') }}
                             </span>
-                            <span class="text-xs text-slate-500">{{ $d->jenisDana?->nama ?? '-' }} • {{ $d->program?->nama ?? 'Umum' }}</span>
+                            <span class="text-xs text-slate-500 block">{{ $d->jenisDana?->nama ?? '-' }} • {{ $d->program?->nama ?? 'Umum' }}</span>
+                            @if ($d->donasiBarangs && $d->donasiBarangs->isNotEmpty())
+                                <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                                    📦 Natura: {{ Str::limit($d->donasiBarangs->first()->deskripsi, 25) }}
+                                </span>
+                            @endif
                         </div>
                         <div class="text-right">
                             <span class="font-extrabold text-slate-900 text-sm block">Rp {{ number_format($d->jumlah, 0, ',', '.') }}</span>

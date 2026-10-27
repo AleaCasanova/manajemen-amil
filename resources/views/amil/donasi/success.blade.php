@@ -116,6 +116,24 @@
             </div>
         </div>
 
+        @if ($donasi->donasiBarangs && $donasi->donasiBarangs->isNotEmpty())
+            <!-- Donasi Barang / Natura Box -->
+            <div class="mt-4 p-3.5 rounded-2xl bg-teal-50/70 border border-teal-200 text-xs">
+                <div class="flex items-center gap-1.5 font-bold text-teal-800 mb-1.5">
+                    <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    <span>Disertai Donasi Barang / Natura:</span>
+                </div>
+                @foreach ($donasi->donasiBarangs as $itemBarang)
+                    <div class="flex justify-between items-start py-1 border-t border-teal-100 first:border-0">
+                        <span class="font-semibold text-slate-800">{{ $itemBarang->deskripsi }}</span>
+                        @if ($itemBarang->estimasi_nilai > 0)
+                            <span class="text-teal-700 font-mono font-bold">Est: Rp {{ number_format($itemBarang->estimasi_nilai, 0, ',', '.') }}</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
         @if ($donasi->niat)
             <!-- Doa / Niat Box -->
             <div class="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
@@ -136,6 +154,14 @@
         $namaPenerima = $donasi->donatur?->is_anonim ? 'Bapak/Ibu' : ($donasi->donatur?->nama ?? 'Bapak/Ibu');
         $verifyUrl = route('kwitansi.verify', $donasi->no_kwitansi);
 
+        $barangText = '';
+        if ($donasi->donasiBarangs && $donasi->donasiBarangs->isNotEmpty()) {
+            $barangList = $donasi->donasiBarangs->map(function ($b) {
+                return $b->deskripsi . ($b->estimasi_nilai > 0 ? ' (Est: Rp ' . number_format($b->estimasi_nilai, 0, ',', '.') . ')' : '');
+            })->implode(', ');
+            $barangText = "\n📦 *Donasi Barang/Natura:* {$barangList}";
+        }
+
         $waText = "Assalamu'alaikum Warahmatullahi Wabarakatuh,\n\n"
             . "Yth. *{$namaPenerima}*,\n"
             . "Terima kasih atas kepercayaan Anda menyalurkan donasi melalui *Gerak Sedekah Cilacap (GSC)*.\n\n"
@@ -143,7 +169,7 @@
             . "📄 *No. Kwitansi:* {$donasi->no_kwitansi}\n"
             . "📅 *Waktu Transaksi:* " . $waktuDonasi->translatedFormat('d F Y, H:i') . " WIB\n"
             . "🤲 *Jenis Dana:* " . ($donasi->jenisDana?->nama ?? 'Donasi') . "\n"
-            . "💰 *Nominal:* Rp " . number_format($donasi->jumlah, 0, ',', '.') . "\n"
+            . "💰 *Nominal:* Rp " . number_format($donasi->jumlah, 0, ',', '.') . "{$barangText}\n"
             . "👤 *Amil Penghimpun:* " . ($donasi->amil?->nama ?? 'Amil GSC') . "\n\n"
             . "🔗 *Cek & Verifikasi Keaslian Kwitansi Resmi:*\n"
             . "{$verifyUrl}\n\n"
