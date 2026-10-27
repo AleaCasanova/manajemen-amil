@@ -566,8 +566,8 @@
                 </a>
 
                 <a href="{{ route('amil.donasi.create') }}" class="flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition">
-                    <div class="w-11 h-11 rounded-full bg-emerald-600 text-white flex items-center justify-center -mt-6 shadow-lg shadow-emerald-600/40 border-2 border-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(5, 150, 105, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150">
+                        <svg class="w-6 h-6 text-white" style="color: #ffffff !important; stroke: #ffffff !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
@@ -604,8 +604,8 @@
                 </a>
 
                 <a href="{{ route('amil.aktivitas.create') }}" class="flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition">
-                    <div class="w-11 h-11 rounded-full bg-teal-600 text-white flex items-center justify-center -mt-6 shadow-lg shadow-teal-600/40 border-2 border-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(13, 148, 136, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150">
+                        <svg class="w-6 h-6 text-white" style="color: #ffffff !important; stroke: #ffffff !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
@@ -642,8 +642,8 @@
                 </a>
 
                 <a href="{{ route('amil.donasi.create') }}" class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('amil.donasi.create') ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
-                    <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center -mt-5 shadow-lg shadow-emerald-600/40">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; box-shadow: 0 10px 18px -2px rgba(5, 150, 105, 0.45) !important;" class="w-12 h-12 rounded-full flex items-center justify-center -mt-6 border-2 border-white active:scale-95 transition-transform duration-150">
+                        <svg class="w-6 h-6 text-white" style="color: #ffffff !important; stroke: #ffffff !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
