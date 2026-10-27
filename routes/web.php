@@ -190,6 +190,18 @@ Route::get('/run-seed-media', function () {
     }
 });
 
+// Helper untuk membersihkan data dummy dan memasukkan 24 pegawai real GSC
+Route::get('/run-reset-real-data', function () {
+    try {
+        Artisan::call('db:seed', ['--class' => 'RealDataSeeder', '--force' => true]);
+        Artisan::call('optimize:clear');
+
+        return '<h2>Alhamdulillah! Pembersihan Data & Pendaftaran 24 Pegawai Real Berhasil</h2><p>Output:<br>'.nl2br(Artisan::output()).'</p>';
+    } catch (Throwable $e) {
+        return 'Gagal memproses data real: '.$e->getMessage().'<br><pre>'.$e->getTraceAsString().'</pre>';
+    }
+});
+
 // Fallback Route untuk memastikan file gambar di storage/app/public/ selalu dapat diakses di shared hosting
 Route::get('/storage/{path}', function (string $path) {
     $filePath = storage_path('app/public/'.$path);

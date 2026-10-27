@@ -64,10 +64,10 @@ class DatabaseSeeder extends Seeder
 
         // 2. Default User Admin
         $admin = User::firstOrCreate(
-            ['email' => 'admin@amilgsc.com'],
+            ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Administrator Amil',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('password123'),
                 'role_id' => $adminRole->id,
                 'is_active' => true,
             ]
@@ -220,10 +220,9 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 9. Dummy Data Lengkap (Minimal 5 data per tabel)
+        // 9. Data Pegawai Real GSC & Pembersihan Data Dummy
         $this->call([
-            DummyDataSeeder::class,
-            DummyMediaSeeder::class,
+            RealDataSeeder::class,
         ]);
     }
 }
