@@ -84,9 +84,18 @@ class DonasiService
     /**
      * Konversi angka nominal ke kalimat terbilang Bahasa Indonesia
      */
-    public static function terbilang(float $nominal): string
+    public static function terbilang(float|int|string $nominal): string
     {
-        $angka = abs((int) $nominal);
+        $angka = abs((int) round((float) $nominal));
+        if ($angka === 0) {
+            return 'Nol Rupiah';
+        }
+
+        return trim(preg_replace('/\s+/', ' ', self::ejaAngka($angka))).' Rupiah';
+    }
+
+    private static function ejaAngka(int $angka): string
+    {
         $huruf = [
             '',
             'Satu',
@@ -102,30 +111,42 @@ class DonasiService
             'Sebelas',
         ];
 
-        $hasil = '';
-
         if ($angka < 12) {
-            $hasil = ' '.$huruf[$angka];
-        } elseif ($angka < 20) {
-            $hasil = self::terbilang($angka - 10).' Belas';
-        } elseif ($angka < 100) {
-            $hasil = self::terbilang((int) ($angka / 10)).' Puluh'.self::terbilang($angka % 10);
-        } elseif ($angka < 200) {
-            $hasil = ' Seratus'.self::terbilang($angka - 100);
-        } elseif ($angka < 1000) {
-            $hasil = self::terbilang((int) ($angka / 100)).' Ratus'.self::terbilang($angka % 100);
-        } elseif ($angka < 2000) {
-            $hasil = ' Seribu'.self::terbilang($angka - 1000);
-        } elseif ($angka < 1000000) {
-            $hasil = self::terbilang((int) ($angka / 1000)).' Ribu'.self::terbilang($angka % 1000);
-        } elseif ($angka < 1000000000) {
-            $hasil = self::terbilang((int) ($angka / 1000000)).' Juta'.self::terbilang($angka % 1000000);
-        } elseif ($angka < 1000000000000) {
-            $hasil = self::terbilang((int) ($angka / 1000000000)).' Miliar'.self::terbilang(fmod($angka, 1000000000));
-        } else {
-            $hasil = self::terbilang((int) ($angka / 1000000000000)).' Triliun'.self::terbilang(fmod($angka, 1000000000000));
+            return ' '.$huruf[$angka];
         }
 
-        return trim($hasil).' Rupiah';
+        if ($angka < 20) {
+            return self::ejaAngka($angka - 10).' Belas';
+        }
+
+        if ($angka < 100) {
+            return self::ejaAngka((int) ($angka / 10)).' Puluh'.self::ejaAngka($angka % 10);
+        }
+
+        if ($angka < 200) {
+            return ' Seratus'.self::ejaAngka($angka - 100);
+        }
+
+        if ($angka < 1000) {
+            return self::ejaAngka((int) ($angka / 100)).' Ratus'.self::ejaAngka($angka % 100);
+        }
+
+        if ($angka < 2000) {
+            return ' Seribu'.self::ejaAngka($angka - 1000);
+        }
+
+        if ($angka < 1000000) {
+            return self::ejaAngka((int) ($angka / 1000)).' Ribu'.self::ejaAngka($angka % 1000);
+        }
+
+        if ($angka < 1000000000) {
+            return self::ejaAngka((int) ($angka / 1000000)).' Juta'.self::ejaAngka($angka % 1000000);
+        }
+
+        if ($angka < 1000000000000) {
+            return self::ejaAngka((int) ($angka / 1000000000)).' Miliar'.self::ejaAngka((int) fmod($angka, 1000000000));
+        }
+
+        return self::ejaAngka((int) ($angka / 1000000000000)).' Triliun'.self::ejaAngka((int) fmod($angka, 1000000000000));
     }
 }

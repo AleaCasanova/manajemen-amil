@@ -28,15 +28,35 @@ class KwitansiService
 
         $terbilang = DonasiService::terbilang($donasi->jumlah);
 
+        $logoKop = null;
+        if (file_exists(public_path('image/logo_kop.png'))) {
+            $logoKop = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('image/logo_kop.png')));
+        } elseif (file_exists(public_path('logo_gsc.png'))) {
+            $logoKop = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('logo_gsc.png')));
+        }
+
+        $capGsc = null;
+        if (file_exists(public_path('image/cap_gsc.jpeg'))) {
+            $capGsc = 'data:image/jpeg;base64,'.base64_encode(file_get_contents(public_path('image/cap_gsc.jpeg')));
+        }
+
+        $ttdBendahara = null;
+        if (file_exists(public_path('image/ttd_bendahara.jpeg'))) {
+            $ttdBendahara = 'data:image/jpeg;base64,'.base64_encode(file_get_contents(public_path('image/ttd_bendahara.jpeg')));
+        }
+
         $data = [
             'donasi' => $donasi,
             'qrCode' => $qrCodeData,
             'terbilang' => $terbilang,
+            'logoKop' => $logoKop,
+            'capGsc' => $capGsc,
+            'ttdBendahara' => $ttdBendahara,
             'app_name' => Setting::get('app_name', 'Sistem Manajemen Amil GSC'),
-            'institution_name' => Setting::get('app_institution', 'Yayasan Gerak Sedekah Cilacap (GSC)'),
-            'address' => Setting::get('app_address', 'Jl. Gerak Sedekah Cilacap No. 01, Cilacap, Jawa Tengah'),
-            'phone' => Setting::get('app_phone', '081234567890'),
-            'email' => Setting::get('app_email', 'info@amilgsc.com'),
+            'institution_name' => Setting::get('app_institution', 'GERAK SEDEKAH CILACAP (GSC)'),
+            'address' => Setting::get('app_address', 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224'),
+            'phone' => Setting::get('app_phone', '0852-9000-xxxx'),
+            'email' => Setting::get('app_email', 'info@geraksedekahcilacap.org'),
         ];
 
         return Pdf::loadView('pdf.kwitansi', $data)
