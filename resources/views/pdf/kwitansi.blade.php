@@ -181,8 +181,8 @@
             margin-bottom: 2px;
         }
         .sign-placeholder {
-            height: 52px;
-            line-height: 52px;
+            height: 54px;
+            line-height: 54px;
             color: #94a3b8;
             font-size: 8.5px;
             font-style: italic;
@@ -221,11 +221,11 @@
             <td style="width: 62%; vertical-align: middle;">
                 <table style="width: auto;">
                     <tr>
-                        <td style="width: 58px; vertical-align: middle; padding-right: 12px;">
+                        <td style="width: 72px; vertical-align: middle; padding-right: 14px;">
                             @if(!empty($logoKop))
-                                <img src="{{ $logoKop }}" style="width: 50px; height: 50px; object-fit: contain;">
+                                <img src="{{ $logoKop }}" style="width: 64px; height: 64px; object-fit: contain;">
                             @else
-                                <img src="{{ public_path('logo_gsc.png') }}" style="width: 50px; height: 50px; object-fit: contain;">
+                                <img src="{{ public_path('logo_gsc.png') }}" style="width: 64px; height: 64px; object-fit: contain;">
                             @endif
                         </td>
                         <td style="vertical-align: middle;">
@@ -374,26 +374,26 @@
             <td class="sign-col" style="width: 28%; vertical-align: top;">
                 <div class="sign-date">Cilacap, {{ \Carbon\Carbon::parse($donasi->tgl_donasi)->locale('id')->translatedFormat('d F Y') }}</div>
                 <div class="sign-title">Petugas Penerima / Bendahara,</div>
-                <div style="height: 58px; text-align: center; margin: 0 auto; margin-bottom: -6px; position: relative; z-index: 2;">
+                <div style="height: 60px; text-align: center; margin: 0 auto; margin-bottom: -6px; position: relative; z-index: 2;">
                     @if(!empty($ttdCapResmi))
-                        <img src="{{ $ttdCapResmi }}" style="height: 58px; width: auto; object-fit: contain;">
+                        <img src="{{ $ttdCapResmi }}" style="height: 60px; width: auto; object-fit: contain;">
                     @elseif(!empty($capGsc) || !empty($ttdBendahara))
                         <table style="margin: 0 auto; width: auto;">
                             <tr>
                                 @if(!empty($capGsc))
                                     <td style="vertical-align: middle; padding-right: 4px;">
-                                        <img src="{{ $capGsc }}" style="height: 50px; width: auto; object-fit: contain;">
+                                        <img src="{{ $capGsc }}" style="height: 52px; width: auto; object-fit: contain;">
                                     </td>
                                 @endif
                                 @if(!empty($ttdBendahara))
                                     <td style="vertical-align: middle;">
-                                        <img src="{{ $ttdBendahara }}" style="height: 50px; width: auto; object-fit: contain;">
+                                        <img src="{{ $ttdBendahara }}" style="height: 52px; width: auto; object-fit: contain;">
                                     </td>
                                 @endif
                             </tr>
                         </table>
                     @else
-                        <div style="height: 58px;"></div>
+                        <div style="height: 60px;"></div>
                     @endif
                 </div>
                 <div style="position: relative; z-index: 1;">
