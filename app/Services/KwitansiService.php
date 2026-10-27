@@ -15,7 +15,11 @@ class KwitansiService
      */
     public function generatePdf(Donasi $donasi)
     {
-        $donasi->loadMissing(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser']);
+        try {
+            $donasi->loadMissing(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser']);
+        } catch (\Throwable) {
+            // Abaikan jika database tidak tersedia atau relasi sudah dimuat
+        }
 
         // Generate QR Code untuk verifikasi kwitansi
         $verifyUrl = route('kwitansi.verify', ['no_kwitansi' => $donasi->no_kwitansi]);
@@ -35,13 +39,22 @@ class KwitansiService
             $logoKop = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('logo_gsc.png')));
         }
 
+        $ttdCapResmi = null;
+        if (file_exists(public_path('image/ttd_cap_resmi.png'))) {
+            $ttdCapResmi = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('image/ttd_cap_resmi.png')));
+        }
+
         $capGsc = null;
-        if (file_exists(public_path('image/cap_gsc.jpeg'))) {
+        if (file_exists(public_path('image/cap_gsc.png'))) {
+            $capGsc = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('image/cap_gsc.png')));
+        } elseif (file_exists(public_path('image/cap_gsc.jpeg'))) {
             $capGsc = 'data:image/jpeg;base64,'.base64_encode(file_get_contents(public_path('image/cap_gsc.jpeg')));
         }
 
         $ttdBendahara = null;
-        if (file_exists(public_path('image/ttd_bendahara.jpeg'))) {
+        if (file_exists(public_path('image/ttd_bendahara.png'))) {
+            $ttdBendahara = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('image/ttd_bendahara.png')));
+        } elseif (file_exists(public_path('image/ttd_bendahara.jpeg'))) {
             $ttdBendahara = 'data:image/jpeg;base64,'.base64_encode(file_get_contents(public_path('image/ttd_bendahara.jpeg')));
         }
 
@@ -50,6 +63,7 @@ class KwitansiService
             'qrCode' => $qrCodeData,
             'terbilang' => $terbilang,
             'logoKop' => $logoKop,
+            'ttdCapResmi' => $ttdCapResmi,
             'capGsc' => $capGsc,
             'ttdBendahara' => $ttdBendahara,
             'app_name' => Setting::get('app_name', 'Sistem Manajemen Amil GSC'),
