@@ -62,7 +62,7 @@
         <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/20">
             <div class="mb-5">
                 <h2 class="text-lg font-bold text-slate-800">Masuk Akun Amil</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Masukkan email & password akun petugas amil Anda di bawah ini.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Silakan masuk menggunakan nama, nomor HP, atau email Anda.</p>
             </div>
 
             @if(session('info'))
@@ -80,21 +80,35 @@
             <form id="loginForm" action="{{ route('amil.login.post') }}" method="POST" class="space-y-4">
                 @csrf
 
+                <!-- Input 1: Nama / No. HP / Email (Bebas diisi apa saja) -->
                 <div>
-                    <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Petugas Amil</label>
+                    <label for="login" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama / No. HP / Email</label>
                     <div class="relative">
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
-                            placeholder="nama@amilgsc.com"
+                        <input type="text" id="login" name="login" value="{{ old('login') ?? old('email') }}" required autofocus
+                            placeholder="Ketik Nama, No. HP, atau Email Anda"
+                            autocomplete="username"
                             class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium transition placeholder:text-slate-400">
                     </div>
+                    <span class="text-[11px] text-slate-400 mt-1 block">Bisa masukkan nama yang terdaftar atau nomor WhatsApp.</span>
                 </div>
 
+                <!-- Input 2: Password -->
                 <div>
                     <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Password</label>
                     <div class="relative">
                         <input type="password" id="password" name="password" required
                             placeholder="••••••••"
-                            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium transition placeholder:text-slate-400">
+                            autocomplete="current-password"
+                            class="w-full pl-4 pr-11 py-3 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium transition placeholder:text-slate-400">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="Lihat password">
+                            <svg id="eyeIconOpen" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg id="eyeIconClosed" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -127,6 +141,22 @@
     </div>
 
     <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeOpen = document.getElementById('eyeIconOpen');
+            const eyeClosed = document.getElementById('eyeIconClosed');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeOpen.classList.remove('hidden');
+                eyeClosed.classList.add('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeOpen.classList.add('hidden');
+                eyeClosed.classList.remove('hidden');
+            }
+        }
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
