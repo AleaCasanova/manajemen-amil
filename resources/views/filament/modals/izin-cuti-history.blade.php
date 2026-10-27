@@ -534,7 +534,7 @@
                                             </button>
                                             <button 
                                                 type="button" 
-                                                onclick="let alasan = prompt('Masukkan alasan penolakan:'); if (alasan !== null && alasan.trim() !== '') { @this.call('tolakPengajuan', {{ $item->id }}, alasan); }"
+                                                x-on:click="let alasan = prompt('Masukkan alasan penolakan:'); if (alasan !== null) { $wire.tolakPengajuan({{ $item->id }}, alasan); }"
                                                 class="gsc-btn gsc-btn-reject">
                                                 <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                 Tolak
