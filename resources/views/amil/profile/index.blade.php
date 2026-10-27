@@ -54,7 +54,7 @@
                     </span>
                 </div>
                 <p class="text-xs sm:text-sm text-emerald-100/90 font-medium">
-                    {{ $amil?->jabatan ?? 'Petugas Amil Lapangan' }} &bull; {{ $amil?->divisi?->nama ?? 'Divisi Umum' }}
+                    {{ $amil?->jabatan_label ?? 'Petugas Amil' }} &bull; {{ $amil?->divisi?->nama ?? 'Divisi Umum' }}
                 </p>
                 <div class="pt-2 flex flex-wrap items-center gap-3 text-[11px] text-emerald-200/90">
                     <span class="flex items-center gap-1.5">
@@ -288,7 +288,7 @@
             </div>
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
                 <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Jabatan</span>
-                <span class="font-extrabold text-slate-800 text-sm mt-0.5 block truncate">{{ $amil?->jabatan ?? 'Petugas Amil' }}</span>
+                <span class="font-extrabold text-slate-800 text-sm mt-0.5 block truncate">{{ $amil?->jabatan_label ?? 'Petugas Amil' }}</span>
             </div>
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
                 <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Target Donasi</span>

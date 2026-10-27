@@ -40,6 +40,9 @@
         $currentAmil = Auth::user()->amil;
         $isRelawan = $currentAmil?->isRelawan() ?? false;
         $isMagang = $currentAmil?->isMagang() ?? false;
+        $isDriver = $currentAmil?->isDriver() ?? false;
+        $isKetua = $currentAmil?->isKetua() ?? false;
+        $isStaff = $currentAmil?->isStaff() ?? false;
         $canAccessDonasi = $currentAmil ? $currentAmil->canAccessDonasi() : true;
         $needsAttendance = $currentAmil ? $currentAmil->needsAttendance() : true;
         $canAccessIzinCuti = $currentAmil ? $currentAmil->canAccessIzinCuti() : true;
@@ -63,9 +66,9 @@
                     </a>
                 </div>
 
-                <!-- 2. Desktop Navigation (Terorganisir & Bebas Tumpukan) -->
+                <!-- 2. Desktop Navigation (Terorganisir & Bersih Khusus Per Role) -->
                 <nav class="hidden lg:flex items-center gap-1 xl:gap-2">
-                    <!-- Dashboard -->
+                    <!-- Dashboard (Semua Role) -->
                     <a href="{{ route('amil.dashboard') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.dashboard') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
                         <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -73,8 +76,8 @@
                         <span>Dashboard</span>
                     </a>
 
-                    <!-- Dropdown: Fundraising & Donasi (Hanya untuk yang punya akses donasi) -->
-                    @if($canAccessDonasi)
+                    @if($isRelawan)
+                        {{-- NAV KHUSUS RELAWAN (Mudah & Simpel) --}}
                         <div class="relative group">
                             <button type="button" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.donasi.*', 'amil.donatur.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
                                 <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +88,6 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                            <!-- Menu Dropdown -->
                             <div class="absolute left-0 top-full pt-1.5 w-56 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                                 <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
                                     <a href="{{ route('amil.donasi.create') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-emerald-50 text-emerald-800 font-extrabold transition">
@@ -109,10 +111,164 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
 
-                    <!-- Dropdown: Operasional & SDM (Bukan Relawan) -->
-                    @if(!$isRelawan)
+                        <!-- Pengumuman Langsung -->
+                        <a href="{{ route('amil.pengumuman.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.pengumuman.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                            </svg>
+                            <span>Pengumuman</span>
+                        </a>
+
+                    @elseif($isMagang)
+                        {{-- NAV KHUSUS ANAK MAGANG (Presensi & Logbook Aktivitas) --}}
+                        <a href="{{ route('amil.absensi.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.absensi.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Presensi</span>
+                        </a>
+
+                        <a href="{{ route('amil.aktivitas.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.aktivitas.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            <span>Logbook Aktivitas</span>
+                        </a>
+
+                        <a href="{{ route('amil.izin-cuti.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.izin-cuti.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Izin & Cuti</span>
+                        </a>
+
+                        <!-- Dropdown: Agenda & Info -->
+                        <div class="relative group">
+                            <button type="button" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.agenda.*', 'amil.pengumuman.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Agenda & Info</span>
+                                <svg class="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="absolute left-0 top-full pt-1.5 w-52 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                                <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
+                                    <a href="{{ route('amil.agenda.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </span>
+                                        <span>Agenda Penugasan</span>
+                                    </a>
+                                    <a href="{{ route('amil.pengumuman.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                        </span>
+                                        <span>Pengumuman Lembaga</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    @elseif($isDriver)
+                        {{-- NAV KHUSUS DRIVER OPERASIONAL --}}
+                        <a href="{{ route('amil.aktivitas.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.aktivitas.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            <span>Tugas Lapangan</span>
+                        </a>
+
+                        <a href="{{ route('amil.penyaluran.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.penyaluran.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            <span>Penyaluran (8 Asnaf)</span>
+                        </a>
+
+                        <a href="{{ route('amil.absensi.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.absensi.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Presensi</span>
+                        </a>
+
+                        <a href="{{ route('amil.izin-cuti.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.izin-cuti.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Izin & Cuti</span>
+                        </a>
+
+                        <!-- Dropdown: Agenda & Info -->
+                        <div class="relative group">
+                            <button type="button" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.agenda.*', 'amil.pengumuman.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Agenda & Info</span>
+                                <svg class="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="absolute left-0 top-full pt-1.5 w-52 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                                <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
+                                    <a href="{{ route('amil.agenda.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </span>
+                                        <span>Agenda Penugasan</span>
+                                    </a>
+                                    <a href="{{ route('amil.pengumuman.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                        </span>
+                                        <span>Pengumuman Lembaga</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    @else
+                        {{-- NAV REGULER (STAFF, KETUA) --}}
+                        <!-- Dropdown: Fundraising & Donasi -->
+                        <div class="relative group">
+                            <button type="button" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.donasi.*', 'amil.donatur.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Donasi & Donatur</span>
+                                <svg class="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="absolute left-0 top-full pt-1.5 w-56 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                                <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
+                                    <a href="{{ route('amil.donasi.create') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-emerald-50 text-emerald-800 font-extrabold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                        </span>
+                                        <span>Input Donasi Baru</span>
+                                    </a>
+                                    <a href="{{ route('amil.donasi.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        </span>
+                                        <span>Riwayat Donasi Saya</span>
+                                    </a>
+                                    <a href="{{ route('amil.donatur.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                        </span>
+                                        <span>Database Donatur</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown: Operasional & SDM -->
                         <div class="relative group">
                             <button type="button" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.absensi.*', 'amil.aktivitas.*', 'amil.izin-cuti.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
                                 <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +279,6 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                            <!-- Menu Dropdown -->
                             <div class="absolute left-0 top-full pt-1.5 w-60 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                                 <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
                                     <a href="{{ route('amil.absensi.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
@@ -156,67 +311,69 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
 
-                    <!-- Penyaluran ZISWAF (Staff/Driver/Ketua saja) -->
-                    @if($canAccessPenyaluran)
+                        <!-- Penyaluran ZISWAF -->
                         <a href="{{ route('amil.penyaluran.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.penyaluran.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
                             <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
                             <span>Penyaluran (8 Asnaf)</span>
                         </a>
-                    @endif
 
-                    <!-- Dropdown: Komunikasi -->
-                    <div class="relative group">
-                        <button type="button" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.agenda.*', 'amil.pengumuman.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
-                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <span>Agenda & Info</span>
-                            <svg class="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <!-- Menu Dropdown -->
-                        <div class="absolute left-0 top-full pt-1.5 w-52 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
-                                @if(!$isRelawan)
+                        <!-- Dropdown: Agenda & Info -->
+                        <div class="relative group">
+                            <button type="button" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.agenda.*', 'amil.pengumuman.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Agenda & Info</span>
+                                <svg class="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="absolute left-0 top-full pt-1.5 w-52 hidden group-hover:block z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                                <div class="bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-700 text-xs overflow-hidden">
                                     <a href="{{ route('amil.agenda.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
                                         <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                         </span>
                                         <span>Agenda Penugasan</span>
                                     </a>
-                                @endif
-                                <a href="{{ route('amil.pengumuman.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
-                                    <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                                    </span>
-                                    <span>Pengumuman Lembaga</span>
-                                </a>
+                                    <a href="{{ route('amil.pengumuman.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 font-semibold transition">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                                        </span>
+                                        <span>Pengumuman Lembaga</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 </nav>
 
                 <!-- 3. Action Buttons & User Profile (Kanan) -->
                 <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                     <!-- Quick Button Header (Desktop) -->
-                    @if($canAccessDonasi)
-                        <a href="{{ route('amil.donasi.create') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs shadow-sm hover:shadow transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            <span>+ Donasi</span>
-                        </a>
-                    @elseif($isMagang)
+                    @if($isMagang)
                         <a href="{{ route('amil.aktivitas.create') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-extrabold text-xs shadow-sm hover:shadow transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
                             <span>+ Aktivitas</span>
+                        </a>
+                    @elseif($isDriver)
+                        <a href="{{ route('amil.aktivitas.create') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-extrabold text-xs shadow-sm hover:shadow transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            <span>+ Catat Tugas</span>
+                        </a>
+                    @else
+                        <a href="{{ route('amil.donasi.create') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs shadow-sm hover:shadow transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            <span>+ Donasi</span>
                         </a>
                     @endif
 
@@ -313,6 +470,11 @@
                 <a href="{{ route('amil.donatur.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
                     <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                     <span>Database Donatur</span>
+                </a>
+            @elseif($isMagang)
+                <a href="{{ route('amil.aktivitas.create') }}" class="p-2.5 rounded-xl bg-teal-600 text-white font-bold flex items-center gap-2">
+                    <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    <span>+ Catat Aktivitas</span>
                 </a>
             @endif
 

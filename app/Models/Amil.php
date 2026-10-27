@@ -98,42 +98,60 @@ class Amil extends Model
     public static function getJabatanOptions(): array
     {
         return [
-            self::JABATAN_KETUA => 'Ketua / Pimpinan',
-            self::JABATAN_STAFF => 'Staff / Pengurus',
-            self::JABATAN_DRIVER => 'Driver Operasional',
-            self::JABATAN_RELAWAN => 'Relawan (Hanya Donasi & Donatur)',
-            self::JABATAN_MAGANG => 'Anak Magang (Hanya Presensi & Logbook Aktivitas)',
+            self::JABATAN_KETUA => 'Ketua',
+            self::JABATAN_STAFF => 'Staff',
+            self::JABATAN_DRIVER => 'Driver',
+            self::JABATAN_RELAWAN => 'Relawan',
+            self::JABATAN_MAGANG => 'Magang',
         ];
     }
 
     public function getCleanJabatan(): string
     {
-        return strtolower(trim($this->jabatan ?? 'staff'));
+        $val = strtolower(trim($this->jabatan ?? 'staff'));
+
+        if (str_contains($val, 'magang') || str_contains($val, 'intern')) {
+            return self::JABATAN_MAGANG;
+        }
+
+        if (str_contains($val, 'relawan') || str_contains($val, 'volunteer')) {
+            return self::JABATAN_RELAWAN;
+        }
+
+        if (str_contains($val, 'driver') || str_contains($val, 'supir')) {
+            return self::JABATAN_DRIVER;
+        }
+
+        if (str_contains($val, 'ketua') || str_contains($val, 'pimpinan') || str_contains($val, 'kepala')) {
+            return self::JABATAN_KETUA;
+        }
+
+        return self::JABATAN_STAFF;
     }
 
     public function isRelawan(): bool
     {
-        return in_array($this->getCleanJabatan(), [self::JABATAN_RELAWAN, 'volunteer']);
+        return $this->getCleanJabatan() === self::JABATAN_RELAWAN;
     }
 
     public function isMagang(): bool
     {
-        return in_array($this->getCleanJabatan(), [self::JABATAN_MAGANG, 'intern']);
+        return $this->getCleanJabatan() === self::JABATAN_MAGANG;
     }
 
     public function isKetua(): bool
     {
-        return in_array($this->getCleanJabatan(), [self::JABATAN_KETUA, 'pimpinan']);
+        return $this->getCleanJabatan() === self::JABATAN_KETUA;
     }
 
     public function isDriver(): bool
     {
-        return in_array($this->getCleanJabatan(), [self::JABATAN_DRIVER, 'supir']);
+        return $this->getCleanJabatan() === self::JABATAN_DRIVER;
     }
 
     public function isStaff(): bool
     {
-        return ! $this->isRelawan() && ! $this->isMagang();
+        return $this->getCleanJabatan() === self::JABATAN_STAFF;
     }
 
     /**
@@ -171,11 +189,29 @@ class Amil extends Model
         return ! $this->isRelawan() && ! $this->isMagang();
     }
 
+    public function getJabatanAttribute($value): ?string
+    {
+        if (! $value) {
+            return $value;
+        }
+
+        // Bersihkan teks penjelasan dalam tanda kurung seperti (Hanya Presensi & Logbook Aktivitas)
+        $clean = preg_replace('/\s*\([^)]*\)/', '', (string) $value);
+
+        return trim($clean) ?: $value;
+    }
+
     public function getJabatanLabelAttribute(): string
     {
         $options = self::getJabatanOptions();
         $key = $this->getCleanJabatan();
 
-        return $options[$key] ?? ucfirst($this->jabatan ?? 'Staff');
+        if (isset($options[$key])) {
+            return $options[$key];
+        }
+
+        $clean = preg_replace('/\s*\([^)]*\)/', '', (string) ($this->attributes['jabatan'] ?? 'Staff'));
+
+        return trim(ucfirst($clean)) ?: 'Staff';
     }
 }

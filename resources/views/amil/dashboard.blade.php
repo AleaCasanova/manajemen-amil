@@ -25,19 +25,26 @@
 
             <!-- Quick Action Button -->
             <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                @if($amil->canAccessDonasi())
-                    <a href="{{ route('amil.donasi.create') }}" class="py-2 px-3.5 sm:py-2.5 sm:px-4 bg-white text-emerald-800 font-bold text-xs sm:text-sm rounded-xl shadow-md hover:bg-emerald-50 active:scale-95 transition flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>Input Donasi</span>
-                    </a>
-                @elseif($amil->isMagang())
-                    <a href="{{ route('amil.aktivitas.create') }}" class="py-2 px-3.5 sm:py-2.5 sm:px-4 bg-white text-teal-800 font-bold text-xs sm:text-sm rounded-xl shadow-md hover:bg-teal-50 active:scale-95 transition flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-teal-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                @if($amil->isMagang())
+                    <a href="{{ route('amil.aktivitas.create') }}" style="background-color: #ffffff !important; color: #0f766e !important;" class="py-2 px-3.5 sm:py-2.5 sm:px-4 bg-white font-bold text-xs sm:text-sm rounded-xl shadow-md hover:bg-teal-50 active:scale-95 transition flex items-center gap-1.5 shrink-0">
+                        <svg class="w-4 h-4 shrink-0" style="color: #0d9488 !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                        <span>+ Catat Aktivitas</span>
+                        <span style="color: #0f766e !important;">+ Catat Aktivitas</span>
+                    </a>
+                @elseif($amil->isDriver())
+                    <a href="{{ route('amil.aktivitas.create') }}" style="background-color: #ffffff !important; color: #0f766e !important;" class="py-2 px-3.5 sm:py-2.5 sm:px-4 bg-white font-bold text-xs sm:text-sm rounded-xl shadow-md hover:bg-teal-50 active:scale-95 transition flex items-center gap-1.5 shrink-0">
+                        <svg class="w-4 h-4 shrink-0" style="color: #0d9488 !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span style="color: #0f766e !important;">+ Catat Tugas</span>
+                    </a>
+                @else
+                    <a href="{{ route('amil.donasi.create') }}" style="background-color: #ffffff !important; color: #065f46 !important;" class="py-2 px-3.5 sm:py-2.5 sm:px-4 bg-white font-bold text-xs sm:text-sm rounded-xl shadow-md hover:bg-emerald-50 active:scale-95 transition flex items-center gap-1.5 shrink-0">
+                        <svg class="w-4 h-4 shrink-0" style="color: #059669 !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span style="color: #065f46 !important;">+ Input Donasi</span>
                     </a>
                 @endif
             </div>
