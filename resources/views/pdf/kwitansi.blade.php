@@ -374,26 +374,26 @@
             <td class="sign-col" style="width: 28%; vertical-align: top;">
                 <div class="sign-date">Cilacap, {{ \Carbon\Carbon::parse($donasi->tgl_donasi)->locale('id')->translatedFormat('d F Y') }}</div>
                 <div class="sign-title">Petugas Penerima / Bendahara,</div>
-                <div style="height: 50px; text-align: center; margin: 0 auto; margin-bottom: -15px; position: relative; z-index: 2;">
+                <div style="height: 54px; text-align: center; margin: 0 auto; margin-bottom: -6px; position: relative; z-index: 2;">
                     @if(!empty($ttdCapResmi))
-                        <img src="{{ $ttdCapResmi }}" style="height: 50px; width: auto; object-fit: contain;">
+                        <img src="{{ $ttdCapResmi }}" style="height: 54px; width: auto; object-fit: contain;">
                     @elseif(!empty($capGsc) || !empty($ttdBendahara))
                         <table style="margin: 0 auto; width: auto;">
                             <tr>
                                 @if(!empty($capGsc))
                                     <td style="vertical-align: middle; padding-right: 4px;">
-                                        <img src="{{ $capGsc }}" style="height: 44px; width: auto; object-fit: contain;">
+                                        <img src="{{ $capGsc }}" style="height: 48px; width: auto; object-fit: contain;">
                                     </td>
                                 @endif
                                 @if(!empty($ttdBendahara))
                                     <td style="vertical-align: middle;">
-                                        <img src="{{ $ttdBendahara }}" style="height: 44px; width: auto; object-fit: contain;">
+                                        <img src="{{ $ttdBendahara }}" style="height: 48px; width: auto; object-fit: contain;">
                                     </td>
                                 @endif
                             </tr>
                         </table>
                     @else
-                        <div style="height: 50px;"></div>
+                        <div style="height: 54px;"></div>
                     @endif
                 </div>
                 <div style="position: relative; z-index: 1;">
