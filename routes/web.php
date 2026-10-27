@@ -41,6 +41,7 @@ use App\Http\Controllers\Amil\PengumumanController;
 use App\Http\Controllers\Amil\PenyaluranController;
 use App\Http\Controllers\Amil\ProfileController as AmilProfileController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/login', [AmilAuthController::class, 'showLoginForm'])->name('login');
 Route::get('/amil/login', [AmilAuthController::class, 'showLoginForm'])->name('amil.login');
@@ -141,7 +142,37 @@ Route::get('/clear-cache', function () {
     try {
         Artisan::call('optimize:clear');
 
-        return 'Cache Berhasil Dibersihkan:<br>'.nl2br(Artisan::output());
+        // Sinkronisasi data identitas lembaga resmi Gerak Sedekah Cilacap
+        try {
+            DB::table('settings')
+                ->where('key', 'app_institution')
+                ->update(['value' => 'Yayasan Gerak Sedekah Cilacap (GSC)']);
+
+            DB::table('settings')
+                ->where('key', 'app_address')
+                ->where(function ($q) {
+                    $q->where('value', 'LIKE', '%Cepat%')->orWhere('value', 'LIKE', '%Jawa Barat%')->orWhere('value', 'LIKE', '%No. 01%');
+                })
+                ->update(['value' => 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224']);
+
+            DB::table('settings')
+                ->where('key', 'app_phone')
+                ->where('value', '081234567890')
+                ->update(['value' => '0852-9000-xxxx']);
+
+            DB::table('settings')
+                ->where('key', 'app_email')
+                ->where('value', 'LIKE', '%amilgsc.com%')
+                ->update(['value' => 'info@geraksedekahcilacap.org']);
+
+            DB::table('lokasi_kantors')
+                ->where('alamat', 'LIKE', '%Cepat%')
+                ->update(['alamat' => 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224']);
+        } catch (Throwable) {
+            // Abaikan jika DB tidak dapat diakses
+        }
+
+        return 'Cache Berhasil Dibersihkan & Data Lembaga Gerak Sedekah Cilacap Disinkronkan:<br>'.nl2br(Artisan::output());
     } catch (Throwable $e) {
         return 'Gagal membersihkan cache: '.$e->getMessage();
     }

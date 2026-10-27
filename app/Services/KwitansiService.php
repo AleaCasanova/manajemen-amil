@@ -58,6 +58,28 @@ class KwitansiService
             $ttdBendahara = 'data:image/jpeg;base64,'.base64_encode(file_get_contents(public_path('image/ttd_bendahara.jpeg')));
         }
 
+        $institutionName = Setting::get('app_institution', 'GERAK SEDEKAH CILACAP (GSC)');
+        $institutionName = str_ireplace(['Gerakan Sedekah Cepat', 'Sedekah Cepat', 'Gerakan Sedekah'], ['Gerak Sedekah Cilacap', 'Gerak Sedekah Cilacap', 'Gerak Sedekah'], $institutionName);
+        if (! str_contains(strtolower($institutionName), 'cilacap')) {
+            $institutionName = 'GERAK SEDEKAH CILACAP (GSC)';
+        }
+
+        $address = Setting::get('app_address', 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224');
+        $address = str_ireplace(['Gerakan Sedekah Cepat', 'Sedekah Cepat'], ['Gerak Sedekah Cilacap', 'Gerak Sedekah Cilacap'], $address);
+        if (str_contains($address, 'Jawa Barat') || str_contains($address, 'No. 01')) {
+            $address = 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224';
+        }
+
+        $phone = Setting::get('app_phone', '0852-9000-xxxx');
+        if ($phone === '081234567890') {
+            $phone = '0852-9000-xxxx';
+        }
+
+        $email = Setting::get('app_email', 'info@geraksedekahcilacap.org');
+        if (str_contains($email, 'amilgsc.com')) {
+            $email = 'info@geraksedekahcilacap.org';
+        }
+
         $data = [
             'donasi' => $donasi,
             'qrCode' => $qrCodeData,
@@ -67,10 +89,10 @@ class KwitansiService
             'capGsc' => $capGsc,
             'ttdBendahara' => $ttdBendahara,
             'app_name' => Setting::get('app_name', 'Sistem Manajemen Amil GSC'),
-            'institution_name' => Setting::get('app_institution', 'GERAK SEDEKAH CILACAP (GSC)'),
-            'address' => Setting::get('app_address', 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224'),
-            'phone' => Setting::get('app_phone', '0852-9000-xxxx'),
-            'email' => Setting::get('app_email', 'info@geraksedekahcilacap.org'),
+            'institution_name' => $institutionName,
+            'address' => $address,
+            'phone' => $phone,
+            'email' => $email,
         ];
 
         return Pdf::loadView('pdf.kwitansi', $data)

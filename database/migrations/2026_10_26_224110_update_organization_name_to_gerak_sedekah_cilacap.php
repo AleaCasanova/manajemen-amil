@@ -29,8 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('settings')
-            ->where('key', 'app_institution')
-            ->update(['value' => 'Yayasan Gerakan Sedekah Cepat (GSC)']);
+        // No-op
     }
 };
