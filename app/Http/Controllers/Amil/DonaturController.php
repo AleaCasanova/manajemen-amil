@@ -22,6 +22,10 @@ class DonaturController extends Controller
     {
         $amil = Auth::user()->amil;
 
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke database donatur.');
+        }
+
         $query = Donatur::where('amil_pic_id', $amil->id)
             ->orWhere('created_by', Auth::id())
             ->with(['kategori'])
@@ -55,6 +59,11 @@ class DonaturController extends Controller
     public function create()
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke database donatur.');
+        }
+
         $kategoris = DonaturKategori::all();
 
         return view('amil.donatur.create', compact('amil', 'kategoris'));
@@ -66,6 +75,10 @@ class DonaturController extends Controller
     public function store(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke pendaftaran donatur.');
+        }
 
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
@@ -121,6 +134,10 @@ class DonaturController extends Controller
     public function show(Donatur $donatur)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke database donatur.');
+        }
 
         // Proteksi Keamanan: Amil hanya bisa mengakses data donatur binaannya
         if ($donatur->amil_pic_id !== $amil->id && $donatur->created_by !== Auth::id() && ! Auth::user()->hasRole('Admin')) {

@@ -16,6 +16,10 @@ class AktivitasController extends Controller
     {
         $amil = Auth::user()->amil;
 
+        if ($amil && $amil->isRelawan()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk membuat laporan aktivitas harian.');
+        }
+
         $query = AktivitasHarian::where('amil_id', $amil->id)
             ->latest('tanggal');
 
@@ -44,6 +48,10 @@ class AktivitasController extends Controller
     {
         $amil = Auth::user()->amil;
 
+        if ($amil && $amil->isRelawan()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk membuat laporan aktivitas harian.');
+        }
+
         return view('amil.aktivitas.create', compact('amil'));
     }
 
@@ -53,6 +61,10 @@ class AktivitasController extends Controller
     public function store(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && $amil->isRelawan()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk membuat laporan aktivitas harian.');
+        }
 
         $validated = $request->validate([
             'tanggal' => ['required', 'date'],

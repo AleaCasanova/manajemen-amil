@@ -19,6 +19,10 @@ class PenyaluranController extends Controller
     {
         $amil = Auth::user()->amil;
 
+        if ($amil && ! $amil->canAccessPenyaluran()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Fitur penyaluran dana hanya dapat diakses oleh petugas staff/ketua.');
+        }
+
         $query = Penyaluran::where('amil_id', $amil->id)
             ->with(['mustahik', 'program', 'jenisDana'])
             ->latest('tgl_salur');
@@ -43,6 +47,10 @@ class PenyaluranController extends Controller
     {
         $amil = Auth::user()->amil;
 
+        if ($amil && ! $amil->canAccessPenyaluran()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Fitur penyaluran dana hanya dapat diakses oleh petugas staff/ketua.');
+        }
+
         $mustahiks = Mustahik::where('status_verifikasi', 'terverifikasi')
             ->orderBy('nama', 'asc')
             ->get();
@@ -59,6 +67,10 @@ class PenyaluranController extends Controller
     public function store(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessPenyaluran()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Fitur penyaluran dana hanya dapat diakses oleh petugas staff/ketua.');
+        }
 
         $validated = $request->validate([
             'mustahik_id' => ['required', 'exists:mustahiks,id'],

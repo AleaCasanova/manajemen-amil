@@ -84,4 +84,98 @@ class Amil extends Model
     {
         return $this->hasMany(Penyaluran::class);
     }
+
+    public const JABATAN_KETUA = 'ketua';
+
+    public const JABATAN_STAFF = 'staff';
+
+    public const JABATAN_DRIVER = 'driver';
+
+    public const JABATAN_RELAWAN = 'relawan';
+
+    public const JABATAN_MAGANG = 'magang';
+
+    public static function getJabatanOptions(): array
+    {
+        return [
+            self::JABATAN_KETUA => 'Ketua / Pimpinan',
+            self::JABATAN_STAFF => 'Staff / Pengurus',
+            self::JABATAN_DRIVER => 'Driver Operasional',
+            self::JABATAN_RELAWAN => 'Relawan (Hanya Donasi & Donatur)',
+            self::JABATAN_MAGANG => 'Anak Magang (Hanya Presensi & Logbook Aktivitas)',
+        ];
+    }
+
+    public function getCleanJabatan(): string
+    {
+        return strtolower(trim($this->jabatan ?? 'staff'));
+    }
+
+    public function isRelawan(): bool
+    {
+        return in_array($this->getCleanJabatan(), [self::JABATAN_RELAWAN, 'volunteer']);
+    }
+
+    public function isMagang(): bool
+    {
+        return in_array($this->getCleanJabatan(), [self::JABATAN_MAGANG, 'intern']);
+    }
+
+    public function isKetua(): bool
+    {
+        return in_array($this->getCleanJabatan(), [self::JABATAN_KETUA, 'pimpinan']);
+    }
+
+    public function isDriver(): bool
+    {
+        return in_array($this->getCleanJabatan(), [self::JABATAN_DRIVER, 'supir']);
+    }
+
+    public function isStaff(): bool
+    {
+        return ! $this->isRelawan() && ! $this->isMagang();
+    }
+
+    /**
+     * Fitur Akses: Input Donasi & Database Donatur
+     * (Semua peran bisa KECUALI Anak Magang)
+     */
+    public function canAccessDonasi(): bool
+    {
+        return ! $this->isMagang();
+    }
+
+    /**
+     * Fitur Akses: Presensi Kehadiran & Laporan Aktivitas
+     * (Semua peran wajib/bisa KECUALI Relawan yang bebas beban absen)
+     */
+    public function needsAttendance(): bool
+    {
+        return ! $this->isRelawan();
+    }
+
+    /**
+     * Fitur Akses: Pengajuan Izin & Cuti
+     */
+    public function canAccessIzinCuti(): bool
+    {
+        return ! $this->isRelawan();
+    }
+
+    /**
+     * Fitur Akses: Penyaluran Bantuan 8 Asnaf
+     * (Hanya staff, ketua, driver operasional inti)
+     */
+    public function canAccessPenyaluran(): bool
+    {
+        return ! $this->isRelawan() && ! $this->isMagang();
+    }
+
+    public function getJabatanLabelAttribute(): string
+    {
+        $options = self::getJabatanOptions();
+        $key = $this->getCleanJabatan();
+
+        return $options[$key] ?? ucfirst($this->jabatan ?? 'Staff');
+    }
 }

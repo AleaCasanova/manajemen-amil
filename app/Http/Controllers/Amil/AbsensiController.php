@@ -25,6 +25,10 @@ class AbsensiController extends Controller
     {
         $amil = Auth::user()->amil;
 
+        if ($amil && ! $amil->needsAttendance()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk presensi kehadiran.');
+        }
+
         $today = Carbon::today('Asia/Jakarta');
         $absensiToday = $this->absensiService->getTodayAbsensi($amil);
 
@@ -49,6 +53,10 @@ class AbsensiController extends Controller
     public function clockIn(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->needsAttendance()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk presensi kehadiran.');
+        }
 
         // Cek apakah sudah absen hari ini
         $existing = $this->absensiService->getTodayAbsensi($amil);
@@ -152,6 +160,10 @@ class AbsensiController extends Controller
     public function clockOut(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->needsAttendance()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk presensi kehadiran.');
+        }
 
         $existing = $this->absensiService->getTodayAbsensi($amil);
         if (! $existing || ! $existing->jam_masuk) {

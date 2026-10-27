@@ -20,6 +20,11 @@ class IzinCutiController extends Controller
     public function index()
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessIzinCuti()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Fitur pengajuan izin & cuti tidak berlaku untuk relawan.');
+        }
+
         $tahunSekarang = Carbon::now()->year;
 
         // Dapatkan atau inisialisasi saldo cuti amil tahun ini
@@ -43,6 +48,11 @@ class IzinCutiController extends Controller
     public function create()
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessIzinCuti()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Fitur pengajuan izin & cuti tidak berlaku untuk relawan.');
+        }
+
         $tahunSekarang = Carbon::now()->year;
 
         $saldoCuti = SaldoCuti::firstOrCreate(
@@ -61,6 +71,10 @@ class IzinCutiController extends Controller
     public function store(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessIzinCuti()) {
+            return redirect()->route('amil.dashboard')->with('info', 'Fitur pengajuan izin & cuti tidak berlaku untuk relawan.');
+        }
         $tahunSekarang = Carbon::now()->year;
 
         $validated = $request->validate([

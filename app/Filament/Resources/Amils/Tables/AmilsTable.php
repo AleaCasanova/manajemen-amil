@@ -46,6 +46,16 @@ class AmilsTable
                     ->sortable(),
                 TextColumn::make('jabatan')
                     ->label('Jabatan')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state, Amil $record): string => $record->jabatan_label)
+                    ->color(fn (?string $state): string => match (strtolower(trim($state ?? ''))) {
+                        'ketua' => 'warning',
+                        'staff' => 'success',
+                        'driver' => 'info',
+                        'relawan' => 'purple',
+                        'magang' => 'teal',
+                        default => 'gray',
+                    })
                     ->searchable(),
                 TextColumn::make('no_hp')
                     ->label('WhatsApp / Kontak')
@@ -71,6 +81,9 @@ class AmilsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('jabatan')
+                    ->label('Jabatan / Peran')
+                    ->options(Amil::getJabatanOptions()),
                 SelectFilter::make('status')
                     ->options([
                         'aktif' => 'Aktif',

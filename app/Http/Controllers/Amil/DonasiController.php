@@ -30,6 +30,10 @@ class DonasiController extends Controller
     {
         $amil = Auth::user()->amil;
 
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke fitur donasi.');
+        }
+
         $query = Donasi::where('amil_id', $amil->id)
             ->with(['donatur', 'jenisDana', 'program'])
             ->latest('tgl_donasi');
@@ -60,6 +64,10 @@ class DonasiController extends Controller
     public function create(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke fitur donasi.');
+        }
 
         // Auto no kwitansi
         $noKwitansi = $this->donasiService->generateNoKwitansi();
@@ -99,6 +107,10 @@ class DonasiController extends Controller
     public function store(Request $request)
     {
         $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke pencatatan donasi.');
+        }
 
         $validated = $request->validate([
             // Mode donatur: existing atau new

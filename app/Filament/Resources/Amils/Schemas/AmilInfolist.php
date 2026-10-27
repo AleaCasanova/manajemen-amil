@@ -40,8 +40,17 @@ class AmilInfolist
                                             ->color('gray')
                                             ->copyable(),
                                         TextEntry::make('jabatan')
-                                            ->label('Jabatan')
-                                            ->placeholder('-'),
+                                            ->label('Jabatan / Peran')
+                                            ->badge()
+                                            ->formatStateUsing(fn ($record) => $record->jabatan_label)
+                                            ->color(fn ($state) => match (strtolower(trim($state ?? ''))) {
+                                                'ketua' => 'warning',
+                                                'staff' => 'success',
+                                                'driver' => 'info',
+                                                'relawan' => 'purple',
+                                                'magang' => 'teal',
+                                                default => 'gray',
+                                            }),
                                         TextEntry::make('divisi.nama')
                                             ->label('Divisi Kerja')
                                             ->badge()

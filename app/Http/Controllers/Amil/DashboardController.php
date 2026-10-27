@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Amil;
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
 use App\Models\Agenda;
+use App\Models\AktivitasHarian;
 use App\Models\Donasi;
 use App\Models\Donatur;
 use App\Models\Pengumuman;
@@ -69,6 +70,23 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
+        // 8. Metrik & Aktivitas Khusus Magang / Operasional
+        $totalPresensiBulanIni = Absensi::where('amil_id', $amil->id)
+            ->whereYear('tanggal', now()->year)
+            ->whereMonth('tanggal', now()->month)
+            ->whereIn('status', ['hadir', 'terlambat'])
+            ->count();
+
+        $totalAktivitasBulanIni = AktivitasHarian::where('amil_id', $amil->id)
+            ->whereYear('tanggal', now()->year)
+            ->whereMonth('tanggal', now()->month)
+            ->count();
+
+        $aktivitasTerakhir = AktivitasHarian::where('amil_id', $amil->id)
+            ->latest('tanggal')
+            ->take(5)
+            ->get();
+
         return view('amil.dashboard', compact(
             'amil',
             'absensiHariIni',
@@ -79,7 +97,10 @@ class DashboardController extends Controller
             'totalDonaturSaya',
             'donasiTerakhir',
             'pengumumanTerbaru',
-            'agendaHariIni'
+            'agendaHariIni',
+            'totalPresensiBulanIni',
+            'totalAktivitasBulanIni',
+            'aktivitasTerakhir'
         ));
     }
 }

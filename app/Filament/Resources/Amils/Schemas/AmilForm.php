@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Amils\Schemas;
 
+use App\Models\Amil;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -60,9 +61,13 @@ class AmilForm
                                     ->label('Nama Lengkap')
                                     ->required()
                                     ->placeholder('Nama lengkap amil'),
-                                TextInput::make('jabatan')
-                                    ->label('Jabatan')
-                                    ->placeholder('Contoh: Fundraising Officer, Staf Penyaluran'),
+                                Select::make('jabatan')
+                                    ->label('Jabatan / Peran Amil')
+                                    ->options(Amil::getJabatanOptions())
+                                    ->default('staff')
+                                    ->required()
+                                    ->native(false)
+                                    ->helperText('Peran ini membatasi akses menu di Portal Amil HP/Web'),
                             ]),
                         Grid::make(2)
                             ->components([
