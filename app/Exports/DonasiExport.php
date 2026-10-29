@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Donasi;
+use Illuminate\Support\Enumerable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,7 +18,7 @@ class DonasiExport implements FromCollection, ShouldAutoSize, WithHeadings, With
         protected $query = null
     ) {}
 
-    public function collection()
+    public function collection(): Enumerable
     {
         return $this->query
             ? $this->query->with(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser'])->get()
@@ -44,27 +45,27 @@ class DonasiExport implements FromCollection, ShouldAutoSize, WithHeadings, With
         ];
     }
 
-    public function map($donasi): array
+    public function map(mixed $donasi): array
     {
         return [
             $donasi->no_kwitansi,
             $donasi->tgl_donasi ? $donasi->tgl_donasi->format('d/m/Y H:i') : '-',
-            $donasi->donatur->is_anonim ? 'Hamba Allah (Anonim)' : $donasi->donatur->nama,
-            $donasi->donatur->kode_donatur,
-            $donasi->donatur->no_hp ?? '-',
-            $donasi->jenisDana->nama ?? '-',
-            $donasi->program->nama ?? 'Umum',
+            $donasi->donatur?->is_anonim ? 'Hamba Allah (Anonim)' : ($donasi->donatur?->nama ?? '-'),
+            $donasi->donatur?->kode_donatur ?? '-',
+            $donasi->donatur?->no_hp ?? '-',
+            $donasi->jenisDana?->nama ?? '-',
+            $donasi->program?->nama ?? 'Umum',
             $donasi->jumlah,
-            ucfirst($donasi->metode_bayar),
+            ucfirst($donasi->metode_bayar ?? '-'),
             $donasi->bank ?? '-',
-            $donasi->amil->nama ?? '-',
-            strtoupper(str_replace('_', ' ', $donasi->status)),
-            $donasi->verifiedByUser->name ?? '-',
+            $donasi->amil?->nama ?? '-',
+            strtoupper(str_replace('_', ' ', $donasi->status ?? '-')),
+            $donasi->verifiedByUser?->name ?? '-',
             $donasi->verified_at ? $donasi->verified_at->format('d/m/Y H:i') : '-',
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): ?array
     {
         return [
             1 => [
