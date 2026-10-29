@@ -15,6 +15,8 @@ class DonasiChartWidget extends ChartWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    protected ?string $maxHeight = '250px';
+
     protected function getData(): array
     {
         $months = [];
@@ -61,12 +63,18 @@ class DonasiChartWidget extends ChartWidget
     {
         return RawJs::make(<<<'JS'
             {
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
                         min: 0,
+                        suggestedMax: 10000000,
                         ticks: {
-                            callback: (value) => 'Rp ' + Number(value).toLocaleString('id-ID'),
+                            precision: 0,
+                            callback: (value) => {
+                                if (value % 1 !== 0) return null;
+                                return 'Rp ' + Number(value).toLocaleString('id-ID');
+                            },
                         },
                     },
                 },

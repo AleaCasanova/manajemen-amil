@@ -19,6 +19,8 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
         'xl' => 1,
     ];
 
+    protected ?string $maxHeight = '230px';
+
     protected function getData(): array
     {
         $items = Donasi::query()
@@ -86,6 +88,7 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
     {
         return RawJs::make(<<<'JS'
             {
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'right',

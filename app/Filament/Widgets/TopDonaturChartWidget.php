@@ -20,6 +20,8 @@ class TopDonaturChartWidget extends ChartWidget
         'xl' => 1,
     ];
 
+    protected ?string $maxHeight = '230px';
+
     protected function getData(): array
     {
         $topDonaturs = Donasi::query()
@@ -65,6 +67,7 @@ class TopDonaturChartWidget extends ChartWidget
     {
         return RawJs::make(<<<'JS'
             {
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false,
@@ -79,8 +82,13 @@ class TopDonaturChartWidget extends ChartWidget
                     y: {
                         beginAtZero: true,
                         min: 0,
+                        suggestedMax: 5000000,
                         ticks: {
-                            callback: (value) => 'Rp ' + Number(value).toLocaleString('id-ID'),
+                            precision: 0,
+                            callback: (value) => {
+                                if (value % 1 !== 0) return null;
+                                return 'Rp ' + Number(value).toLocaleString('id-ID');
+                            },
                         },
                     },
                     x: {
