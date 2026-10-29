@@ -177,6 +177,12 @@ Route::get('/clear-cache', function () {
             DB::table('divisis')
                 ->whereNotIn('nama', ['Keuangan', 'Fundraising', 'Kesehatan', 'Program', 'Manajemen', 'Donasi', 'IT'])
                 ->delete();
+
+            // Bersihkan kolom bank pada transaksi non-transfer jika ada data lama
+            DB::table('donasis')
+                ->whereIn('metode_bayar', ['tunai', 'qris'])
+                ->whereNotNull('bank')
+                ->update(['bank' => null]);
         } catch (Throwable) {
             // Abaikan jika DB tidak dapat diakses
         }

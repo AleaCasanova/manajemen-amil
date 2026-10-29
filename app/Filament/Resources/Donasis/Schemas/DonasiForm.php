@@ -110,7 +110,8 @@ class DonasiForm
                                 TextInput::make('bank')
                                     ->label('Nama Bank / Dompet')
                                     ->placeholder('BSI, Mandiri, BCA, GoPay, dll')
-                                    ->visible(fn ($get) => in_array($get('metode_bayar'), ['transfer', 'ewallet'])),
+                                    ->visible(fn ($get) => in_array($get('metode_bayar'), ['transfer', 'ewallet']))
+                                    ->dehydrated(fn ($get) => in_array($get('metode_bayar'), ['transfer', 'ewallet'])),
                                 TextInput::make('atas_nama')
                                     ->label('Atas Nama (Niat Khusus)')
                                     ->placeholder('Contoh: Alm. H. Ahmad bin Fulan'),

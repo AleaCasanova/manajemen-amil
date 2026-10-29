@@ -313,9 +313,17 @@
             <td class="colon">:</td>
             <td class="value">
                 @php
-                    $metodeBayarText = ucfirst($donasi->metode_bayar);
-                    if ($donasi->bank) {
-                        $metodeBayarText = $donasi->bank . ' (' . ucfirst($donasi->metode_bayar) . ')';
+                    $metode = strtolower($donasi->metode_bayar ?? 'tunai');
+                    if ($metode === 'tunai') {
+                        $metodeBayarText = 'Tunai';
+                    } elseif ($metode === 'qris') {
+                        $metodeBayarText = 'QRIS';
+                    } elseif ($metode === 'transfer') {
+                        $metodeBayarText = $donasi->bank ? 'Transfer Bank (' . $donasi->bank . ')' : 'Transfer Bank';
+                    } elseif ($metode === 'ewallet') {
+                        $metodeBayarText = $donasi->bank ? 'E-Wallet (' . $donasi->bank . ')' : 'E-Wallet';
+                    } else {
+                        $metodeBayarText = ucfirst($metode);
                     }
                 @endphp
                 {{ $metodeBayarText }}

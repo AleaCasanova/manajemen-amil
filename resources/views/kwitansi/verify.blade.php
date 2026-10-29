@@ -199,7 +199,21 @@
                 </div>
                 <div class="data-item">
                     <span class="data-label">Metode Pembayaran</span>
-                    <span class="data-val" style="text-transform: capitalize;">{{ $donasi->metode_bayar }} {{ $donasi->bank ? '(' . $donasi->bank . ')' : '' }}</span>
+                    @php
+                        $metode = strtolower($donasi->metode_bayar ?? 'tunai');
+                        if ($metode === 'tunai') {
+                            $metodeText = 'Tunai';
+                        } elseif ($metode === 'qris') {
+                            $metodeText = 'QRIS';
+                        } elseif ($metode === 'transfer') {
+                            $metodeText = $donasi->bank ? 'Transfer Bank (' . $donasi->bank . ')' : 'Transfer Bank';
+                        } elseif ($metode === 'ewallet') {
+                            $metodeText = $donasi->bank ? 'E-Wallet (' . $donasi->bank . ')' : 'E-Wallet';
+                        } else {
+                            $metodeText = ucfirst($metode);
+                        }
+                    @endphp
+                    <span class="data-val">{{ $metodeText }}</span>
                 </div>
                 <div class="data-item">
                     <span class="data-label">Petugas Amil Penerima</span>

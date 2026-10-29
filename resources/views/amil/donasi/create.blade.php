@@ -304,7 +304,8 @@
                 <!-- Bagian Khusus Bank Jika Transfer -->
                 <div id="sectionTransferBank" class="{{ old('metode_bayar') === 'transfer' ? 'block' : 'hidden' }} p-3.5 rounded-xl bg-slate-50 border border-slate-200">
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Bank Rekening Tujuan <span class="text-rose-500">*</span></label>
-                    <select name="bank" class="w-full rounded-xl border border-slate-300 py-2.5 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                    <select name="bank" id="selectBank" {{ old('metode_bayar') === 'transfer' ? '' : 'disabled' }} class="w-full rounded-xl border border-slate-300 py-2.5 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white">
+                        <option value="" disabled {{ old('bank') ? '' : 'selected' }}>-- Pilih Bank Rekening Tujuan --</option>
                         <option value="BSI - Bank Syariah Indonesia" {{ old('bank') === 'BSI - Bank Syariah Indonesia' ? 'selected' : '' }}>BSI - Bank Syariah Indonesia</option>
                         <option value="BCA - Bank Central Asia" {{ old('bank') === 'BCA - Bank Central Asia' ? 'selected' : '' }}>BCA - Bank Central Asia</option>
                         <option value="Mandiri" {{ old('bank') === 'Mandiri' ? 'selected' : '' }}>Bank Mandiri</option>
@@ -595,10 +596,16 @@
     // Toggle Tampilan Transfer Bank
     function toggleMetodeBayar(val) {
         const secTransfer = document.getElementById('sectionTransferBank');
+        const selectBank = document.getElementById('selectBank');
         if (val === 'transfer') {
             secTransfer.classList.remove('hidden');
+            if (selectBank) selectBank.disabled = false;
         } else {
             secTransfer.classList.add('hidden');
+            if (selectBank) {
+                selectBank.disabled = true;
+                selectBank.value = '';
+            }
         }
     }
 

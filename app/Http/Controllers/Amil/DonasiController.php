@@ -226,7 +226,7 @@ class DonasiController extends Controller
                 'program_id' => $validated['program_id'] ?? null,
                 'jumlah' => $validated['jumlah'],
                 'metode_bayar' => $validated['metode_bayar'],
-                'bank' => $validated['bank'] ?? null,
+                'bank' => in_array($validated['metode_bayar'], ['transfer', 'ewallet']) ? ($validated['bank'] ?? null) : null,
                 'bukti_transfer' => $buktiPath,
                 'lampiran_foto' => $lampiranFotoPath,
                 'tgl_donasi' => $tglDonasi->format('Y-m-d H:i:s'),
