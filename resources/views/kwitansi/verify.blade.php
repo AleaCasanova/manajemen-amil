@@ -17,7 +17,7 @@
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+            background: linear-gradient(135deg, #ecfeff 0%, #e0f2fe 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,7 +27,7 @@
         .card {
             background: #ffffff;
             border-radius: 20px;
-            box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.15), 0 0 1px 1px rgba(0,0,0,0.05);
+            box-shadow: 0 20px 40px -15px rgba(8, 145, 178, 0.15), 0 0 1px 1px rgba(0,0,0,0.05);
             max-width: 480px;
             width: 100%;
             overflow: hidden;
@@ -38,7 +38,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .header {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
             color: #ffffff;
             padding: 28px 24px 22px;
             text-align: center;
@@ -71,8 +71,8 @@
             padding: 24px;
         }
         .amount-card {
-            background: #f0fdf4;
-            border: 1.5px dashed #10b981;
+            background: #ecfeff;
+            border: 1.5px dashed #06b6d4;
             border-radius: 14px;
             padding: 16px;
             text-align: center;
@@ -81,14 +81,14 @@
         .amount-card span {
             font-size: 11px;
             font-weight: 700;
-            color: #047857;
+            color: #0891b2;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .amount-card h2 {
             font-size: 24px;
             font-weight: 800;
-            color: #065f46;
+            color: #0e7490;
             margin-top: 4px;
         }
         .data-list {
@@ -118,7 +118,7 @@
         .btn-download {
             display: block;
             width: 100%;
-            background: #059669;
+            background: #0891b2;
             color: #ffffff;
             text-decoration: none;
             padding: 12px 18px;
@@ -127,11 +127,11 @@
             font-size: 14px;
             text-align: center;
             margin-top: 20px;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25);
             transition: all 0.2s;
         }
         .btn-download:hover {
-            background: #047857;
+            background: #0e7490;
             transform: translateY(-1px);
         }
         .not-found {
@@ -184,7 +184,7 @@
                 @if($donasi->program)
                     <div class="data-item">
                         <span class="data-label">Program Donasi</span>
-                        <span class="data-val" style="color: #059669;">{{ $donasi->program->nama }}</span>
+                        <span class="data-val" style="color: #0891b2;">{{ $donasi->program->nama }}</span>
                     </div>
                 @endif
                 <div class="data-item">
@@ -207,7 +207,7 @@
                 </div>
                 <div class="data-item" style="border: none;">
                     <span class="data-label">Status Verifikasi</span>
-                    <span class="data-val" style="color: #059669;">{{ strtoupper(str_replace('_', ' ', $donasi->status)) }}</span>
+                    <span class="data-val" style="color: #0891b2;">{{ strtoupper(str_replace('_', ' ', $donasi->status)) }}</span>
                 </div>
             </div>
 

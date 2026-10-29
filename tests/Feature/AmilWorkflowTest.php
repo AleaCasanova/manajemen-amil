@@ -160,6 +160,7 @@ class AmilWorkflowTest extends TestCase
     public function test_amil_can_clock_in_and_clock_out(): void
     {
         // Bersihkan absensi hari ini jika ada
+        Carbon::setTestNow(Carbon::parse('2026-10-26 07:55:00', 'Asia/Jakarta'));
         Absensi::where('amil_id', $this->amil->id)->whereDate('tanggal', Carbon::today())->delete();
 
         // 1. Clock In (koordinat tepat di kantor)

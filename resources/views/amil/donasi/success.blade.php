@@ -6,7 +6,7 @@
 <div class="max-w-2xl mx-auto py-4">
     <!-- Success Badge & Heading -->
     <div class="text-center mb-6">
-        <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-inner">
+        <div class="w-16 h-16 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center mx-auto mb-3 shadow-inner">
             <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
             </svg>
@@ -17,13 +17,13 @@
 
     <!-- Kwitansi Summary Card -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 relative overflow-hidden mb-6">
-        <!-- Top Green Accent Ribbon -->
-        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600"></div>
+        <!-- Top Cyan Accent Ribbon -->
+        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-cyan-500 via-sky-500 to-cyan-600"></div>
 
         <div class="flex items-center justify-between pb-5 border-b border-slate-100">
             <div>
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Nomor Kwitansi</span>
-                <span class="text-base sm:text-lg font-mono font-bold text-emerald-700">{{ $donasi->no_kwitansi }}</span>
+                <span class="text-base sm:text-lg font-mono font-bold text-cyan-700">{{ $donasi->no_kwitansi }}</span>
             </div>
             <div class="text-right">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Tanggal & Waktu</span>
@@ -67,7 +67,7 @@
 
             <div>
                 <span class="text-slate-400 block mb-0.5">Jenis Dana & Program</span>
-                <span class="font-bold text-emerald-700">{{ $donasi->jenisDana?->nama ?? 'Donasi' }}</span>
+                <span class="font-bold text-cyan-700">{{ $donasi->jenisDana?->nama ?? 'Donasi' }}</span>
                 <span class="block text-slate-500">{{ $donasi->program?->nama ?? 'Penerimaan Bebas' }}</span>
             </div>
 
@@ -118,16 +118,16 @@
 
         @if ($donasi->donasiBarangs && $donasi->donasiBarangs->isNotEmpty())
             <!-- Donasi Barang / Natura Box -->
-            <div class="mt-4 p-3.5 rounded-2xl bg-teal-50/70 border border-teal-200 text-xs">
-                <div class="flex items-center gap-1.5 font-bold text-teal-800 mb-1.5">
-                    <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <div class="mt-4 p-3.5 rounded-2xl bg-cyan-50/70 border border-cyan-200 text-xs">
+                <div class="flex items-center gap-1.5 font-bold text-cyan-800 mb-1.5">
+                    <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     <span>Disertai Donasi Barang / Natura:</span>
                 </div>
                 @foreach ($donasi->donasiBarangs as $itemBarang)
-                    <div class="flex justify-between items-start py-1 border-t border-teal-100 first:border-0">
+                    <div class="flex justify-between items-start py-1 border-t border-cyan-100 first:border-0">
                         <span class="font-semibold text-slate-800">{{ $itemBarang->deskripsi }}</span>
                         @if ($itemBarang->estimasi_nilai > 0)
-                            <span class="text-teal-700 font-mono font-bold">Est: Rp {{ number_format($itemBarang->estimasi_nilai, 0, ',', '.') }}</span>
+                            <span class="text-cyan-700 font-mono font-bold">Est: Rp {{ number_format($itemBarang->estimasi_nilai, 0, ',', '.') }}</span>
                         @endif
                     </div>
                 @endforeach
@@ -194,7 +194,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <!-- Download PDF Button -->
             <a href="{{ route('kwitansi.download', $donasi->id) }}" class="py-3 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-sm transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
                 <span>Download Kwitansi (PDF)</span>
@@ -215,7 +215,7 @@
                 ← Kembali ke Dashboard
             </a>
 
-            <a href="{{ route('amil.donasi.create') }}" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition">
+            <a href="{{ route('amil.donasi.create') }}" class="text-xs font-bold text-cyan-700 hover:text-cyan-800 transition">
                 + Input Donasi Baru Lagi
             </a>
         </div>

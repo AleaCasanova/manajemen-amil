@@ -70,14 +70,14 @@ class KwitansiService
             $address = 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224';
         }
 
-        $phone = Setting::get('app_phone', '0852-9000-xxxx');
-        if ($phone === '081234567890') {
-            $phone = '0852-9000-xxxx';
+        $phone = Setting::get('app_phone', '+62 857-0122-3333');
+        if ($phone === '081234567890' || $phone === '0852-9000-xxxx') {
+            $phone = '+62 857-0122-3333';
         }
 
-        $email = Setting::get('app_email', 'info@geraksedekahcilacap.org');
-        if (str_contains($email, 'amilgsc.com')) {
-            $email = 'info@geraksedekahcilacap.org';
+        $email = Setting::get('app_email', 'geraksedekahcilacap@gmail.com');
+        if (str_contains($email, 'amilgsc.com') || str_contains($email, 'info@geraksedekahcilacap.org')) {
+            $email = 'geraksedekahcilacap@gmail.com';
         }
 
         $data = [

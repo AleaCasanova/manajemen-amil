@@ -47,7 +47,7 @@ Route::get('/login', [AmilAuthController::class, 'showLoginForm'])->name('login'
 Route::get('/amil/login', [AmilAuthController::class, 'showLoginForm'])->name('amil.login');
 Route::get('/amil', function () {
     return redirect()->route('amil.dashboard');
-});
+})->middleware('auth');
 Route::post('/amil/login', [AmilAuthController::class, 'login'])
     ->middleware('throttle:5,1')
     ->name('amil.login.post');
@@ -158,13 +158,16 @@ Route::get('/clear-cache', function () {
 
             DB::table('settings')
                 ->where('key', 'app_phone')
-                ->where('value', '081234567890')
-                ->update(['value' => '0852-9000-xxxx']);
+                ->whereIn('value', ['081234567890', '0852-9000-xxxx'])
+                ->update(['value' => '+62 857-0122-3333']);
 
             DB::table('settings')
                 ->where('key', 'app_email')
-                ->where('value', 'LIKE', '%amilgsc.com%')
-                ->update(['value' => 'info@geraksedekahcilacap.org']);
+                ->where(function ($q) {
+                    $q->where('value', 'LIKE', '%amilgsc.com%')
+                        ->orWhere('value', 'LIKE', '%geraksedekahcilacap.org%');
+                })
+                ->update(['value' => 'geraksedekahcilacap@gmail.com']);
 
             DB::table('lokasi_kantors')
                 ->where('alamat', 'LIKE', '%Cepat%')

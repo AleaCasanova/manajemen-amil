@@ -48,10 +48,10 @@
         <div class="bg-emerald-900/60 p-1.5 rounded-2xl mb-4 backdrop-blur-md border border-emerald-500/30 flex items-center gap-1">
             <span class="flex-1 py-2 px-3 text-center rounded-xl bg-white text-emerald-800 font-bold text-xs shadow flex items-center justify-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                Portal Amil (Aktif)
+                Portal Amil
             </span>
             <a href="/admin" class="flex-1 py-2 px-3 text-center rounded-xl text-emerald-200 hover:text-white hover:bg-emerald-800/60 font-semibold text-xs transition flex items-center justify-center gap-1.5">
-                Panel Admin (Filament)
+                Panel Admin
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>

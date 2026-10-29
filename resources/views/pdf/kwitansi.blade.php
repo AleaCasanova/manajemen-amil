@@ -21,7 +21,7 @@
             background-color: #ffffff;
         }
         .container {
-            border: 2px solid #0f766e;
+            border: 2px solid #0891b2;
             border-radius: 12px;
             padding: 14px 18px;
             position: relative;
@@ -29,14 +29,14 @@
         }
         .header-table {
             width: 100%;
-            border-bottom: 1.5px solid #0f766e;
+            border-bottom: 1.5px solid #0891b2;
             padding-bottom: 8px;
             margin-bottom: 8px;
         }
         .institution-title {
             font-size: 15.5px;
             font-weight: bold;
-            color: #0f766e;
+            color: #0891b2;
             letter-spacing: 0.3px;
             margin-bottom: 2px;
         }
@@ -48,7 +48,7 @@
         .receipt-title {
             font-size: 16px;
             font-weight: bold;
-            color: #0f766e;
+            color: #0891b2;
             letter-spacing: 0.5px;
             text-align: right;
         }
@@ -69,8 +69,8 @@
             letter-spacing: 0.5px;
         }
         .badge-verified {
-            background-color: #d1fae5;
-            color: #047857;
+            background-color: #cffafe;
+            color: #0e7490;
         }
         .badge-pending {
             background-color: #fef3c7;
@@ -83,15 +83,15 @@
         .content-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .content-table td {
-            padding: 4.5px 0;
+            padding: 3px 0;
             vertical-align: top;
-            font-size: 10.5px;
+            font-size: 10px;
         }
         .label {
-            width: 160px;
+            width: 165px;
             color: #334155;
             font-weight: 600;
         }
@@ -105,10 +105,10 @@
             color: #0f172a;
         }
         .amount-box {
-            border: 1.5px dashed #0f766e;
+            border: 1.5px dashed #0891b2;
             border-radius: 8px;
-            padding: 8px 14px;
-            margin: 8px 0 10px 0;
+            padding: 7px 14px;
+            margin: 6px 0 8px 0;
             background-color: #ffffff;
         }
         .amount-box table {
@@ -117,7 +117,7 @@
         .amount-num {
             font-size: 18px;
             font-weight: bold;
-            color: #047857;
+            color: #0891b2;
             margin-top: 2px;
         }
         .amount-terbilang {
@@ -149,7 +149,7 @@
             margin-top: 3px;
         }
         .doa-box {
-            border-left: 2.5px solid #0f766e;
+            border-left: 2.5px solid #0891b2;
             background-color: #f8fafc;
             padding: 6px 10px;
             border-radius: 0 4px 4px 0;
@@ -158,7 +158,7 @@
         .doa-title {
             font-size: 8.5px;
             font-weight: bold;
-            color: #0f766e;
+            color: #0891b2;
             margin-bottom: 2px;
         }
         .doa-text {
@@ -271,31 +271,58 @@
             </td>
         </tr>
         <tr>
-            <td class="label">Alamat / Kontak</td>
+            <td class="label">Alamat Donatur</td>
             <td class="colon">:</td>
             <td class="value">
                 @if($donasi->donatur->is_anonim)
                     -
                 @else
                     {{ $donasi->donatur->alamat ?? ($donasi->donatur->kota ?? '-') }}
-                    @if($donasi->donatur->no_hp)
-                        | {{ $donasi->donatur->no_hp }}
-                    @endif
                 @endif
             </td>
         </tr>
         <tr>
-            <td class="label">Jenis Dana / Program</td>
+            <td class="label">No. Kontak / WhatsApp</td>
+            <td class="colon">:</td>
+            <td class="value">
+                @if($donasi->donatur->is_anonim)
+                    -
+                @else
+                    {{ $donasi->donatur->no_hp ?? '-' }}
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Jenis Dana</td>
             <td class="colon">:</td>
             <td class="value">
                 <strong>{{ $donasi->jenisDana?->nama }}</strong>
-                @if($donasi->program)
-                    - <span style="color: #047857; font-weight: 600;">{{ $donasi->program->nama }}</span>
-                @endif
+            </td>
+        </tr>
+        @if($donasi->program)
+            <tr>
+                <td class="label">Program Penyaluran</td>
+                <td class="colon">:</td>
+                <td class="value">
+                    <strong style="color: #0891b2;">{{ $donasi->program->nama }}</strong>
+                </td>
+            </tr>
+        @endif
+        <tr>
+            <td class="label">Metode Pembayaran</td>
+            <td class="colon">:</td>
+            <td class="value">
+                @php
+                    $metodeBayarText = ucfirst($donasi->metode_bayar);
+                    if ($donasi->bank) {
+                        $metodeBayarText = $donasi->bank . ' (' . ucfirst($donasi->metode_bayar) . ')';
+                    }
+                @endphp
+                {{ $metodeBayarText }}
             </td>
         </tr>
         <tr>
-            <td class="label">Metode Pembayaran</td>
+            <td class="label">Waktu Transaksi</td>
             <td class="colon">:</td>
             <td class="value">
                 @php
@@ -304,13 +331,8 @@
                         ? \Carbon\Carbon::parse($donasi->created_at)->timezone('Asia/Jakarta')->translatedFormat('H:i')
                         : $waktuDonasi->translatedFormat('H:i');
                     $tglLengkap = $waktuDonasi->locale('id')->translatedFormat('d F Y');
-
-                    $metodeBayarText = ucfirst($donasi->metode_bayar);
-                    if ($donasi->bank) {
-                        $metodeBayarText = $donasi->bank . ' (' . ucfirst($donasi->metode_bayar) . ')';
-                    }
                 @endphp
-                {{ $metodeBayarText }} | Tgl: {{ $tglLengkap }} {{ $jamFormatted }} WIB
+                {{ $tglLengkap }}, {{ $jamFormatted }} WIB
             </td>
         </tr>
         @if($donasi->donasiBarangs && $donasi->donasiBarangs->count() > 0)
@@ -319,7 +341,7 @@
                     <td class="label">Donasi Barang / Natura</td>
                     <td class="colon">:</td>
                     <td class="value">
-                        <strong style="color: #047857;">{{ $itemBarang->deskripsi }}</strong>
+                        <strong style="color: #0891b2;">{{ $itemBarang->deskripsi }}</strong>
                         @if($itemBarang->estimasi_nilai > 0)
                             <span style="color: #475569; font-size: 9.5px;">(Estimasi Nilai: Rp {{ number_format($itemBarang->estimasi_nilai, 0, ',', '.') }})</span>
                         @endif
@@ -334,11 +356,11 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 36%; vertical-align: middle;">
-                    <div style="font-size: 8.5px; color: #0f766e; font-weight: bold; text-transform: uppercase;">JUMLAH DONASI:</div>
+                    <div style="font-size: 8.5px; color: #0891b2; font-weight: bold; text-transform: uppercase;">JUMLAH DONASI:</div>
                     <div class="amount-num">Rp {{ number_format($donasi->jumlah, 0, ',', '.') }},-</div>
                 </td>
-                <td style="width: 64%; vertical-align: middle; border-left: 1px dashed #5eead4; padding-left: 16px;">
-                    <div style="font-size: 8.5px; color: #0f766e; font-weight: bold; text-transform: uppercase;">TERBILANG:</div>
+                <td style="width: 64%; vertical-align: middle; border-left: 1px dashed #67e8f9; padding-left: 16px;">
+                    <div style="font-size: 8.5px; color: #0891b2; font-weight: bold; text-transform: uppercase;">TERBILANG:</div>
                     <div class="amount-terbilang">{{ $terbilang }}</div>
                 </td>
             </tr>
