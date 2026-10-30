@@ -16,8 +16,14 @@ class AdminResourcesTableTest extends TestCase
     {
         parent::setUp();
 
-        $this->admin = User::where('email', 'admin@amilgsc.com')->first()
-            ?? User::factory()->create(['email' => 'admin@amilgsc.com', 'is_active' => true]);
+        $this->admin = User::where('email', 'admin@gmail.com')->first()
+            ?? User::where('email', 'admin@amilgsc.com')->first()
+            ?? User::whereHas('roles', fn ($q) => $q->where('name', 'Admin'))->first()
+            ?? User::factory()->create(['email' => 'admin@gmail.com', 'is_active' => true]);
+
+        if (! $this->admin->hasRole('Admin')) {
+            $this->admin->assignRole('Admin');
+        }
     }
 
     public function test_admin_can_access_absensi_amil_table(): void

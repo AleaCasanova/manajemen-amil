@@ -40,6 +40,8 @@ class RealDataSeeder extends Seeder
             'mustahiks',
             'notifikasis',
             'amils',
+            'model_has_roles',
+            'model_has_permissions',
         ];
 
         foreach ($tablesToTruncate as $tableName) {

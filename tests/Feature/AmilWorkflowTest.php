@@ -31,9 +31,12 @@ class AmilWorkflowTest extends TestCase
         parent::setUp();
 
         // Siapkan akun amil pengujian
-        $this->user = User::where('email', 'amil@amilgsc.com')->first();
-        if (! $this->user) {
+        $existingAmilUser = User::where('email', 'amil@amilgsc.com')->first()
+            ?? User::whereHas('roles', fn ($q) => $q->where('name', 'Amil'))->first();
+
+        if (! $existingAmilUser) {
             $this->user = User::factory()->create(['email' => 'testamil@amilgsc.com', 'is_active' => true]);
+            $this->user->assignRole('Amil');
             $this->amil = Amil::create([
                 'user_id' => $this->user->id,
                 'nip' => 'AML-TEST01',
@@ -42,7 +45,14 @@ class AmilWorkflowTest extends TestCase
                 'status' => 'aktif',
             ]);
         } else {
-            $this->amil = $this->user->amil;
+            $this->user = $existingAmilUser;
+            $this->amil = $this->user->amil ?? Amil::create([
+                'user_id' => $this->user->id,
+                'nip' => 'AML-TEST01',
+                'nama' => $this->user->name,
+                'target_bulanan' => 10000000,
+                'status' => 'aktif',
+            ]);
         }
 
         // Siapkan kantor aktif untuk uji absensi geofencing
@@ -64,7 +74,7 @@ class AmilWorkflowTest extends TestCase
     {
         $response = $this->post('/amil/login', [
             'email' => $this->user->email,
-            'password' => 'password',
+            'password' => 'password123',
         ]);
 
         $response->assertRedirect(route('amil.dashboard'));

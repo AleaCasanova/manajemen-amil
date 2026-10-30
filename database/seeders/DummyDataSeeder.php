@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Absensi;
 use App\Models\Agenda;
 use App\Models\AktivitasHarian;
 use App\Models\Amil;
@@ -23,12 +24,12 @@ use Illuminate\Database\Seeder;
 class DummyDataSeeder extends Seeder
 {
     /**
-     * Jalankan penambahan data dummy untuk tabel-tabel operasional.
-     * CATATAN PENTING: Sesuai instruksi, data amil dan user TIDAK DIUBAH / DIOTAK-ATIK SAMA SEKALI.
+     * Jalankan penambahan data operasional minimal 10 baris per tabel.
+     * Mengaitkan seluruh data ke 24 Pegawai Asli GSC dan Super Admin tanpa merusak akun mereka.
      */
     public function run(): void
     {
-        $adminUser = User::first();
+        $adminUser = User::where('email', 'admin@gmail.com')->first() ?? User::first();
         $adminId = $adminUser?->id ?? 1;
 
         $amils = Amil::all();
@@ -36,27 +37,72 @@ class DummyDataSeeder extends Seeder
             return;
         }
 
-        $amil1 = $amils->first();
-        $amil2 = $amils->skip(1)->first() ?? $amil1;
-        $amil3 = $amils->skip(2)->first() ?? $amil1;
-        $amil4 = $amils->skip(3)->first() ?? $amil1;
-        $amil5 = $amils->skip(4)->first() ?? $amil1;
-        $amil6 = $amils->skip(5)->first() ?? $amil1;
+        $amil1 = $amils->get(0) ?? $amils->first(); // Kholifatun Mualfiyah (Keuangan)
+        $amil2 = $amils->get(1) ?? $amils->first(); // Wiji Susanti (Fundraising)
+        $amil3 = $amils->get(2) ?? $amils->first(); // Ujang (Driver / Kesehatan)
+        $amil4 = $amils->get(3) ?? $amils->first(); // Fahri Azzuhair (Fundraising)
+        $amil5 = $amils->get(4) ?? $amils->first(); // Ahmad Robbani Izzal (Kesehatan)
+        $amil6 = $amils->get(5) ?? $amils->first(); // Naffisa Putri Azzahra (Fundraising)
+        $amil7 = $amils->get(6) ?? $amils->first(); // Rafi Ramadhan (Driver)
+        $amil8 = $amils->get(7) ?? $amils->first(); // Rista Amalia Salsabila (Program)
+        $amil9 = $amils->get(8) ?? $amils->first(); // Endang Kuswanto (Ketua)
+        $amil10 = $amils->get(9) ?? $amils->first(); // Faishal Hanif (Program)
+        $amilAlea = $amils->firstWhere('nama', 'Alea Casanova') ?? ($amils->get(19) ?? $amils->first());
 
         $kategoriRetail = DonaturKategori::firstOrCreate(['nama' => 'Perorangan / Retail']);
         $kategoriKorporat = DonaturKategori::firstOrCreate(['nama' => 'Korporat / Lembaga / Perusahaan']);
         $kategoriKomunitas = DonaturKategori::firstOrCreate(['nama' => 'Komunitas / Komunitas Mitra']);
 
-        $jenisZakatMaal = JenisDana::where('nama', 'LIKE', '%Zakat Maal%')->first() ?? JenisDana::first();
-        $jenisZakatFitrah = JenisDana::where('nama', 'LIKE', '%Zakat Fitrah%')->first() ?? JenisDana::first();
-        $jenisInfakTerikat = JenisDana::where('nama', 'LIKE', '%Terikat%')->first() ?? JenisDana::first();
-        $jenisInfakUmum = JenisDana::where('nama', 'LIKE', '%Umum%')->first() ?? JenisDana::first();
-        $jenisDskl = JenisDana::where('nama', 'LIKE', '%DSKL%')->first() ?? JenisDana::first();
+        $jenisZakatMaal = JenisDana::where('nama', 'LIKE', '%Zakat Maal%')->first() ?? JenisDana::firstOrCreate(['nama' => 'Zakat Maal', 'kode' => 'ZM', 'tipe' => 'zakat']);
+        $jenisZakatFitrah = JenisDana::where('nama', 'LIKE', '%Zakat Fitrah%')->first() ?? JenisDana::firstOrCreate(['nama' => 'Zakat Fitrah', 'kode' => 'ZF', 'tipe' => 'zakat']);
+        $jenisInfakTerikat = JenisDana::where('nama', 'LIKE', '%Terikat%')->first() ?? JenisDana::firstOrCreate(['nama' => 'Infak Terikat', 'kode' => 'IT', 'tipe' => 'infak']);
+        $jenisInfakUmum = JenisDana::where('nama', 'LIKE', '%Umum%')->first() ?? JenisDana::firstOrCreate(['nama' => 'Infak Umum', 'kode' => 'IU', 'tipe' => 'infak']);
+        $jenisDskl = JenisDana::where('nama', 'LIKE', '%DSKL%')->first() ?? JenisDana::firstOrCreate(['nama' => 'DSKL', 'kode' => 'DSKL', 'tipe' => 'dskl']);
 
         // ========================================================
-        // 1. PROGRAMS (Pastikan minimal 10 program)
+        // 1. PROGRAMS (Minimal 10 Data Program)
         // ========================================================
         $programsData = [
+            [
+                'nama' => 'Pangan Berkah Lansia Dhuafa',
+                'deskripsi' => 'Program pembagian sembako bulanan untuk lansia dhuafa dan keluarga prasejahtera di Cilacap.',
+                'target_dana' => 75000000,
+                'tgl_mulai' => Carbon::create(2026, 1, 1),
+                'tgl_selesai' => Carbon::create(2026, 12, 31),
+                'status' => 'aktif',
+            ],
+            [
+                'nama' => 'Beasiswa Generasi Cerdas Mandiri',
+                'deskripsi' => 'Bantuan biaya SPP, perlengkapan sekolah, dan pembinaan karakter anak yatim berprestasi.',
+                'target_dana' => 100000000,
+                'tgl_mulai' => Carbon::create(2026, 1, 1),
+                'tgl_selesai' => Carbon::create(2026, 12, 31),
+                'status' => 'aktif',
+            ],
+            [
+                'nama' => 'Layanan Ambulans Siaga Gratis',
+                'deskripsi' => 'Operasional armada ambulans 24 jam gratis untuk pasien dhuafa dan korban kecelakaan.',
+                'target_dana' => 60000000,
+                'tgl_mulai' => Carbon::create(2026, 1, 1),
+                'tgl_selesai' => Carbon::create(2026, 12, 31),
+                'status' => 'aktif',
+            ],
+            [
+                'nama' => 'Pemberdayaan UMKM Barokah',
+                'deskripsi' => 'Bantuan permodalan usaha mikro tanpa bunga dan pendampingan manajemen usaha mustahik.',
+                'target_dana' => 85000000,
+                'tgl_mulai' => Carbon::create(2026, 1, 1),
+                'tgl_selesai' => Carbon::create(2026, 12, 31),
+                'status' => 'aktif',
+            ],
+            [
+                'nama' => 'Renovasi Rumah Tidak Layak Huni (RTLH)',
+                'deskripsi' => 'Bedah rumah roboh, perbaikan atap bocor, dan pembuatan sanitasi layak bagi warga miskin.',
+                'target_dana' => 150000000,
+                'tgl_mulai' => Carbon::create(2026, 1, 1),
+                'tgl_selesai' => Carbon::create(2026, 12, 31),
+                'status' => 'aktif',
+            ],
             [
                 'nama' => 'Sedekah Al-Qur\'an & Santri Penghafal Kitab',
                 'deskripsi' => 'Pengadaan mushaf Al-Qur\'an standar dan santunan biaya hidup santri dhuafa penghafal Al-Qur\'an di pelosok Cilacap.',
@@ -106,7 +152,7 @@ class DummyDataSeeder extends Seeder
         $allPrograms = Program::all();
 
         // ========================================================
-        // 2. MUSTAHIK (Pastikan minimal 10 mustahik)
+        // 2. MUSTAHIK (10 Data Mustahik)
         // ========================================================
         $mustahikData = [
             [
@@ -157,6 +203,38 @@ class DummyDataSeeder extends Seeder
                 'kondisi' => 'Tunanetra dan lumpuh ringan, dirawat oleh tetangga secara gotong royong.',
                 'status_verifikasi' => 'terverifikasi',
             ],
+            [
+                'nama' => 'Pak Slamet Riyadi',
+                'nik' => '3301072006760002',
+                'alamat' => 'Desa Karangmangu RT 02/RW 03, Kec. Kroya, Kab. Cilacap',
+                'asnaf' => 'gharim',
+                'kondisi' => 'Terlilit utang pengobatan cuci darah istri yang mendesak dan telah menunggak.',
+                'status_verifikasi' => 'terverifikasi',
+            ],
+            [
+                'nama' => 'Ahmad Muzaki (Ibnu Sabil)',
+                'nik' => '3301081109010007',
+                'alamat' => 'Singgah di Masjid Agung Darussalam Cilacap asal Jawa Timur',
+                'asnaf' => 'ibnu_sabil',
+                'kondisi' => 'Musafir kehabisan ongkos perjalanan saat perjalanan pulang pasca menyelesaikan studi tahfidz.',
+                'status_verifikasi' => 'terverifikasi',
+            ],
+            [
+                'nama' => 'Ibu Tarwiyah',
+                'nik' => '3301095507680003',
+                'alamat' => 'Kelurahan Tambakreja RT 03/RW 06, Kec. Cilacap Selatan, Kab. Cilacap',
+                'asnaf' => 'miskin',
+                'kondisi' => 'Buruh cuci pakaian dengan rumah terancam abrasi pasang laut, menanggung 1 cucu yatim.',
+                'status_verifikasi' => 'terverifikasi',
+            ],
+            [
+                'nama' => 'Mbah Sutarmi',
+                'nik' => '3301104803420005',
+                'alamat' => 'Desa Kesugihan Kidul RT 04/RW 01, Kec. Kesugihan, Kab. Cilacap',
+                'asnaf' => 'fakir',
+                'kondisi' => 'Lansia renta usia 84 tahun hidup sendiri tanpa keluarga, bergantung pada bantuan tetangga.',
+                'status_verifikasi' => 'terverifikasi',
+            ],
         ];
 
         foreach ($mustahikData as $m) {
@@ -166,12 +244,12 @@ class DummyDataSeeder extends Seeder
         $allMustahiks = Mustahik::all();
 
         // ========================================================
-        // 3. PENYALURAN (Pastikan minimal 10 penyaluran)
+        // 3. PENYALURAN (10 Data Penyaluran)
         // ========================================================
         $penyaluranData = [
             [
-                'mustahik_id' => $allMustahiks->where('nama', 'Mbah Waryono')->first()?->id ?? $allMustahiks->first()->id,
-                'program_id' => $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first()?->id ?? $allPrograms->first()->id,
+                'mustahik_id' => $allMustahiks->get(0)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first()?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakUmum->id,
                 'jumlah' => 750000,
                 'tgl_salur' => Carbon::create(2026, 10, 15),
@@ -179,8 +257,8 @@ class DummyDataSeeder extends Seeder
                 'catatan' => 'Penyaluran paket sembako lengkap dan santunan tunai kebutuhan harian lansia dhuafa.',
             ],
             [
-                'mustahik_id' => $allMustahiks->where('nama', 'Ibu Samini')->first()?->id ?? $allMustahiks->first()->id,
-                'program_id' => $allPrograms->where('nama', 'Pemberdayaan UMKM Barokah')->first()?->id ?? $allPrograms->first()->id,
+                'mustahik_id' => $allMustahiks->get(1)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Pemberdayaan UMKM Barokah')->first()?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakTerikat->id,
                 'jumlah' => 2000000,
                 'tgl_salur' => Carbon::create(2026, 10, 18),
@@ -188,40 +266,76 @@ class DummyDataSeeder extends Seeder
                 'catatan' => 'Bantuan modal usaha dagang sayur keliling dan timbangan digital.',
             ],
             [
-                'mustahik_id' => $allMustahiks->where('nama', 'Bapak Nurhasan (Mualaf)')->first()?->id ?? $allMustahiks->first()->id,
-                'program_id' => $allPrograms->where('nama', 'Sedekah Al-Qur\'an & Santri Penghafal Kitab')->first()?->id ?? $allPrograms->first()->id,
+                'mustahik_id' => $allMustahiks->get(2)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Sedekah Al-Qur\'an & Santri Penghafal Kitab')->first()?->id ?? 1,
                 'jenis_dana_id' => $jenisZakatMaal->id,
                 'jumlah' => 1500000,
                 'tgl_salur' => Carbon::create(2026, 10, 20),
-                'amil_id' => $amil5->id,
+                'amil_id' => $amil4->id,
                 'catatan' => 'Santunan pembinaan asnaf mualaf dan paket perlengkapan ibadah sholat.',
             ],
             [
-                'mustahik_id' => $allMustahiks->where('nama', 'Ustadz Abdul Wahid')->first()?->id ?? $allMustahiks->first()->id,
-                'program_id' => $allPrograms->where('nama', 'Sedekah Al-Qur\'an & Santri Penghafal Kitab')->first()?->id ?? $allPrograms->first()->id,
+                'mustahik_id' => $allMustahiks->get(3)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Sedekah Al-Qur\'an & Santri Penghafal Kitab')->first()?->id ?? 1,
                 'jenis_dana_id' => $jenisZakatMaal->id,
                 'jumlah' => 1250000,
                 'tgl_salur' => Carbon::create(2026, 10, 22),
-                'amil_id' => $amil3->id,
+                'amil_id' => $amil8->id,
                 'catatan' => 'Kafalah guru ngaji pelosok TPQ dan bantuan 20 mushaf Al-Qur\'an santri.',
             ],
             [
-                'mustahik_id' => $allMustahiks->where('nama', 'Ibu Darsih')->first()?->id ?? $allMustahiks->first()->id,
-                'program_id' => $allPrograms->where('nama', 'Layanan Ambulans Siaga Gratis')->first()?->id ?? $allPrograms->first()->id,
+                'mustahik_id' => $allMustahiks->get(4)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Layanan Ambulans Siaga Gratis')->first()?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakTerikat->id,
                 'jumlah' => 1000000,
                 'tgl_salur' => Carbon::create(2026, 10, 24),
-                'amil_id' => $amil4->id,
+                'amil_id' => $amil3->id,
                 'catatan' => 'Bantuan operasional pengantaran kontrol rutin pasien stroke ke RSUD Cilacap.',
             ],
             [
-                'mustahik_id' => $allMustahiks->where('nama', 'Mbah Karyo Sukarto')->first()?->id ?? $allMustahiks->first()->id,
-                'program_id' => $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first()?->id ?? $allPrograms->first()->id,
+                'mustahik_id' => $allMustahiks->get(5)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first()?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakUmum->id,
                 'jumlah' => 800000,
                 'tgl_salur' => Carbon::create(2026, 10, 26),
                 'amil_id' => $amil6->id,
                 'catatan' => 'Santunan tunai bulanan dan popok dewasa medis lansia dhuafa.',
+            ],
+            [
+                'mustahik_id' => $allMustahiks->get(6)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Santunan Yatim & Piatu Bahagia')->first()?->id ?? 1,
+                'jenis_dana_id' => $jenisZakatMaal->id,
+                'jumlah' => 2500000,
+                'tgl_salur' => Carbon::create(2026, 10, 27),
+                'amil_id' => $amil10->id,
+                'catatan' => 'Bantuan pelunasan utang biaya tindakan medis darurat di rumah sakit.',
+            ],
+            [
+                'mustahik_id' => $allMustahiks->get(7)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first()?->id ?? 1,
+                'jenis_dana_id' => $jenisInfakUmum->id,
+                'jumlah' => 600000,
+                'tgl_salur' => Carbon::create(2026, 10, 28),
+                'amil_id' => $amil5->id,
+                'catatan' => 'Bantuan bekal perjalanan tiket bus antar provinsi dan uang saku darurat.',
+            ],
+            [
+                'mustahik_id' => $allMustahiks->get(8)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Renovasi Rumah Tidak Layak Huni (RTLH)')->first()?->id ?? 1,
+                'jenis_dana_id' => $jenisInfakTerikat->id,
+                'jumlah' => 1750000,
+                'tgl_salur' => Carbon::create(2026, 10, 28),
+                'amil_id' => $amil8->id,
+                'catatan' => 'Pengadaan material seng asbes dan semen untuk perbaikan dinding rumah abrasi.',
+            ],
+            [
+                'mustahik_id' => $allMustahiks->get(9)?->id ?? 1,
+                'program_id' => $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first()?->id ?? 1,
+                'jenis_dana_id' => $jenisInfakUmum->id,
+                'jumlah' => 700000,
+                'tgl_salur' => Carbon::create(2026, 10, 29),
+                'amil_id' => $amilAlea->id,
+                'catatan' => 'Paket sembako dan santunan lansia sebatang kara Kesugihan Kidul.',
             ],
         ];
 
@@ -237,411 +351,410 @@ class DummyDataSeeder extends Seeder
         }
 
         // ========================================================
-        // 4. DONATUR (Tambahkan 10 donatur baru)
+        // 4. DONATUR (12 Data Donatur Baru)
         // ========================================================
         $donatursData = [
             [
-                'kode_donatur' => 'DNT-202610-007',
+                'kode_donatur' => 'DNT-202610-001',
                 'nama' => 'H. Bambang Soeprapto',
                 'jenis' => 'individu',
                 'kategori_id' => $kategoriRetail->id,
                 'no_hp' => '081227189001',
                 'email' => 'bambang.soeprapto@gmail.com',
-                'alamat' => 'Jl. Gatot Subroto No. 45',
-                'kelurahan' => 'Sidanegara',
-                'kecamatan' => 'Cilacap Tengah',
+                'alamat' => 'Jl. Gatot Subroto No. 45, Cilacap Tengah',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
-                'amil_pic_id' => $amil1->id,
-                'created_by' => $adminId,
-            ],
-            [
-                'kode_donatur' => 'DNT-202610-008',
-                'nama' => 'dr. Ratna Wulandari, Sp.A',
-                'jenis' => 'individu',
-                'kategori_id' => $kategoriRetail->id,
-                'no_hp' => '081391223002',
-                'email' => 'dr.ratna.w@gmail.com',
-                'alamat' => 'Jl. Dr. Soetomo No. 12',
-                'kelurahan' => 'Sidakaya',
-                'kecamatan' => 'Cilacap Selatan',
-                'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
                 'amil_pic_id' => $amil2->id,
                 'created_by' => $adminId,
             ],
             [
-                'kode_donatur' => 'DNT-202610-009',
-                'nama' => 'CV. Samudra Jaya Mandiri',
-                'jenis' => 'lembaga',
-                'kategori_id' => $kategoriKorporat->id,
-                'no_hp' => '082134556003',
-                'email' => 'csr@samudrajaya.co.id',
-                'alamat' => 'Kawasan Industri Cilacap Kav. 18',
-                'kelurahan' => 'Karangkandri',
-                'kecamatan' => 'Kesugihan',
-                'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
-                'amil_pic_id' => $amil3->id,
-                'created_by' => $adminId,
-            ],
-            [
-                'kode_donatur' => 'DNT-202610-010',
-                'nama' => 'Hj. Maryam Sulaiman',
+                'kode_donatur' => 'DNT-202610-002',
+                'nama' => 'Hj. Ratna Sulistiyowati',
                 'jenis' => 'individu',
                 'kategori_id' => $kategoriRetail->id,
-                'no_hp' => '085747889004',
-                'email' => 'maryam.sulaiman@yahoo.co.id',
-                'alamat' => 'Jl. Diponegoro No. 88',
-                'kelurahan' => 'Adipala',
-                'kecamatan' => 'Adipala',
+                'no_hp' => '081328901234',
+                'email' => 'ratna.sulistiyo@gmail.com',
+                'alamat' => 'Jl. Rinjani No. 12, Kel. Sidanegara, Cilacap Tengah',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
                 'amil_pic_id' => $amil4->id,
                 'created_by' => $adminId,
             ],
             [
-                'kode_donatur' => 'DNT-202610-011',
-                'nama' => 'Ir. Eko Prasetyo, M.T.',
-                'jenis' => 'individu',
-                'kategori_id' => $kategoriRetail->id,
-                'no_hp' => '087836112005',
-                'email' => 'eko.prasetyo@eng.co.id',
-                'alamat' => 'Perum Griya Praja Mukti Blok D-5',
-                'kelurahan' => 'Kroya',
-                'kecamatan' => 'Kroya',
+                'kode_donatur' => 'DNT-202610-003',
+                'nama' => 'CV. Samudra Jaya Mandiri',
+                'jenis' => 'lembaga',
+                'kategori_id' => $kategoriKorporat->id,
+                'no_hp' => '0282534890',
+                'email' => 'csr@samudrajaya.co.id',
+                'alamat' => 'Kawasan Industri Pelabuhan Tanjung Intan Cilacap',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
-                'amil_pic_id' => $amil5->id,
+                'amil_pic_id' => $amil2->id,
                 'created_by' => $adminId,
             ],
             [
-                'kode_donatur' => 'DNT-202610-012',
-                'nama' => 'Komunitas Motor Trail Peduli',
+                'kode_donatur' => 'DNT-202610-004',
+                'nama' => 'Komunitas Gowes Sehat Barokah',
                 'jenis' => 'lembaga',
                 'kategori_id' => $kategoriKomunitas->id,
-                'no_hp' => '085290113006',
-                'email' => 'trail.cilacap.peduli@gmail.com',
-                'alamat' => 'Sekretariat Trail Adventure Cilacap',
-                'kelurahan' => 'Jeruklegi Wetan',
-                'kecamatan' => 'Jeruklegi',
+                'no_hp' => '085876543210',
+                'email' => 'gowessehat.clp@gmail.com',
+                'alamat' => 'Sekretariat GOR Wijayakusuma Cilacap',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
                 'amil_pic_id' => $amil6->id,
                 'created_by' => $adminId,
             ],
             [
-                'kode_donatur' => 'DNT-202610-013',
-                'nama' => 'H. Suwandi & Keluarga',
+                'kode_donatur' => 'DNT-202610-005',
+                'nama' => 'dr. Hendro Wicaksono, Sp.B',
                 'jenis' => 'individu',
                 'kategori_id' => $kategoriRetail->id,
-                'no_hp' => '081328994007',
-                'email' => 'h.suwandi@outlook.com',
-                'alamat' => 'Jl. Jenderal Sudirman No. 102',
-                'kelurahan' => 'Maos Lor',
-                'kecamatan' => 'Maos',
+                'no_hp' => '081123456789',
+                'email' => 'hendro.wicaksono@yahoo.com',
+                'alamat' => 'Jl. Dr. Soetomo No. 88, Sidakaya, Cilacap Selatan',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
-                'amil_pic_id' => $amil1->id,
+                'amil_pic_id' => $amil4->id,
                 'created_by' => $adminId,
             ],
             [
-                'kode_donatur' => 'DNT-202610-014',
-                'nama' => 'Agus Priyanto, S.E.',
-                'jenis' => 'individu',
-                'kategori_id' => $kategoriRetail->id,
-                'no_hp' => '085876445008',
-                'email' => 'agus.priyanto@finance.id',
-                'alamat' => 'Jl. Perintis Kemerdekaan No. 23',
-                'kelurahan' => 'Gumilir',
-                'kecamatan' => 'Cilacap Utara',
+                'kode_donatur' => 'DNT-202610-006',
+                'nama' => 'PT. Cilacap Samudra Perkasa',
+                'jenis' => 'lembaga',
+                'kategori_id' => $kategoriKorporat->id,
+                'no_hp' => '0282521199',
+                'email' => 'finance@cilacapperksa.com',
+                'alamat' => 'Jl. MT. Haryono Kav. 5, Cilacap Tengah',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
                 'amil_pic_id' => $amil2->id,
                 'created_by' => $adminId,
             ],
             [
-                'kode_donatur' => 'DNT-202610-015',
-                'nama' => 'Koperasi Bahari Sejahtera',
-                'jenis' => 'lembaga',
-                'kategori_id' => $kategoriKorporat->id,
-                'no_hp' => '081290334009',
-                'email' => 'koperasi.bahari.clp@gmail.com',
-                'alamat' => 'Kompleks Pelabuhan Perikanan Samudera',
-                'kelurahan' => 'Tegal Kamulyan',
-                'kecamatan' => 'Cilacap Selatan',
+                'kode_donatur' => 'DNT-202610-007',
+                'nama' => 'Ibu Sri Wahyuningsih',
+                'jenis' => 'individu',
+                'kategori_id' => $kategoriRetail->id,
+                'no_hp' => '087834567812',
+                'email' => 'sri.wahyuni67@gmail.com',
+                'alamat' => 'Jl. Juanda No. 102, Cilacap Utara',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => false,
-                'consent' => true,
-                'amil_pic_id' => $amil3->id,
+                'amil_pic_id' => $amil6->id,
                 'created_by' => $adminId,
             ],
             [
-                'kode_donatur' => 'DNT-202610-016',
-                'nama' => 'Hamba Allah Anonim Bersyukur',
+                'kode_donatur' => 'DNT-202610-008',
+                'nama' => 'Keluarga Besar Alm. H. Sudirman',
                 'jenis' => 'individu',
                 'kategori_id' => $kategoriRetail->id,
-                'no_hp' => '087711229010',
-                'email' => null,
-                'alamat' => 'Cilacap Tengah',
-                'kelurahan' => 'Gunungsimping',
-                'kecamatan' => 'Cilacap Tengah',
+                'no_hp' => '082134567890',
+                'email' => 'sudirman.fam@gmail.com',
+                'alamat' => 'Jl. Ahmad Yani No. 33, Cilacap Selatan',
                 'kota' => 'Cilacap',
-                'provinsi' => 'Jawa Tengah',
-                'is_anonim' => true,
-                'consent' => true,
+                'amil_pic_id' => $amil9->id,
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_donatur' => 'DNT-202610-009',
+                'nama' => 'Toko Bangunan Berkah Logam',
+                'jenis' => 'lembaga',
+                'kategori_id' => $kategoriKorporat->id,
+                'no_hp' => '081391234567',
+                'email' => 'berkahlogam.clp@gmail.com',
+                'alamat' => 'Jl. DI. Panjaitan No. 15, Cilacap',
+                'kota' => 'Cilacap',
                 'amil_pic_id' => $amil4->id,
                 'created_by' => $adminId,
             ],
+            [
+                'kode_donatur' => 'DNT-202610-010',
+                'nama' => 'Bapak Agus Setiawan',
+                'jenis' => 'individu',
+                'kategori_id' => $kategoriRetail->id,
+                'no_hp' => '085747123987',
+                'email' => 'agus.setiawan.eng@gmail.com',
+                'alamat' => 'Perum Pertamina Gunung Simping Blok B No. 9',
+                'kota' => 'Cilacap',
+                'amil_pic_id' => $amil2->id,
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_donatur' => 'DNT-202610-011',
+                'nama' => 'Ibu Nurul Hidayati',
+                'jenis' => 'individu',
+                'kategori_id' => $kategoriRetail->id,
+                'no_hp' => '081234112233',
+                'email' => 'nurul.hidayati@gmail.com',
+                'alamat' => 'Jl. Kendeng No. 17, Kesugihan, Cilacap',
+                'kota' => 'Cilacap',
+                'amil_pic_id' => $amil6->id,
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_donatur' => 'DNT-202610-012',
+                'nama' => 'Apotek Sehat Barokah',
+                'jenis' => 'lembaga',
+                'kategori_id' => $kategoriKorporat->id,
+                'no_hp' => '0282531980',
+                'email' => 'sehatbarokah.apt@gmail.com',
+                'alamat' => 'Jl. Gatot Subroto No. 89, Cilacap',
+                'kota' => 'Cilacap',
+                'amil_pic_id' => $amil5->id,
+                'created_by' => $adminId,
+            ],
         ];
 
-        foreach ($donatursData as $dnt) {
-            Donatur::firstOrCreate(['kode_donatur' => $dnt['kode_donatur']], $dnt);
+        foreach ($donatursData as $d) {
+            Donatur::firstOrCreate(['kode_donatur' => $d['kode_donatur']], $d);
         }
 
-        // ========================================================
-        // 5. DONASI (Tambahkan 10 transaksi donasi baru)
-        // ========================================================
-        $donaturBambang = Donatur::where('kode_donatur', 'DNT-202610-007')->first();
-        $donaturRatna = Donatur::where('kode_donatur', 'DNT-202610-008')->first();
-        $donaturSamudra = Donatur::where('kode_donatur', 'DNT-202610-009')->first();
-        $donaturMaryam = Donatur::where('kode_donatur', 'DNT-202610-010')->first();
-        $donaturEko = Donatur::where('kode_donatur', 'DNT-202610-011')->first();
-        $donaturTrail = Donatur::where('kode_donatur', 'DNT-202610-012')->first();
-        $donaturSuwandi = Donatur::where('kode_donatur', 'DNT-202610-013')->first();
-        $donaturAgus = Donatur::where('kode_donatur', 'DNT-202610-014')->first();
-        $donaturKoperasi = Donatur::where('kode_donatur', 'DNT-202610-015')->first();
-        $donaturAnonim = Donatur::where('kode_donatur', 'DNT-202610-016')->first();
+        $allDonaturs = Donatur::all();
 
-        $progAmbulans = $allPrograms->where('nama', 'Layanan Ambulans Siaga Gratis')->first();
-        $progBeasiswa = $allPrograms->where('nama', 'Beasiswa Generasi Cerdas Mandiri')->first();
-        $progUmkm = $allPrograms->where('nama', 'Pemberdayaan UMKM Barokah')->first();
-        $progQuran = $allPrograms->where('nama', 'Sedekah Al-Qur\'an & Santri Penghafal Kitab')->first();
-        $progKatarak = $allPrograms->where('nama', 'Operasi Katarak & Pengobatan Lansia Gratis')->first();
-
-        $donasisData = [
+        // ========================================================
+        // 5. DONASI (12 Data Donasi Transaksi Uang)
+        // ========================================================
+        $donasiData = [
             [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0010',
-                'donatur_id' => $donaturBambang->id,
-                'amil_id' => $amil1->id,
+                'no_kwitansi' => 'KWT-202602-001',
+                'donatur_id' => $allDonaturs->get(0)?->id ?? 1,
                 'jenis_dana_id' => $jenisZakatMaal->id,
-                'program_id' => null,
-                'jumlah' => 7500000,
+                'program_id' => $allPrograms->where('nama', 'Pemberdayaan UMKM Barokah')->first()?->id ?? 1,
+                'jumlah' => 12500000,
+                'tgl_donasi' => Carbon::create(2026, 2, 10, 10, 30),
                 'metode_bayar' => 'transfer',
-                'bank' => 'BSI - Bank Syariah Indonesia',
-                'tgl_donasi' => Carbon::create(2026, 10, 24, 9, 30),
-                'niat' => 'Zakat penghasilan profesi tahunan keluarga',
-                'atas_nama' => 'H. Bambang Soeprapto & Keluarga',
+                'bank' => 'BSI',
                 'status' => 'terverifikasi',
+                'amil_id' => $amil2->id,
+                'catatan' => 'Tunaikan Zakat Maal perdagangan perikanan kuartal awal 2026.',
+                'verified_at' => Carbon::create(2026, 2, 10, 11, 0),
                 'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 24, 10, 0),
             ],
             [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0011',
-                'donatur_id' => $donaturRatna->id,
-                'amil_id' => $amil2->id,
+                'no_kwitansi' => 'KWT-202603-002',
+                'donatur_id' => $allDonaturs->get(1)?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakTerikat->id,
-                'program_id' => $progAmbulans?->id,
-                'jumlah' => 2000000,
+                'program_id' => $allPrograms->where('nama', 'Beasiswa Generasi Cerdas Mandiri')->first()?->id ?? 1,
+                'jumlah' => 3000000,
+                'tgl_donasi' => Carbon::create(2026, 3, 15, 14, 0),
                 'metode_bayar' => 'qris',
                 'bank' => null,
-                'tgl_donasi' => Carbon::create(2026, 10, 25, 11, 15),
-                'niat' => 'Sedekah operasional ambulans siaga darurat',
-                'atas_nama' => 'dr. Ratna Wulandari, Sp.A',
                 'status' => 'terverifikasi',
-                'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 25, 11, 45),
-            ],
-            [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0012',
-                'donatur_id' => $donaturSamudra->id,
-                'amil_id' => $amil3->id,
-                'jenis_dana_id' => $jenisInfakTerikat->id,
-                'program_id' => $progBeasiswa?->id,
-                'jumlah' => 15000000,
-                'metode_bayar' => 'transfer',
-                'bank' => 'BCA - Bank Central Asia',
-                'tgl_donasi' => Carbon::create(2026, 10, 26, 14, 0),
-                'niat' => 'Penyaluran CSR pendidikan beasiswa anak yatim',
-                'atas_nama' => 'CV. Samudra Jaya Mandiri',
-                'status' => 'terverifikasi',
-                'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 26, 14, 30),
-            ],
-            [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0013',
-                'donatur_id' => $donaturMaryam->id,
                 'amil_id' => $amil4->id,
-                'jenis_dana_id' => $jenisInfakUmum->id,
-                'program_id' => null,
-                'jumlah' => 1000000,
-                'metode_bayar' => 'tunai',
-                'bank' => null,
-                'tgl_donasi' => Carbon::create(2026, 10, 27, 10, 20),
-                'niat' => 'Sedekah subuh berkah untuk umat',
-                'atas_nama' => 'Hj. Maryam Sulaiman',
-                'status' => 'terverifikasi',
+                'catatan' => 'Infak beasiswa pendidikan 3 santri yatim binaan.',
+                'verified_at' => Carbon::create(2026, 3, 15, 14, 15),
                 'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 27, 10, 40),
             ],
             [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0014',
-                'donatur_id' => $donaturEko->id,
-                'amil_id' => $amil5->id,
+                'no_kwitansi' => 'KWT-202604-003',
+                'donatur_id' => $allDonaturs->get(2)?->id ?? 1,
                 'jenis_dana_id' => $jenisZakatMaal->id,
-                'program_id' => null,
-                'jumlah' => 4500000,
+                'program_id' => $allPrograms->where('nama', 'Beasiswa Generasi Cerdas Mandiri')->first()?->id ?? 1,
+                'jumlah' => 15000000,
+                'tgl_donasi' => Carbon::create(2026, 4, 20, 9, 15),
                 'metode_bayar' => 'transfer',
                 'bank' => 'Mandiri',
-                'tgl_donasi' => Carbon::create(2026, 10, 27, 15, 10),
-                'niat' => 'Zakat perniagaan dan simpanan',
-                'atas_nama' => 'Ir. Eko Prasetyo & Istri',
                 'status' => 'terverifikasi',
+                'amil_id' => $amil2->id,
+                'catatan' => 'CSR zakal perusahaan untuk program pendidikan cerdas mandiri.',
+                'verified_at' => Carbon::create(2026, 4, 20, 10, 0),
                 'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 27, 15, 30),
             ],
             [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0015',
-                'donatur_id' => $donaturTrail->id,
-                'amil_id' => $amil6->id,
-                'jenis_dana_id' => $jenisInfakTerikat->id,
-                'program_id' => $progQuran?->id,
-                'jumlah' => 3500000,
-                'metode_bayar' => 'qris',
-                'bank' => null,
-                'tgl_donasi' => Carbon::create(2026, 10, 28, 8, 45),
-                'niat' => 'Donasi pengadaan Al-Quran santri pelosok',
-                'atas_nama' => 'Komunitas Motor Trail Peduli Sesama',
-                'status' => 'terverifikasi',
-                'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 28, 9, 15),
-            ],
-            [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0016',
-                'donatur_id' => $donaturSuwandi->id,
-                'amil_id' => $amil1->id,
+                'no_kwitansi' => 'KWT-202605-004',
+                'donatur_id' => $allDonaturs->get(3)?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakUmum->id,
-                'program_id' => null,
-                'jumlah' => 1500000,
+                'program_id' => $allPrograms->where('nama', 'Layanan Ambulans Siaga Gratis')->first()?->id ?? 1,
+                'jumlah' => 2500000,
+                'tgl_donasi' => Carbon::create(2026, 5, 25, 16, 45),
                 'metode_bayar' => 'tunai',
                 'bank' => null,
-                'tgl_donasi' => Carbon::create(2026, 10, 28, 13, 0),
-                'niat' => 'Infak jariyah keluarga besar',
-                'atas_nama' => 'H. Suwandi',
                 'status' => 'terverifikasi',
+                'amil_id' => $amil6->id,
+                'catatan' => 'Donasi patungan komunitas gowes untuk operasional BBM ambulans siaga.',
+                'verified_at' => Carbon::create(2026, 5, 25, 17, 0),
                 'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 28, 13, 20),
             ],
             [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0017',
-                'donatur_id' => $donaturAgus->id,
+                'no_kwitansi' => 'KWT-202606-005',
+                'donatur_id' => $allDonaturs->get(4)?->id ?? 1,
+                'jenis_dana_id' => $jenisInfakTerikat->id,
+                'program_id' => $allPrograms->where('nama', 'Operasi Katarak & Pengobatan Lansia Gratis')->first()?->id ?? 1,
+                'jumlah' => 5000000,
+                'tgl_donasi' => Carbon::create(2026, 6, 12, 11, 20),
+                'metode_bayar' => 'transfer',
+                'bank' => 'BCA',
+                'status' => 'terverifikasi',
+                'amil_id' => $amil4->id,
+                'catatan' => 'Bantuan pengobatan katarak lansia mustahik tidak mampu.',
+                'verified_at' => Carbon::create(2026, 6, 12, 11, 45),
+                'verified_by' => $adminId,
+            ],
+            [
+                'no_kwitansi' => 'KWT-202607-006',
+                'donatur_id' => $allDonaturs->get(5)?->id ?? 1,
+                'jenis_dana_id' => $jenisZakatMaal->id,
+                'program_id' => $allPrograms->where('nama', 'Renovasi Rumah Tidak Layak Huni (RTLH)')->first()?->id ?? 1,
+                'jumlah' => 20000000,
+                'tgl_donasi' => Carbon::create(2026, 7, 18, 13, 0),
+                'metode_bayar' => 'transfer',
+                'bank' => 'BSI',
+                'status' => 'terverifikasi',
                 'amil_id' => $amil2->id,
-                'jenis_dana_id' => $jenisZakatFitrah->id,
-                'program_id' => null,
-                'jumlah' => 450000,
+                'catatan' => 'Program kemitraan bedah rumah dhuafa pesisir Cilacap.',
+                'verified_at' => Carbon::create(2026, 7, 18, 14, 0),
+                'verified_by' => $adminId,
+            ],
+            [
+                'no_kwitansi' => 'KWT-202608-007',
+                'donatur_id' => $allDonaturs->get(6)?->id ?? 1,
+                'jenis_dana_id' => $jenisInfakUmum->id,
+                'program_id' => $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first()?->id ?? 1,
+                'jumlah' => 1000000,
+                'tgl_donasi' => Carbon::create(2026, 8, 22, 10, 0),
                 'metode_bayar' => 'qris',
                 'bank' => null,
-                'tgl_donasi' => Carbon::create(2026, 10, 28, 16, 20),
-                'niat' => 'Zakat fitrah anggota keluarga (9 jiwa)',
-                'atas_nama' => 'Agus Priyanto, S.E.',
                 'status' => 'terverifikasi',
+                'amil_id' => $amil6->id,
+                'catatan' => 'Infak sedekah jumat berkah untuk paket sembako lansia.',
+                'verified_at' => Carbon::create(2026, 8, 22, 10, 15),
                 'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 28, 16, 40),
             ],
             [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0018',
-                'donatur_id' => $donaturKoperasi->id,
-                'amil_id' => $amil3->id,
+                'no_kwitansi' => 'KWT-202609-008',
+                'donatur_id' => $allDonaturs->get(7)?->id ?? 1,
+                'jenis_dana_id' => $jenisDskl->id,
+                'program_id' => $allPrograms->where('nama', 'Sedekah Al-Qur\'an & Santri Penghafal Kitab')->first()?->id ?? 1,
+                'jumlah' => 7500000,
+                'tgl_donasi' => Carbon::create(2026, 9, 5, 15, 30),
+                'metode_bayar' => 'transfer',
+                'bank' => 'Bank Jateng',
+                'status' => 'terverifikasi',
+                'amil_id' => $amil9->id,
+                'catatan' => 'Wakaf Al-Qur\'an dan mushaf santri pelosok Cilacap.',
+                'verified_at' => Carbon::create(2026, 9, 5, 16, 0),
+                'verified_by' => $adminId,
+            ],
+            [
+                'no_kwitansi' => 'KWT-202610-009',
+                'donatur_id' => $allDonaturs->get(8)?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakTerikat->id,
-                'program_id' => $progKatarak?->id,
-                'jumlah' => 8000000,
+                'program_id' => $allPrograms->where('nama', 'Santunan Yatim & Piatu Bahagia')->first()?->id ?? 1,
+                'jumlah' => 4500000,
+                'tgl_donasi' => Carbon::create(2026, 10, 1, 9, 0),
                 'metode_bayar' => 'transfer',
                 'bank' => 'BRI',
-                'tgl_donasi' => Carbon::create(2026, 10, 29, 9, 10),
-                'niat' => 'Bantuan operasi katarak lansia pesisir',
-                'atas_nama' => 'Koperasi Bahari Sejahtera',
                 'status' => 'terverifikasi',
+                'amil_id' => $amil4->id,
+                'catatan' => 'Sedekah rutin bulanan santunan yatim piatu dhuafa.',
+                'verified_at' => Carbon::create(2026, 10, 1, 9, 30),
                 'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 29, 9, 30),
             ],
             [
-                'no_kwitansi' => 'KWT-GSC/2026/10/0019',
-                'donatur_id' => $donaturAnonim->id,
-                'amil_id' => $amil4->id,
+                'no_kwitansi' => 'KWT-202610-010',
+                'donatur_id' => $allDonaturs->get(9)?->id ?? 1,
                 'jenis_dana_id' => $jenisInfakUmum->id,
-                'program_id' => null,
-                'jumlah' => 500000,
+                'program_id' => $allPrograms->where('nama', 'Tanggap Bencana & Dapur Umum Darurat')->first()?->id ?? 1,
+                'jumlah' => 2000000,
+                'tgl_donasi' => Carbon::create(2026, 10, 14, 14, 10),
                 'metode_bayar' => 'tunai',
                 'bank' => null,
-                'tgl_donasi' => Carbon::create(2026, 10, 29, 11, 0),
-                'niat' => 'Sedekah jumat berkah ikhlas lillahi ta\'ala',
-                'atas_nama' => null,
                 'status' => 'terverifikasi',
+                'amil_id' => $amil2->id,
+                'catatan' => 'Donasi kesiapsiagaan bencana hidrometeorologi musim hujan.',
+                'verified_at' => Carbon::create(2026, 10, 14, 14, 30),
                 'verified_by' => $adminId,
-                'verified_at' => Carbon::create(2026, 10, 29, 11, 20),
+            ],
+            [
+                'no_kwitansi' => 'KWT-202610-011',
+                'donatur_id' => $allDonaturs->get(10)?->id ?? 1,
+                'jenis_dana_id' => $jenisZakatMaal->id,
+                'program_id' => $allPrograms->where('nama', 'Beasiswa Generasi Cerdas Mandiri')->first()?->id ?? 1,
+                'jumlah' => 3500000,
+                'tgl_donasi' => Carbon::create(2026, 10, 20, 11, 0),
+                'metode_bayar' => 'transfer',
+                'bank' => 'BSI',
+                'status' => 'terverifikasi',
+                'amil_id' => $amil6->id,
+                'catatan' => 'Zakat profesi dosen UNU untuk beasiswa mahasiswa dhuafa.',
+                'verified_at' => Carbon::create(2026, 10, 20, 11, 20),
+                'verified_by' => $adminId,
+            ],
+            [
+                'no_kwitansi' => 'KWT-202610-012',
+                'donatur_id' => $allDonaturs->get(11)?->id ?? 1,
+                'jenis_dana_id' => $jenisInfakTerikat->id,
+                'program_id' => $allPrograms->where('nama', 'Layanan Ambulans Siaga Gratis')->first()?->id ?? 1,
+                'jumlah' => 1800000,
+                'tgl_donasi' => Carbon::create(2026, 10, 25, 16, 0),
+                'metode_bayar' => 'tunai',
+                'bank' => null,
+                'status' => 'terverifikasi',
+                'amil_id' => $amil5->id,
+                'catatan' => 'Donasi operasional P3K armada ambulans.',
+                'verified_at' => Carbon::create(2026, 10, 25, 16, 30),
+                'verified_by' => $adminId,
             ],
         ];
 
-        foreach ($donasisData as $dns) {
-            Donasi::firstOrCreate(['no_kwitansi' => $dns['no_kwitansi']], $dns);
+        foreach ($donasiData as $dn) {
+            Donasi::firstOrCreate(['no_kwitansi' => $dn['no_kwitansi']], $dn);
         }
 
-        // ========================================================
-        // 6. DONASI BARANG (Pastikan minimal 10 donasi barang)
-        // ========================================================
         $allDonasis = Donasi::all();
-        $donasi10 = $allDonasis->where('no_kwitansi', 'KWT-GSC/2026/10/0010')->first() ?? $allDonasis->first();
-        $donasi11 = $allDonasis->where('no_kwitansi', 'KWT-GSC/2026/10/0011')->first() ?? $allDonasis->first();
-        $donasi12 = $allDonasis->where('no_kwitansi', 'KWT-GSC/2026/10/0012')->first() ?? $allDonasis->first();
-        $donasi15 = $allDonasis->where('no_kwitansi', 'KWT-GSC/2026/10/0015')->first() ?? $allDonasis->first();
-        $donasi18 = $allDonasis->where('no_kwitansi', 'KWT-GSC/2026/10/0018')->first() ?? $allDonasis->first();
 
-        $barangData = [
+        // ========================================================
+        // 6. DONASI BARANG (10 Data Donasi Barang)
+        // ========================================================
+        $donasiBarangData = [
             [
-                'donasi_id' => $donasi10->id,
-                'deskripsi' => 'Beras Ramos Super 5 Karung (@25 Kg)',
-                'estimasi_nilai' => 1750000,
+                'donasi_id' => $allDonasis->get(0)?->id ?? 1,
+                'deskripsi' => 'Semen Gresik 50 Sak untuk Program Bedah Rumah RTLH',
+                'estimasi_nilai' => 3500000,
             ],
             [
-                'donasi_id' => $donasi11->id,
-                'deskripsi' => '2 Unit Tabung Oksigen Medis 1m3 Lengkap Regulator Ambulans',
-                'estimasi_nilai' => 2200000,
+                'donasi_id' => $allDonasis->get(1)?->id ?? 1,
+                'deskripsi' => 'Beras Organik 20 Karung @25kg Logistik Sembako Lansia Dhuafa',
+                'estimasi_nilai' => 7000000,
             ],
             [
-                'donasi_id' => $donasi12->id,
-                'deskripsi' => '30 Paket Tas & Perlengkapan Belajar Siswa Yatim',
+                'donasi_id' => $allDonasis->get(2)?->id ?? 1,
+                'deskripsi' => 'Tabung Oksigen Medis 1m3 + Regulator Siaga Ambulans GSC (2 Unit)',
                 'estimasi_nilai' => 3000000,
             ],
             [
-                'donasi_id' => $donasi15->id,
-                'deskripsi' => '50 Mushaf Al-Qur\'an Rasm Utsmani Standar Kemenag',
-                'estimasi_nilai' => 4500000,
+                'donasi_id' => $allDonasis->get(3)?->id ?? 1,
+                'deskripsi' => 'Mushaf Al-Qur\'an Terjemahan Standar Kemenag (100 Eksemplar)',
+                'estimasi_nilai' => 8000000,
             ],
             [
-                'donasi_id' => $donasi18->id,
-                'deskripsi' => '20 Paket Sembako Ikan Kaleng & Minyak Goreng Higienis',
-                'estimasi_nilai' => 2500000,
+                'donasi_id' => $allDonasis->get(4)?->id ?? 1,
+                'deskripsi' => 'Sepeda Gunung Anak Layak Pakai Hadiah Santri Berprestasi (3 Unit)',
+                'estimasi_nilai' => 3600000,
+            ],
+            [
+                'donasi_id' => $allDonasis->get(5)?->id ?? 1,
+                'deskripsi' => 'Timbangan Badan Digital & Tensimeter Omron Posyandu Lansia (3 Set)',
+                'estimasi_nilai' => 2400000,
+            ],
+            [
+                'donasi_id' => $allDonasis->get(6)?->id ?? 1,
+                'deskripsi' => 'Perahu Karet Rescue Kapasitas 6 Orang Kesiapsiagaan Banjir',
+                'estimasi_nilai' => 12000000,
+            ],
+            [
+                'donasi_id' => $allDonasis->get(7)?->id ?? 1,
+                'deskripsi' => 'Laptop Pelatihan IT Santri Dhuafa Core i5 Siap Pakai (2 Unit)',
+                'estimasi_nilai' => 7000000,
+            ],
+            [
+                'donasi_id' => $allDonasis->get(8)?->id ?? 1,
+                'deskripsi' => 'Kain Sarung Wadimor & Mukena Dewasa Kado Hari Santri (50 Pasang)',
+                'estimasi_nilai' => 4750000,
+            ],
+            [
+                'donasi_id' => $allDonasis->get(9)?->id ?? 1,
+                'deskripsi' => 'Kasur Busa Medis & Kursi Roda Lipat Layanan Pasien Stroke Dhuafa',
+                'estimasi_nilai' => 3800000,
             ],
         ];
 
-        foreach ($barangData as $bg) {
+        foreach ($donasiBarangData as $bg) {
             DonasiBarang::firstOrCreate(
                 [
                     'donasi_id' => $bg['donasi_id'],
@@ -652,7 +765,7 @@ class DummyDataSeeder extends Seeder
         }
 
         // ========================================================
-        // 7. AGENDAS (Pastikan minimal 10 agenda penugasan)
+        // 7. AGENDAS (10 Data Agenda Penugasan Amil)
         // ========================================================
         $agendasData = [
             [
@@ -673,7 +786,7 @@ class DummyDataSeeder extends Seeder
                 'selesai' => Carbon::create(2026, 11, 4, 11, 30),
                 'status' => 'terjadwal',
                 'created_by' => $adminId,
-                'amils' => [$amil1->id, $amil2->id, $amil5->id],
+                'amils' => [$amil1->id, $amil2->id, $amil4->id, $amil6->id],
             ],
             [
                 'judul' => 'Pemeriksaan Kesehatan Lansia & Screening Katarak',
@@ -683,7 +796,7 @@ class DummyDataSeeder extends Seeder
                 'selesai' => Carbon::create(2026, 11, 7, 12, 0),
                 'status' => 'terjadwal',
                 'created_by' => $adminId,
-                'amils' => [$amil2->id, $amil4->id, $amil6->id],
+                'amils' => [$amil3->id, $amil5->id, $amil7->id],
             ],
             [
                 'judul' => 'Pelatihan Digitalisasi Zakat & CRM Donatur Amil',
@@ -693,7 +806,7 @@ class DummyDataSeeder extends Seeder
                 'selesai' => Carbon::create(2026, 11, 10, 16, 30),
                 'status' => 'terjadwal',
                 'created_by' => $adminId,
-                'amils' => [$amil1->id, $amil2->id, $amil3->id, $amil4->id, $amil5->id, $amil6->id],
+                'amils' => [$amil1->id, $amil2->id, $amil8->id, $amil10->id, $amilAlea->id],
             ],
             [
                 'judul' => 'Jemput Zakat Maal & Kunjungan Kemitraan Donatur',
@@ -703,7 +816,57 @@ class DummyDataSeeder extends Seeder
                 'selesai' => Carbon::create(2026, 11, 12, 15, 0),
                 'status' => 'terjadwal',
                 'created_by' => $adminId,
-                'amils' => [$amil1->id, $amil6->id],
+                'amils' => [$amil2->id, $amil4->id],
+            ],
+            [
+                'judul' => 'Survei Faktual Kelayakan Mustahik Bedah Rumah',
+                'deskripsi' => 'Peninjauan langsung kondisi fisik rumah roboh dan status tanah calon penerima bantuan RTLH di Kawunganten.',
+                'lokasi' => 'Desa Bojong RT 05/RW 02, Kec. Kawunganten',
+                'mulai' => Carbon::create(2026, 10, 15, 8, 0),
+                'selesai' => Carbon::create(2026, 10, 15, 12, 0),
+                'status' => 'selesai',
+                'created_by' => $adminId,
+                'amils' => [$amil8->id, $amil10->id],
+            ],
+            [
+                'judul' => 'Penyaluran Santunan Yatim & Doa Bersama Donatur',
+                'deskripsi' => 'Pemberian santunan uang tunai, perlengkapan sekolah, dan doa bersama 50 anak yatim.',
+                'lokasi' => 'Aula Yayasan Gerak Sedekah Cilacap',
+                'mulai' => Carbon::create(2026, 10, 20, 15, 30),
+                'selesai' => Carbon::create(2026, 10, 20, 17, 30),
+                'status' => 'selesai',
+                'created_by' => $adminId,
+                'amils' => [$amil2->id, $amil6->id, $amil8->id],
+            ],
+            [
+                'judul' => 'Kunjungan Silaturahmi BAZNAS Kabupaten Cilacap',
+                'deskripsi' => 'Koordinasi sinkronisasi data mustahik terpadu dan sinergi program pengentasan kemiskinan daerah.',
+                'lokasi' => 'Kantor BAZNAS Cilacap',
+                'mulai' => Carbon::create(2026, 10, 22, 10, 0),
+                'selesai' => Carbon::create(2026, 10, 22, 12, 0),
+                'status' => 'selesai',
+                'created_by' => $adminId,
+                'amils' => [$amil9->id, $amil1->id],
+            ],
+            [
+                'judul' => 'Posko Layanan Pengecekan Kesehatan Gratis CFD',
+                'deskripsi' => 'Membuka tenda kesehatan gratis tensi, gula darah, dan informasi program sedekah saat Car Free Day.',
+                'lokasi' => 'Alun-alun Kabupaten Cilacap',
+                'mulai' => Carbon::create(2026, 10, 25, 6, 0),
+                'selesai' => Carbon::create(2026, 10, 25, 9, 30),
+                'status' => 'selesai',
+                'created_by' => $adminId,
+                'amils' => [$amil5->id, $amil7->id, $amilAlea->id],
+            ],
+            [
+                'judul' => 'Pengantaran Pasien Rujukan Dhuafa ke RS Margono Banyumas',
+                'deskripsi' => 'Layanan ambulans antar kabupaten untuk pasien kanker rujukan operasi dari RSUD Cilacap.',
+                'lokasi' => 'RSUD Margono Soekarjo Purwokerto',
+                'mulai' => Carbon::create(2026, 10, 27, 7, 0),
+                'selesai' => Carbon::create(2026, 10, 27, 13, 0),
+                'status' => 'selesai',
+                'created_by' => $adminId,
+                'amils' => [$amil3->id, $amil5->id],
             ],
         ];
 
@@ -716,7 +879,7 @@ class DummyDataSeeder extends Seeder
         }
 
         // ========================================================
-        // 8. PENGUMUMAN (Pastikan minimal 10 pengumuman)
+        // 8. PENGUMUMAN (10 Data Pengumuman Lembaga)
         // ========================================================
         $pengumumansData = [
             [
@@ -748,10 +911,45 @@ class DummyDataSeeder extends Seeder
                 'created_by' => $adminId,
             ],
             [
-                'judul' => 'Himbauan Kesiapsiagaan Cuaca Ekstrem dan Banjir Musim Penghujan',
-                'isi' => 'Menyikapi peringatan BMKG Cilacap terkait potensi cuaca ekstrem di pesisir selatan, divisi kebencanaan dan seluruh amil diminta mengecek kesiapan logistik darurat dan perahu karet operasional.',
+                'judul' => 'Undangan Rapat Pleno Koordinasi Akhir Bulan Oktober 2026',
+                'isi' => 'Seluruh jajaran amil diundang menghadiri Rapat Pleno Evaluasi Kinerja Bulanan pada Kamis, 31 Oktober 2026 pukul 09.00 WIB di Ruang Rapat Yayasan GSC. Kehadiran tepat waktu sangat diharapkan.',
                 'target' => 'semua',
-                'published_at' => Carbon::create(2026, 10, 29, 8, 30),
+                'published_at' => Carbon::create(2026, 10, 29, 16, 0),
+                'created_by' => $adminId,
+            ],
+            [
+                'judul' => 'Panduan Penggunaan Radius Presensi Absensi Kantor 100 Meter',
+                'isi' => 'Bagi amil yang melakukan clock-in absensi masuk, pastikan GPS ponsel dalam mode akurasi tinggi dan berada dalam radius geofencing 100 meter dari titik koordinat kantor yayasan.',
+                'target' => 'semua',
+                'published_at' => Carbon::create(2026, 10, 20, 8, 30),
+                'created_by' => $adminId,
+            ],
+            [
+                'judul' => 'Pengumuman Jadwal Libur Nasional & Cuti Bersama',
+                'isi' => 'Menindaklanjuti SKB 3 Menteri, pelayanan kantor yayasan akan libur sesuai kalender nasional. Namun tim ambulans darurat tetap siaga bergilir secara on-call 24 jam.',
+                'target' => 'semua',
+                'published_at' => Carbon::create(2026, 10, 18, 10, 0),
+                'created_by' => $adminId,
+            ],
+            [
+                'judul' => 'Sosialisasi Standar Kebersihan dan Sterilisasi Armada Ambulans',
+                'isi' => 'Seluruh armada ambulans yang telah selesai melayani pengantaran pasien wajib disemprot disinfektan dan diganti sprei brankar demi keselamatan pasien berikutnya.',
+                'target' => 'semua',
+                'published_at' => Carbon::create(2026, 10, 15, 13, 0),
+                'created_by' => $adminId,
+            ],
+            [
+                'judul' => 'Penyaluran Zakat Maal Fitur Baru Penyaluran Digital',
+                'isi' => 'Modul penyaluran kini telah dilengkapi foto penyerahan bantuan dan tanda tangan digital mustahik untuk menjamin akuntabilitas penyaluran dana zakat umat.',
+                'target' => 'semua',
+                'published_at' => Carbon::create(2026, 10, 12, 11, 15),
+                'created_by' => $adminId,
+            ],
+            [
+                'judul' => 'Kajian Rutin Pekanan Pegawai & Amil Yayasan GSC',
+                'isi' => 'Mengundang segenap keluarga besar amil dan staf untuk mengikuti kajian tholabul ilmi setiap hari Jumat pagi pukul 07.30 - 08.30 WIB di Musholla Kantor.',
+                'target' => 'semua',
+                'published_at' => Carbon::create(2026, 10, 10, 15, 0),
                 'created_by' => $adminId,
             ],
         ];
@@ -761,15 +959,15 @@ class DummyDataSeeder extends Seeder
         }
 
         // ========================================================
-        // 9. AKTIVITAS HARIAN (Pastikan minimal 10 aktivitas)
+        // 9. AKTIVITAS HARIAN (10 Data Aktivitas Logbook Amil)
         // ========================================================
         $aktivitasData = [
             [
                 'amil_id' => $amil1->id,
                 'tanggal' => Carbon::create(2026, 10, 25),
-                'judul' => 'Kunjungan dan Edukasi Zakat Maal Perusahaan Mitra',
-                'deskripsi' => 'Melakukan presentasi sosialisasi perhitungan nisab zakat maal dan program kemitraan CSR di CV. Samudra Jaya Mandiri.',
-                'lokasi' => 'Kawasan Industri Cilacap',
+                'judul' => 'Rekonsiliasi Bank & Verifikasi Laporan Donasi Masuk',
+                'deskripsi' => 'Melakukan pencocokan mutasi rekening koran BSI dan Mandiri dengan transaksi donasi yang diinput sistem.',
+                'lokasi' => 'Kantor Yayasan GSC Cilacap',
                 'status' => 'disetujui',
             ],
             [
@@ -791,17 +989,57 @@ class DummyDataSeeder extends Seeder
             [
                 'amil_id' => $amil4->id,
                 'tanggal' => Carbon::create(2026, 10, 28),
-                'judul' => 'Penyaluran Paket Nutrisi Balita Stunting',
-                'deskripsi' => 'Menyerahkan paket susu, telur, dan madu kepada 15 keluarga balita stunting di posyandu binaan.',
-                'lokasi' => 'Posyandu Melati Gumilir',
+                'judul' => 'Kunjungan dan Edukasi Zakat Maal Perusahaan Mitra',
+                'deskripsi' => 'Melakukan presentasi sosialisasi perhitungan nisab zakat maal dan program kemitraan CSR di CV. Samudra Jaya Mandiri.',
+                'lokasi' => 'Kawasan Industri Pelabuhan Cilacap',
                 'status' => 'disetujui',
             ],
             [
                 'amil_id' => $amil5->id,
                 'tanggal' => Carbon::create(2026, 10, 29),
-                'judul' => 'Pencatatan & Rekonsiliasi Donasi Kotak Infak Toko Mitra',
-                'deskripsi' => 'Melakukan pembukaan dan penghitungan hasil kotak infak di 8 titik mini market mitra wilayah Cilacap Tengah.',
-                'lokasi' => 'Cilacap Tengah',
+                'judul' => 'Pemeriksaan Kesehatan Berkala Lansia Dhuafa',
+                'deskripsi' => 'Melakukan pengecekan tensi dan kadar gula darah bagi 20 lansia mustahik di posko binaan.',
+                'lokasi' => 'Posyandu Gumilir, Cilacap Utara',
+                'status' => 'disetujui',
+            ],
+            [
+                'amil_id' => $amil6->id,
+                'tanggal' => Carbon::create(2026, 10, 26),
+                'judul' => 'Followup Donatur Komunitas Gowes & Penyerahan Kwitansi',
+                'deskripsi' => 'Menyerahkan bukti kwitansi resmi donasi ambulans siaga dan laporan progres pemanfaatan armada.',
+                'lokasi' => 'GOR Wijayakusuma Cilacap',
+                'status' => 'disetujui',
+            ],
+            [
+                'amil_id' => $amil7->id,
+                'tanggal' => Carbon::create(2026, 10, 27),
+                'judul' => 'Pengecekan Teknis & Servis Rutin Armada Ambulans 02',
+                'deskripsi' => 'Penggantian oli mesin, servis rem, dan pengecekan tabung oksigen ambulans di bengkel resmi.',
+                'lokasi' => 'Bengkel Mobil Cilacap Tengah',
+                'status' => 'disetujui',
+            ],
+            [
+                'amil_id' => $amil8->id,
+                'tanggal' => Carbon::create(2026, 10, 28),
+                'judul' => 'Penyaluran Paket Sembako & Santunan Tunai Lansia',
+                'deskripsi' => 'Menyerahkan langsung paket beras, minyak, susu, dan uang tunai ke rumah Mbah Sutarmi.',
+                'lokasi' => 'Desa Kesugihan Kidul',
+                'status' => 'disetujui',
+            ],
+            [
+                'amil_id' => $amil9->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'judul' => 'Audiensi Sinergi Program Kemiskinan dengan BAZNAS Cilacap',
+                'deskripsi' => 'Membahas pemetaan wilayah kantong kemiskinan dan harmonisasi program beasiswa dhuafa tahun 2027.',
+                'lokasi' => 'Kantor BAZNAS Cilacap',
+                'status' => 'disetujui',
+            ],
+            [
+                'amil_id' => $amilAlea->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'judul' => 'Maintenance Sistem Aplikasi Manajemen Amil & Monitoring DB',
+                'deskripsi' => 'Melakukan testing fitur kwitansi, validasi perhitungan donasi, dan pengujian sinkronisasi data presensi.',
+                'lokasi' => 'Ruang IT Kantor GSC',
                 'status' => 'disetujui',
             ],
         ];
@@ -818,7 +1056,7 @@ class DummyDataSeeder extends Seeder
         }
 
         // ========================================================
-        // 10. IZIN CUTI (Pastikan minimal 10 data izin & cuti)
+        // 10. IZIN CUTI (10 Data Izin & Cuti)
         // ========================================================
         $izinData = [
             [
@@ -829,7 +1067,7 @@ class DummyDataSeeder extends Seeder
                 'alasan' => 'Cuti tahunan untuk keperluan mendampingi acara wisuda adik kandung di Yogyakarta.',
                 'status' => 'disetujui',
                 'approved_by' => $adminId,
-                'catatan_admin' => 'Disetujui. Pastikan tugas lapangan didelegasikan ke rekan tim selama cuti.',
+                'catatan_admin' => 'Disetujui. Pastikan laporan keuangan periode berjalan telah didelegasikan.',
             ],
             [
                 'amil_id' => $amil2->id,
@@ -846,7 +1084,7 @@ class DummyDataSeeder extends Seeder
                 'jenis' => 'sakit',
                 'tgl_mulai' => Carbon::create(2026, 10, 19),
                 'tgl_selesai' => Carbon::create(2026, 10, 20),
-                'alasan' => 'Sakit demam dan radang tenggorokan dengan anjuran istirahat dokter.',
+                'alasan' => 'Sakit demam dan radang tenggorokan dengan surat anjuran istirahat dokter klinik.',
                 'status' => 'disetujui',
                 'approved_by' => $adminId,
                 'catatan_admin' => 'Semoga lekas sembuh dan pulih kembali.',
@@ -856,10 +1094,70 @@ class DummyDataSeeder extends Seeder
                 'jenis' => 'cuti',
                 'tgl_mulai' => Carbon::create(2026, 12, 21),
                 'tgl_selesai' => Carbon::create(2026, 12, 23),
-                'alasan' => 'Cuti tahunan keperluan keluarga akhir tahun.',
+                'alasan' => 'Cuti tahunan keperluan acara silaturahmi keluarga besar akhir tahun.',
                 'status' => 'diajukan',
                 'approved_by' => null,
                 'catatan_admin' => null,
+            ],
+            [
+                'amil_id' => $amil5->id,
+                'jenis' => 'izin',
+                'tgl_mulai' => Carbon::create(2026, 10, 12),
+                'tgl_selesai' => Carbon::create(2026, 10, 12),
+                'alasan' => 'Izin mengurus sertifikasi kompetensi tenaga kesehatan di Semarang.',
+                'status' => 'disetujui',
+                'approved_by' => $adminId,
+                'catatan_admin' => 'Disetujui. Sukses untuk sertifikasinya.',
+            ],
+            [
+                'amil_id' => $amil6->id,
+                'jenis' => 'cuti',
+                'tgl_mulai' => Carbon::create(2026, 11, 23),
+                'tgl_selesai' => Carbon::create(2026, 11, 24),
+                'alasan' => 'Cuti tahunan untuk keperluan mengurus renovasi rumah orang tua.',
+                'status' => 'diajukan',
+                'approved_by' => null,
+                'catatan_admin' => null,
+            ],
+            [
+                'amil_id' => $amil7->id,
+                'jenis' => 'sakit',
+                'tgl_mulai' => Carbon::create(2026, 10, 8),
+                'tgl_selesai' => Carbon::create(2026, 10, 9),
+                'alasan' => 'Sakit gejala flu berat dan pusing pasca dinas malam pengantaran ambulans.',
+                'status' => 'disetujui',
+                'approved_by' => $adminId,
+                'catatan_admin' => 'Istirahat yang cukup agar segera fit kembali.',
+            ],
+            [
+                'amil_id' => $amil8->id,
+                'jenis' => 'izin',
+                'tgl_mulai' => Carbon::create(2026, 10, 16),
+                'tgl_selesai' => Carbon::create(2026, 10, 16),
+                'alasan' => 'Izin keperluan wisuda kerabat dekat di Purwokerto.',
+                'status' => 'disetujui',
+                'approved_by' => $adminId,
+                'catatan_admin' => 'Disetujui.',
+            ],
+            [
+                'amil_id' => $amil10->id,
+                'jenis' => 'cuti',
+                'tgl_mulai' => Carbon::create(2026, 11, 9),
+                'tgl_selesai' => Carbon::create(2026, 11, 10),
+                'alasan' => 'Cuti tahunan keperluan khitanan anak kandung.',
+                'status' => 'disetujui',
+                'approved_by' => $adminId,
+                'catatan_admin' => 'Disetujui. Semoga acaranya lancar dan barokah.',
+            ],
+            [
+                'amil_id' => $amilAlea->id,
+                'jenis' => 'izin',
+                'tgl_mulai' => Carbon::create(2026, 10, 23),
+                'tgl_selesai' => Carbon::create(2026, 10, 23),
+                'alasan' => 'Izin bimbingan laporan magang dengan dosen pembimbing kampus.',
+                'status' => 'disetujui',
+                'approved_by' => $adminId,
+                'catatan_admin' => 'Disetujui. Semangat bimbingan laporannya.',
             ],
         ];
 
@@ -875,7 +1173,167 @@ class DummyDataSeeder extends Seeder
         }
 
         // ========================================================
-        // 11. NOTIFIKASI (Pastikan minimal 10 notifikasi)
+        // 11. ABSENSI (12 Data Absensi Amil)
+        // ========================================================
+        $absensiData = [
+            [
+                'amil_id' => $amil1->id,
+                'tanggal' => Carbon::create(2026, 10, 28),
+                'jam_masuk' => '07:55:00',
+                'jam_pulang' => '16:30:00',
+                'lat_masuk' => -7.71804200,
+                'lng_masuk' => 109.01543200,
+                'lat_pulang' => -7.71804500,
+                'lng_pulang' => 109.01543800,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir tepat waktu kantor yayasan.',
+            ],
+            [
+                'amil_id' => $amil2->id,
+                'tanggal' => Carbon::create(2026, 10, 28),
+                'jam_masuk' => '07:50:00',
+                'jam_pulang' => '16:35:00',
+                'lat_masuk' => -7.71804100,
+                'lng_masuk' => 109.01543000,
+                'lat_pulang' => -7.71804300,
+                'lng_pulang' => 109.01543500,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir tepat waktu.',
+            ],
+            [
+                'amil_id' => $amil3->id,
+                'tanggal' => Carbon::create(2026, 10, 28),
+                'jam_masuk' => '07:45:00',
+                'jam_pulang' => '16:40:00',
+                'lat_masuk' => -7.71804400,
+                'lng_masuk' => 109.01543300,
+                'lat_pulang' => -7.71804600,
+                'lng_pulang' => 109.01544000,
+                'status' => 'hadir',
+                'keterangan' => 'Siaga ambulans shift pagi.',
+            ],
+            [
+                'amil_id' => $amil4->id,
+                'tanggal' => Carbon::create(2026, 10, 28),
+                'jam_masuk' => '08:05:00',
+                'jam_pulang' => '16:30:00',
+                'lat_masuk' => -7.71804000,
+                'lng_masuk' => 109.01543100,
+                'lat_pulang' => -7.71804200,
+                'lng_pulang' => 109.01543600,
+                'status' => 'terlambat',
+                'keterangan' => 'Terlambat 5 menit karena kendala cuaca hujan deras.',
+            ],
+            [
+                'amil_id' => $amil5->id,
+                'tanggal' => Carbon::create(2026, 10, 28),
+                'jam_masuk' => '07:58:00',
+                'jam_pulang' => '16:32:00',
+                'lat_masuk' => -7.71804300,
+                'lng_masuk' => 109.01543400,
+                'lat_pulang' => -7.71804500,
+                'lng_pulang' => 109.01543700,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir tepat waktu.',
+            ],
+            [
+                'amil_id' => $amil6->id,
+                'tanggal' => Carbon::create(2026, 10, 28),
+                'jam_masuk' => '07:52:00',
+                'jam_pulang' => '16:30:00',
+                'lat_masuk' => -7.71804200,
+                'lng_masuk' => 109.01543200,
+                'lat_pulang' => -7.71804400,
+                'lng_pulang' => 109.01543900,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir tepat waktu.',
+            ],
+            [
+                'amil_id' => $amil1->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'jam_masuk' => '07:48:00',
+                'jam_pulang' => '16:35:00',
+                'lat_masuk' => -7.71804200,
+                'lng_masuk' => 109.01543200,
+                'lat_pulang' => -7.71804500,
+                'lng_pulang' => 109.01543800,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir tepat waktu.',
+            ],
+            [
+                'amil_id' => $amil2->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'jam_masuk' => '07:50:00',
+                'jam_pulang' => '16:30:00',
+                'lat_masuk' => -7.71804100,
+                'lng_masuk' => 109.01543000,
+                'lat_pulang' => -7.71804300,
+                'lng_pulang' => 109.01543500,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir tepat waktu.',
+            ],
+            [
+                'amil_id' => $amil7->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'jam_masuk' => '07:40:00',
+                'jam_pulang' => '16:45:00',
+                'lat_masuk' => -7.71804400,
+                'lng_masuk' => 109.01543300,
+                'lat_pulang' => -7.71804600,
+                'lng_pulang' => 109.01544000,
+                'status' => 'hadir',
+                'keterangan' => 'Piket darurat ambulans siaga.',
+            ],
+            [
+                'amil_id' => $amil8->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'jam_masuk' => '07:55:00',
+                'jam_pulang' => '16:30:00',
+                'lat_masuk' => -7.71804200,
+                'lng_masuk' => 109.01543200,
+                'lat_pulang' => -7.71804400,
+                'lng_pulang' => 109.01543900,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir dinas penyaluran lapangan.',
+            ],
+            [
+                'amil_id' => $amil10->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'jam_masuk' => '07:57:00',
+                'jam_pulang' => '16:30:00',
+                'lat_masuk' => -7.71804300,
+                'lng_masuk' => 109.01543400,
+                'lat_pulang' => -7.71804500,
+                'lng_pulang' => 109.01543700,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir tepat waktu.',
+            ],
+            [
+                'amil_id' => $amilAlea->id,
+                'tanggal' => Carbon::create(2026, 10, 29),
+                'jam_masuk' => '07:51:00',
+                'jam_pulang' => '16:33:00',
+                'lat_masuk' => -7.71804200,
+                'lng_masuk' => 109.01543200,
+                'lat_pulang' => -7.71804500,
+                'lng_pulang' => 109.01543800,
+                'status' => 'hadir',
+                'keterangan' => 'Hadir shift IT & digitalisasi.',
+            ],
+        ];
+
+        foreach ($absensiData as $ab) {
+            Absensi::firstOrCreate(
+                [
+                    'amil_id' => $ab['amil_id'],
+                    'tanggal' => $ab['tanggal'],
+                ],
+                $ab
+            );
+        }
+
+        // ========================================================
+        // 12. NOTIFIKASI (10 Data Notifikasi Sistem)
         // ========================================================
         $notifikasiData = [
             [
@@ -899,7 +1357,7 @@ class DummyDataSeeder extends Seeder
             [
                 'user_id' => $adminId,
                 'judul' => 'Pengajuan Cuti Tahunan Baru',
-                'pesan' => 'Ahmad Fauzi mengajukan cuti tahunan tanggal 16-18 November 2026 menunggu persetujuan.',
+                'pesan' => 'Kholifatun Mualfiyah mengajukan cuti tahunan tanggal 16-18 November 2026 menunggu persetujuan.',
                 'tipe' => 'izin_cuti',
                 'url' => '/admin/izin-cutis',
                 'is_read' => false,
@@ -917,9 +1375,54 @@ class DummyDataSeeder extends Seeder
             [
                 'user_id' => $adminId,
                 'judul' => 'Laporan Aktivitas Harian Masuk',
-                'pesan' => 'Muhammad Ridwan telah menginput laporan aktivitas survei lapangan mustahik hari ini.',
+                'pesan' => 'Wiji Susanti telah menginput laporan aktivitas survei lapangan mustahik hari ini.',
                 'tipe' => 'aktivitas',
                 'url' => '/admin/aktivitas-harians',
+                'is_read' => false,
+                'read_at' => null,
+            ],
+            [
+                'user_id' => $adminId,
+                'judul' => 'Layanan Ambulans Siaga Darurat Dilaporkan',
+                'pesan' => 'Armada ambulans siaga 01 telah kembali dari RSUD Margono Purwokerto dengan kondisi aman.',
+                'tipe' => 'aktivitas',
+                'url' => '/admin/aktivitas-harians',
+                'is_read' => true,
+                'read_at' => Carbon::create(2026, 10, 27, 14, 0),
+            ],
+            [
+                'user_id' => $adminId,
+                'judul' => 'Donasi Barang Masuk: 50 Sak Semen Bedah Rumah',
+                'pesan' => 'Toko Bangunan Berkah Logam telah menyerahkan bantuan material 50 sak semen.',
+                'tipe' => 'donasi',
+                'url' => '/admin/donasi-barangs',
+                'is_read' => true,
+                'read_at' => Carbon::create(2026, 10, 28, 10, 0),
+            ],
+            [
+                'user_id' => $adminId,
+                'judul' => 'Mustahik Baru Asnaf Mualaf Terdaftar',
+                'pesan' => 'Data Bapak Nurhasan telah diverifikasi tim lapangan sebagai penerima manfaat asnaf mualaf.',
+                'tipe' => 'mustahik',
+                'url' => '/admin/mustahiks',
+                'is_read' => false,
+                'read_at' => null,
+            ],
+            [
+                'user_id' => $adminId,
+                'judul' => 'Pengajuan Izin Setengah Hari Masuk',
+                'pesan' => 'Fahri Azzuhair mengajukan izin urusan administrasi tanggal 5 November 2026.',
+                'tipe' => 'izin_cuti',
+                'url' => '/admin/izin-cutis',
+                'is_read' => false,
+                'read_at' => null,
+            ],
+            [
+                'user_id' => $adminId,
+                'judul' => 'Rekapitulasi Presensi Amil Bulan Oktober Siap Diunduh',
+                'pesan' => 'Rekap absensi bulanan seluruh pegawai yayasan telah terbit dan dapat diekspor ke Excel.',
+                'tipe' => 'absensi',
+                'url' => '/admin/absensis',
                 'is_read' => false,
                 'read_at' => null,
             ],
