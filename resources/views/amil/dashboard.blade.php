@@ -70,8 +70,16 @@
                     <div class="flex items-center gap-1.5 flex-wrap">
                         <h2 class="text-xs sm:text-sm font-bold text-slate-800">Presensi ({{ now()->translatedFormat('d M Y') }})</h2>
                         @if($absensiHariIni)
-                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
+                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase {{ $absensiHariIni->status === 'alpa' ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800' }}">
                                 {{ $absensiHariIni->status }}
+                            </span>
+                        @elseif(now()->isSunday())
+                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase bg-blue-100 text-blue-800">
+                                Libur Minggu
+                            </span>
+                        @elseif(now()->isSaturday() && $amil->isMagang())
+                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase bg-blue-100 text-blue-800">
+                                Libur Sabtu (Magang)
                             </span>
                         @else
                             <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
@@ -82,6 +90,10 @@
                     <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-snug">
                         @if($absensiHariIni)
                             Masuk: <strong class="text-slate-700">{{ $absensiHariIni->jam_masuk ? substr($absensiHariIni->jam_masuk, 0, 5) . ' WIB' : '-' }}</strong> | Pulang: <strong class="text-slate-700">{{ $absensiHariIni->jam_pulang ? substr($absensiHariIni->jam_pulang, 0, 5) . ' WIB' : 'Belum Pulang' }}</strong>
+                        @elseif(now()->isSunday())
+                            Hari ini adalah hari Minggu (Libur akhir pekan seluruh amil).
+                        @elseif(now()->isSaturday() && $amil->isMagang())
+                            Hari ini adalah hari Sabtu (Libur akhir pekan mahasiswa magang - skema 5 hari kerja).
                         @else
                             Anda belum melakukan absen masuk hari ini.
                         @endif

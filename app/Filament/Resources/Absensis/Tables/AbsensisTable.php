@@ -42,6 +42,16 @@ class AbsensisTable
                         $absen = $record->absensis->firstWhere('tanggal', $today);
 
                         if (! $absen) {
+                            if (Carbon::today()->isSunday()) {
+                                return 'Libur (Minggu)';
+                            }
+                            if (Carbon::today()->isSaturday() && $record->isMagang()) {
+                                return 'Libur (Sabtu Magang)';
+                            }
+                            if (! $record->needsAttendance()) {
+                                return 'Bebas Absen (Relawan)';
+                            }
+
                             return 'Belum Presensi';
                         }
 
@@ -92,6 +102,10 @@ class AbsensisTable
                         $absen = $record->absensis->firstWhere('tanggal', $today);
 
                         if (! $absen) {
+                            if (Carbon::today()->isSunday() || (Carbon::today()->isSaturday() && $record->isMagang())) {
+                                return 'info';
+                            }
+
                             return 'gray';
                         }
 
@@ -136,9 +150,19 @@ class AbsensisTable
                         $start = $now->copy()->startOfMonth();
                         $end = $now->copy();
                         $workingDaysPassed = 0;
+                        $isMagang = $record->isMagang();
+
                         while ($start->lte($end)) {
-                            if (! $start->isWeekend()) {
-                                $workingDaysPassed++;
+                            if ($isMagang) {
+                                // Magang: 5 hari kerja (Senin - Jumat, Sabtu & Minggu libur)
+                                if (! $start->isWeekend()) {
+                                    $workingDaysPassed++;
+                                }
+                            } else {
+                                // Staff, Driver, Manajemen: 6 hari kerja (Senin - Sabtu, hanya Minggu libur)
+                                if (! $start->isSunday()) {
+                                    $workingDaysPassed++;
+                                }
                             }
                             $start->addDay();
                         }
@@ -152,11 +176,13 @@ class AbsensisTable
                             default => '#ef4444',
                         };
 
+                        $schemeLabel = $isMagang ? '5 Hari/Mg' : '6 Hari/Mg';
+
                         return '
-                        <div style="min-width: 130px; max-width: 160px; padding: 2px 0;">
+                        <div style="min-width: 140px; max-width: 170px; padding: 2px 0;">
                             <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; margin-bottom: 4px; line-height: 1.2;">
                                 <span style="color: '.$barColor.'; font-weight: 700;">'.$persen.'%</span>
-                                <span style="color: #94a3b8; font-size: 10px; font-weight: 600;">'.$hadir.'/'.$target.' Hari</span>
+                                <span style="color: #94a3b8; font-size: 10px; font-weight: 600;">'.$hadir.'/'.$target.' Hari <span style="font-size: 9px; opacity: 0.85;">('.$schemeLabel.')</span></span>
                             </div>
                             <div style="width: 100%; height: 6px; background-color: rgba(148, 163, 184, 0.25); border-radius: 9999px; overflow: hidden;">
                                 <div style="width: '.$persen.'%; height: 100%; background-color: '.$barColor.'; border-radius: 9999px; transition: width 0.3s ease-in-out;"></div>

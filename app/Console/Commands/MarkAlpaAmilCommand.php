@@ -44,6 +44,18 @@ class MarkAlpaAmilCommand extends Command
         $alpaCount = 0;
 
         foreach ($activeAmils as $amil) {
+            // Relawan bebas presensi rutin
+            if (! $amil->needsAttendance()) {
+                continue;
+            }
+
+            // Aturan Hari Kerja: Anak Magang 5 hari kerja (Senin - Jumat). Hari Sabtu libur untuk Magang.
+            if ($targetDate->isSaturday() && $amil->isMagang() && ! $this->option('include-weekend')) {
+                $this->line("[i] Amil: {$amil->nama} ({$amil->nip}) dilewati (Libur Sabtu Mahasiswa Magang).");
+
+                continue;
+            }
+
             // 1. Cek apakah sudah ada catatan absensi hari ini (hadir/terlambat/alpa/izin/cuti)
             $existingAbsensi = Absensi::where('amil_id', $amil->id)
                 ->whereDate('tanggal', $dateString)

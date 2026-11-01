@@ -108,7 +108,14 @@ class DonaturForm
                                     ->label('Kota / Kabupaten')
                                     ->placeholder('Bandung'),
                                 TextInput::make('kecamatan')
-                                    ->label('Kecamatan'),
+                                    ->label('Kecamatan')
+                                    ->placeholder('Pilih atau ketik kecamatan...')
+                                    ->datalist([
+                                        'Adipala', 'Bantarsari', 'Binangun', 'Cilacap Selatan', 'Cilacap Tengah', 'Cilacap Utara',
+                                        'Cimanggu', 'Cipari', 'Dayeuhluhur', 'Gandrungmangu', 'Jeruklegi', 'Kampung Laut',
+                                        'Karangpucung', 'Kawunganten', 'Kedungreja', 'Kesugihan', 'Kroya', 'Majenang',
+                                        'Maos', 'Nusawungu', 'Patimuan', 'Sampang', 'Sidareja', 'Wanareja', 'Luar Cilacap',
+                                    ]),
                             ]),
                         Grid::make(2)
                             ->components([

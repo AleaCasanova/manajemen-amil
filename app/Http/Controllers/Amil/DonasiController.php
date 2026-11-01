@@ -99,6 +99,7 @@ class DonasiController extends Controller
                 'nama' => $d->nama,
                 'no_hp' => $d->no_hp,
                 'kode_donatur' => $d->kode_donatur,
+                'kecamatan' => $d->kecamatan,
                 'kota' => $d->kota,
                 'alamat' => $d->alamat,
                 'is_binaan_saya' => $amil && ($d->amil_pic_id == $amil->id || $d->created_by == Auth::id()),
@@ -140,6 +141,7 @@ class DonasiController extends Controller
             'no_hp' => ['required_if:donatur_mode,new', 'nullable', 'string', 'max:25'],
             'email' => ['nullable', 'email', 'max:255'],
             'alamat' => ['nullable', 'string'],
+            'kecamatan' => ['nullable', 'string', 'max:100'],
             'kota' => ['nullable', 'string', 'max:100'],
             'provinsi' => ['nullable', 'string', 'max:100'],
             'kode_pos' => ['nullable', 'string', 'max:10'],
@@ -188,8 +190,9 @@ class DonasiController extends Controller
                         'no_hp' => $validated['no_hp'],
                         'email' => $validated['email'] ?? null,
                         'alamat' => $validated['alamat'] ?? null,
-                        'kota' => $validated['kota'] ?? null,
-                        'provinsi' => $validated['provinsi'] ?? null,
+                        'kecamatan' => $validated['kecamatan'] ?? null,
+                        'kota' => $validated['kota'] ?? (! empty($validated['kecamatan']) && $validated['kecamatan'] !== 'Luar Cilacap' ? 'Cilacap' : null),
+                        'provinsi' => $validated['provinsi'] ?? (! empty($validated['kecamatan']) && $validated['kecamatan'] !== 'Luar Cilacap' ? 'Jawa Tengah' : null),
                         'kode_pos' => $validated['kode_pos'] ?? null,
                         'nik' => $validated['nik'] ?? null,
                         'npwp' => $validated['npwp'] ?? null,
@@ -294,6 +297,7 @@ class DonasiController extends Controller
                     'no_hp' => $donatur->no_hp,
                     'email' => $donatur->email,
                     'alamat' => $donatur->alamat,
+                    'kecamatan' => $donatur->kecamatan,
                     'kota' => $donatur->kota,
                     'provinsi' => $donatur->provinsi,
                 ],
@@ -328,7 +332,7 @@ class DonasiController extends Controller
 
         $donaturs = $query->orderBy('nama', 'asc')
             ->limit(30)
-            ->get(['id', 'nama', 'no_hp', 'kode_donatur', 'kota', 'alamat', 'amil_pic_id', 'created_by']);
+            ->get(['id', 'nama', 'no_hp', 'kode_donatur', 'kecamatan', 'kota', 'alamat', 'amil_pic_id', 'created_by']);
 
         return response()->json([
             'donaturs' => $donaturs->map(function ($d) use ($amil) {
@@ -337,6 +341,7 @@ class DonasiController extends Controller
                     'nama' => $d->nama,
                     'no_hp' => $d->no_hp,
                     'kode_donatur' => $d->kode_donatur,
+                    'kecamatan' => $d->kecamatan,
                     'kota' => $d->kota,
                     'alamat' => $d->alamat,
                     'is_binaan_saya' => $amil && ($d->amil_pic_id == $amil->id || $d->created_by == Auth::id()),

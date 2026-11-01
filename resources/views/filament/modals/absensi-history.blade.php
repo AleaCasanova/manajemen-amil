@@ -19,6 +19,7 @@
     $terlambatCount = $thisMonthRecords->where('status', 'terlambat')->count();
     $izinCount = $thisMonthRecords->where('status', 'izin')->count();
     $cutiCount = $thisMonthRecords->where('status', 'cuti')->count();
+    $alpaCount = $thisMonthRecords->where('status', 'alpa')->count();
     $totalHadir = $hadirCount + $terlambatCount;
 @endphp
 
@@ -113,19 +114,19 @@
         }
 
         /* Stats Grid */
-        .gsc-stats-grid-4 {
+        .gsc-stats-grid-5 {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 10px;
             margin-top: 14px;
             padding-top: 14px;
             border-top: 1px solid #e2e8f0;
         }
-        .dark .gsc-stats-grid-4 {
+        .dark .gsc-stats-grid-5 {
             border-top-color: #1e293b;
         }
-        @media (max-width: 640px) {
-            .gsc-stats-grid-4 {
+        @media (max-width: 768px) {
+            .gsc-stats-grid-5 {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -384,15 +385,18 @@
                 </div>
             </div>
 
-            <div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
                 <span class="gsc-badge gsc-badge-success">
                     Status: {{ ucfirst($amil->status ?? 'Aktif') }}
+                </span>
+                <span class="gsc-badge {{ $amil->isMagang() ? 'gsc-badge-info' : 'gsc-badge-purple' }}" style="font-size: 10px;">
+                    Skema: {{ $amil->isMagang() ? '5 Hari Kerja (Senin - Jumat)' : '6 Hari Kerja (Senin - Sabtu)' }}
                 </span>
             </div>
         </div>
 
         {{-- Mini Stat Pills --}}
-        <div class="gsc-stats-grid-4">
+        <div class="gsc-stats-grid-5">
             <div class="gsc-stat-card">
                 <div class="gsc-stat-lbl">Hadir Bulan Ini</div>
                 <div class="gsc-stat-num" style="color: #10b981;">{{ $totalHadir }} <span style="font-size: 11px; font-weight: 500; color: #64748b;">Hari</span></div>
@@ -408,6 +412,10 @@
             <div class="gsc-stat-card">
                 <div class="gsc-stat-lbl">Izin & Cuti</div>
                 <div class="gsc-stat-num" style="color: #3b82f6;">{{ $izinCount + $cutiCount }} <span style="font-size: 11px; font-weight: 500; color: #64748b;">Hari</span></div>
+            </div>
+            <div class="gsc-stat-card">
+                <div class="gsc-stat-lbl">Alpa (Tanpa Ket.)</div>
+                <div class="gsc-stat-num" style="{{ $alpaCount > 0 ? 'color: #ef4444; font-weight: 800;' : 'color: #64748b;' }}">{{ $alpaCount }} <span style="font-size: 11px; font-weight: 500; color: #64748b;">Hari</span></div>
             </div>
         </div>
     </div>

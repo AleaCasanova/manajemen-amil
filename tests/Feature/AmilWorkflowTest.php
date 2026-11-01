@@ -138,6 +138,7 @@ class AmilWorkflowTest extends TestCase
             'niat' => 'Zakat Maal Keluarga',
         ]);
 
+        $response->assertSessionHasNoErrors();
         $donasi = Donasi::where('amil_id', $this->amil->id)
             ->where('jumlah', 1500000)
             ->latest()
@@ -162,6 +163,69 @@ class AmilWorkflowTest extends TestCase
         $verifyPage->assertStatus(200);
         $verifyPage->assertSee($donasi->no_kwitansi);
         $verifyPage->assertSee('Verifikasi Keaslian Kwitansi');
+    }
+
+    /**
+     * Uji Input Donasi dengan Kecamatan di Kabupaten Cilacap (misal Jeruklegi)
+     */
+    public function test_amil_can_input_donasi_with_kecamatan_cilacap(): void
+    {
+        $kategori = DonaturKategori::first();
+        $jenisDana = JenisDana::first();
+
+        $phone = '0812'.rand(10000000, 99999999);
+        $response = $this->actingAs($this->user)->post(route('amil.donasi.store'), [
+            'donatur_mode' => 'new',
+            'nama_donatur' => 'Ibu Fatimah Jeruklegi',
+            'jenis_donatur' => 'individu',
+            'kategori_id' => $kategori->id,
+            'no_hp' => $phone,
+            'kecamatan' => 'Jeruklegi',
+            'kota' => 'Cilacap',
+            'alamat' => 'Desa Tritih Lor RT 02 RW 03',
+            'jenis_dana_id' => $jenisDana->id,
+            'jumlah' => 250000,
+            'metode_bayar' => 'tunai',
+            'tgl_donasi' => date('Y-m-d'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $donatur = Donatur::where('no_hp', $phone)->first();
+        $this->assertNotNull($donatur);
+        $this->assertEquals('Jeruklegi', $donatur->kecamatan);
+        $this->assertEquals('Cilacap', $donatur->kota);
+    }
+
+    /**
+     * Uji Input Donasi Donatur Luar Kabupaten Cilacap (misal Bandung)
+     */
+    public function test_amil_can_input_donasi_with_donatur_luar_cilacap(): void
+    {
+        $kategori = DonaturKategori::first();
+        $jenisDana = JenisDana::first();
+
+        $phone = '0813'.rand(10000000, 99999999);
+        $response = $this->actingAs($this->user)->post(route('amil.donasi.store'), [
+            'donatur_mode' => 'new',
+            'nama_donatur' => 'Bapak Hendra Bandung',
+            'jenis_donatur' => 'individu',
+            'kategori_id' => $kategori->id,
+            'no_hp' => $phone,
+            'kecamatan' => 'Luar Cilacap',
+            'kota' => 'Bandung',
+            'alamat' => 'Jl. Buah Batu No. 45',
+            'jenis_dana_id' => $jenisDana->id,
+            'jumlah' => 500000,
+            'metode_bayar' => 'transfer',
+            'bank' => 'BSI',
+            'tgl_donasi' => date('Y-m-d'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $donatur = Donatur::where('no_hp', $phone)->first();
+        $this->assertNotNull($donatur);
+        $this->assertEquals('Luar Cilacap', $donatur->kecamatan);
+        $this->assertEquals('Bandung', $donatur->kota);
     }
 
     /**

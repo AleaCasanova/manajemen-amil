@@ -34,11 +34,35 @@ class AdminOverviewWidget extends StatsOverviewWidget
         // 4. Total Amil Aktif
         $totalAmilAktif = Amil::where('status', 'aktif')->count();
 
-        // 5. Amil Belum Absen Hari Ini
-        $amilSudahAbsenIds = Absensi::whereDate('tanggal', today())->pluck('amil_id');
-        $amilBelumAbsen = Amil::where('status', 'aktif')
-            ->whereNotIn('id', $amilSudahAbsenIds)
-            ->count();
+        // 5. Amil Belum Absen Hari Ini (6 hari kerja Staf/Driver vs 5 hari kerja Magang)
+        $today = today();
+        $isSunday = $today->isSunday();
+        $isSaturday = $today->isSaturday();
+
+        if ($isSunday) {
+            $amilBelumAbsen = 0;
+            $absenDesc = 'Hari Minggu (Libur Akhir Pekan Seluruh Amil)';
+        } else {
+            $amilSudahAbsenIds = Absensi::whereDate('tanggal', $today)->pluck('amil_id');
+            $activeAmils = Amil::where('status', 'aktif')
+                ->whereNotIn('id', $amilSudahAbsenIds)
+                ->get()
+                ->filter(function ($a) use ($isSaturday) {
+                    if (! $a->needsAttendance()) {
+                        return false;
+                    }
+                    if ($isSaturday && $a->isMagang()) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+            $amilBelumAbsen = $activeAmils->count();
+            $absenDesc = $isSaturday
+                ? 'Staf & Driver wajib presensi (Magang libur Sabtu)'
+                : 'Perlu diingatkan untuk presensi hari ini';
+        }
 
         // 6. Total Donatur Baru Bulan Ini
         $donaturBaruBulanIni = Donatur::whereMonth('created_at', now()->month)
@@ -66,7 +90,7 @@ class AdminOverviewWidget extends StatsOverviewWidget
                 ->color('success'),
 
             Stat::make('Amil Belum Absen', $amilBelumAbsen.' Orang')
-                ->description('Perlu diingatkan untuk presensi hari ini')
+                ->description($absenDesc)
                 ->descriptionIcon('heroicon-m-clock')
                 ->color($amilBelumAbsen > 0 ? 'warning' : 'success'),
 
