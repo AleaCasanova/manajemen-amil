@@ -1,6 +1,7 @@
-const CACHE_NAME = 'amil-gsc-v3';
+const CACHE_NAME = 'amil-gsc-v4';
 const STATIC_ASSETS = [
   '/',
+  '/login',
   '/amil/dashboard',
   '/manifest.json',
   '/logo_gsc.png'
