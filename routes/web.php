@@ -43,6 +43,24 @@ Route::get('/system-clear-cache', function () {
     ]);
 });
 
+// Route aman untuk membersihkan data transaksi percobaan di hosting sebelum Go-Live
+Route::get('/system-reset-trial-data', function () {
+    $key = request()->query('key');
+    if ($key !== 'gsc-reset-2026' && (! auth()->check() || ! auth()->user()->hasRole('Admin'))) {
+        abort(403, 'Akses ditolak. Gunakan key keamanan yang valid.');
+    }
+
+    Artisan::call('app:reset-trial-data', ['--force' => true]);
+    $output = Artisan::output();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Pembersihan data percobaan di hosting berhasil dilaksanakan! Akun user & amil tetap aman.',
+        'details' => explode("\n", trim($output)),
+        'time' => now()->toDateTimeString(),
+    ]);
+});
+
 // ==========================================
 // PORTAL AMIL (Blade + Tailwind)
 // ==========================================
