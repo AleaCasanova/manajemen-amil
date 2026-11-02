@@ -2,7 +2,7 @@
   "name": "Portal Amil GSC",
   "short_name": "Amil GSC",
   "description": "Aplikasi Manajemen Amil & ZISWAF Gerak Sedekah Cilacap",
-  "start_url": "/amil",
+  "start_url": "/amil/dashboard",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
