@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -34,5 +37,17 @@ class AppServiceProvider extends ServiceProvider
                 Vite::useHotFile(storage_path('framework/no_hot'));
             }
         }
+
+        // Rate limiter cerdas untuk login amil:
+        // 1. Batasi 10 percobaan per akun spesifik (mencegah brute force akun tertentu)
+        // 2. Batasi 120 percobaan per IP (agar 20-30 amil dalam satu WiFi/IP kantor bisa login bersamaan)
+        RateLimiter::for('amil-login', function (Request $request) {
+            $login = (string) $request->input('login', $request->input('email', ''));
+
+            return [
+                Limit::perMinute(10)->by(strtolower(trim($login)).'|'.$request->ip()),
+                Limit::perMinute(120)->by($request->ip()),
+            ];
+        });
     }
 }

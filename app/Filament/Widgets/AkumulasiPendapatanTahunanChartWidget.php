@@ -8,7 +8,10 @@ use Filament\Widgets\ChartWidget;
 
 class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Akumulasi pendapatan pertahun';
+    public function getHeading(): ?string
+    {
+        return 'Akumulasi pendapatan pertahun ('.now()->year.')';
+    }
 
     protected static ?int $sort = 6;
 

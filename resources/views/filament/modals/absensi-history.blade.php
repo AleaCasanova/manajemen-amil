@@ -21,6 +21,8 @@
     $cutiCount = $thisMonthRecords->where('status', 'cuti')->count();
     $alpaCount = $thisMonthRecords->where('status', 'alpa')->count();
     $totalHadir = $hadirCount + $terlambatCount;
+
+    $jamKerjaStats = $amil->getTotalJamKerjaBulan($currentMonth, $currentYear);
 @endphp
 
 <div class="gsc-modal-wrap">
@@ -114,19 +116,24 @@
         }
 
         /* Stats Grid */
-        .gsc-stats-grid-5 {
+        .gsc-stats-grid-6 {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 10px;
             margin-top: 14px;
             padding-top: 14px;
             border-top: 1px solid #e2e8f0;
         }
-        .dark .gsc-stats-grid-5 {
+        .dark .gsc-stats-grid-6 {
             border-top-color: #1e293b;
         }
-        @media (max-width: 768px) {
-            .gsc-stats-grid-5 {
+        @media (max-width: 900px) {
+            .gsc-stats-grid-6 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .gsc-stats-grid-6 {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -396,7 +403,12 @@
         </div>
 
         {{-- Mini Stat Pills --}}
-        <div class="gsc-stats-grid-5">
+        <div class="gsc-stats-grid-6">
+            <div class="gsc-stat-card" style="border-left: 3px solid #10b981;">
+                <div class="gsc-stat-lbl" style="color: #059669;">Total Jam Kerja</div>
+                <div class="gsc-stat-num" style="color: #0f172a; font-size: 15px;">{{ $jamKerjaStats['formatted'] }}</div>
+                <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Rata-rata: {{ $jamKerjaStats['rata_rata_jam_harian'] }}j/hari</div>
+            </div>
             <div class="gsc-stat-card">
                 <div class="gsc-stat-lbl">Hadir Bulan Ini</div>
                 <div class="gsc-stat-num" style="color: #10b981;">{{ $totalHadir }} <span style="font-size: 11px; font-weight: 500; color: #64748b;">Hari</span></div>
@@ -446,6 +458,7 @@
                             <th>Tanggal</th>
                             <th>Masuk</th>
                             <th>Pulang</th>
+                            <th style="white-space: nowrap;">Durasi Kerja</th>
                             <th style="text-align: center;">Selfie Masuk</th>
                             <th style="text-align: center;">Selfie Pulang</th>
                             <th>Lokasi GPS</th>
@@ -508,6 +521,25 @@
                                         <div style="margin-top: 2px;">
                                             <span class="gsc-badge gsc-badge-purple" style="font-size: 9px; padding: 1px 6px;">🚗 Luar</span>
                                         </div>
+                                    @endif
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    @if ($item->jam_masuk && $item->jam_pulang)
+                                        <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 6px; background: rgba(16, 185, 129, 0.1); color: #047857; font-weight: 700; font-size: 11px; font-family: monospace;">
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            {{ $item->durasi_kerja_formatted }}
+                                        </div>
+                                    @elseif ($item->jam_masuk && ! $item->jam_pulang)
+                                        @if ($isToday)
+                                            <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 6px; background: rgba(59, 130, 246, 0.1); color: #1d4ed8; font-weight: 700; font-size: 10px;">
+                                                <span style="display: inline-block; width: 6px; height: 6px; border-radius: 9999px; background: #3b82f6;"></span>
+                                                Sedang Bekerja
+                                            </div>
+                                        @else
+                                            <span style="font-size: 10px; color: #94a3b8; font-style: italic;">Belum Clock Out</span>
+                                        @endif
+                                    @else
+                                        <span style="color: #94a3b8; font-size: 11px;">-</span>
                                     @endif
                                 </td>
                                 <td style="text-align: center; white-space: nowrap;">

@@ -214,4 +214,45 @@ class Amil extends Model
 
         return trim(ucfirst($clean)) ?: 'Staff';
     }
+
+    /**
+     * Hitung akumulasi total jam kerja bulanan amil
+     *
+     * @return array{total_menit: int, total_jam: float, jam: int, menit: int, formatted: string, formatted_lengkap: string, hari_kerja: int, rata_rata_jam_harian: float}
+     */
+    public function getTotalJamKerjaBulan(?int $month = null, ?int $year = null): array
+    {
+        $month = $month ?? now()->month;
+        $year = $year ?? now()->year;
+
+        $absensis = $this->absensis()
+            ->whereYear('tanggal', $year)
+            ->whereMonth('tanggal', $month)
+            ->whereIn('status', ['hadir', 'terlambat'])
+            ->whereNotNull('jam_masuk')
+            ->whereNotNull('jam_pulang')
+            ->get();
+
+        $totalMenit = 0;
+        foreach ($absensis as $a) {
+            $totalMenit += $a->durasi_menit;
+        }
+
+        $hariKerja = $absensis->count();
+        $jam = intdiv($totalMenit, 60);
+        $sisaMenit = $totalMenit % 60;
+        $totalJamDecimal = round($totalMenit / 60, 1);
+        $rataRataJamHarian = $hariKerja > 0 ? round(($totalMenit / $hariKerja) / 60, 1) : 0;
+
+        return [
+            'total_menit' => $totalMenit,
+            'total_jam' => $totalJamDecimal,
+            'jam' => $jam,
+            'menit' => $sisaMenit,
+            'formatted' => "{$jam}j {$sisaMenit}m",
+            'formatted_lengkap' => "{$jam} Jam {$sisaMenit} Menit",
+            'hari_kerja' => $hariKerja,
+            'rata_rata_jam_harian' => $rataRataJamHarian,
+        ];
+    }
 }

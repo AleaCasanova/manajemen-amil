@@ -89,7 +89,7 @@
                     </div>
                     <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-snug">
                         @if($absensiHariIni)
-                            Masuk: <strong class="text-slate-700">{{ $absensiHariIni->jam_masuk ? substr($absensiHariIni->jam_masuk, 0, 5) . ' WIB' : '-' }}</strong> | Pulang: <strong class="text-slate-700">{{ $absensiHariIni->jam_pulang ? substr($absensiHariIni->jam_pulang, 0, 5) . ' WIB' : 'Belum Pulang' }}</strong>
+                            Masuk: <strong class="text-slate-700">{{ $absensiHariIni->jam_masuk ? substr($absensiHariIni->jam_masuk, 0, 5) . ' WIB' : '-' }}</strong> | Pulang: <strong class="text-slate-700">{{ $absensiHariIni->jam_pulang ? substr($absensiHariIni->jam_pulang, 0, 5) . ' WIB' : 'Belum Pulang' }}</strong> | Durasi: <strong class="text-emerald-700">{{ $absensiHariIni->durasi_kerja_formatted }}</strong>
                         @elseif(now()->isSunday())
                             Hari ini adalah hari Minggu (Libur akhir pekan seluruh amil).
                         @elseif(now()->isSaturday() && $amil->isMagang())
@@ -195,7 +195,7 @@
                 <div class="min-w-0">
                     <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Presensi Bulan Ini</span>
                     <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">{{ $totalPresensiBulanIni }} Hari</h3>
-                    <p class="text-[11px] text-emerald-600 font-semibold mt-0.5">Status: Aktif Magang</p>
+                    <p class="text-[11px] text-emerald-600 font-semibold mt-0.5">Total: {{ $amil->getTotalJamKerjaBulan()['formatted'] }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

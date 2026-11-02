@@ -9,7 +9,30 @@ use Illuminate\Support\Carbon;
 
 class DonasiChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Tren Penerimaan Donasi Bulanan';
+    public ?string $filter = null;
+
+    protected function getFilters(): ?array
+    {
+        $years = Donasi::selectRaw('YEAR(tgl_donasi) as yr')
+            ->distinct()
+            ->orderByDesc('yr')
+            ->pluck('yr', 'yr')
+            ->toArray();
+
+        $currentYear = (string) now()->year;
+        if (! isset($years[$currentYear])) {
+            $years[$currentYear] = $currentYear;
+        }
+
+        return $years;
+    }
+
+    public function getHeading(): ?string
+    {
+        $selectedYear = $this->filter ?? now()->year;
+
+        return "Tren Penerimaan Donasi Bulanan ({$selectedYear})";
+    }
 
     protected static ?int $sort = 2;
 
@@ -19,14 +42,15 @@ class DonasiChartWidget extends ChartWidget
 
     protected function getData(): array
     {
+        $selectedYear = (int) ($this->filter ?? now()->year);
         $months = [];
         $totals = [];
 
         for ($i = 1; $i <= 12; $i++) {
-            $monthName = Carbon::create(now()->year, $i, 1)->translatedFormat('M');
+            $monthName = Carbon::create($selectedYear, $i, 1)->translatedFormat('M');
             $months[] = $monthName;
 
-            $total = Donasi::whereYear('tgl_donasi', now()->year)
+            $total = Donasi::whereYear('tgl_donasi', $selectedYear)
                 ->whereMonth('tgl_donasi', $i)
                 ->where('status', 'terverifikasi')
                 ->sum('jumlah');
@@ -68,7 +92,6 @@ class DonasiChartWidget extends ChartWidget
                     y: {
                         beginAtZero: true,
                         min: 0,
-                        suggestedMax: 10000000,
                         ticks: {
                             precision: 0,
                             callback: (value) => {

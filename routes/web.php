@@ -26,6 +26,23 @@ Route::get('/kwitansi/{donasi}/download', [KwitansiController::class, 'download'
 Route::get('/kwitansi/{donasi}/stream', [KwitansiController::class, 'stream'])
     ->name('kwitansi.stream');
 
+// Route darurat untuk membersihkan cache langsung dari browser di cPanel/hosting
+Route::get('/system-clear-cache', function () {
+    $key = request()->query('key');
+    if ($key !== 'gsc2026' && (! auth()->check() || ! auth()->user()->hasRole('Admin'))) {
+        abort(403, 'Akses ditolak. Gunakan key keamanan yang valid.');
+    }
+
+    Artisan::call('optimize:clear');
+    Artisan::call('optimize');
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Cache aplikasi di cPanel berhasil dibersihkan dan dioptimasi penuh! Aturan login baru sudah aktif.',
+        'time' => now()->toDateTimeString(),
+    ]);
+});
+
 // ==========================================
 // PORTAL AMIL (Blade + Tailwind)
 // ==========================================
@@ -49,7 +66,7 @@ Route::get('/amil', function () {
     return redirect()->route('amil.dashboard');
 })->middleware('auth');
 Route::post('/amil/login', [AmilAuthController::class, 'login'])
-    ->middleware('throttle:5,1')
+    ->middleware('throttle:amil-login')
     ->name('amil.login.post');
 
 Route::middleware(['auth'])->prefix('amil')->name('amil.')->group(function () {

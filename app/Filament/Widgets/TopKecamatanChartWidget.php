@@ -9,7 +9,25 @@ use Illuminate\Support\Str;
 
 class TopKecamatanChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Top 5 kecamatan tertinggi bulan ini';
+    public ?string $filter = 'month';
+
+    protected function getFilters(): ?array
+    {
+        return [
+            'month' => 'Bulan Ini',
+            'year' => 'Tahun Ini',
+            'all' => 'Semua Waktu',
+        ];
+    }
+
+    public function getHeading(): ?string
+    {
+        return match ($this->filter) {
+            'year' => 'Top 5 kecamatan tertinggi tahun ini',
+            'all' => 'Top 5 kecamatan tertinggi (semua waktu)',
+            default => 'Top 5 kecamatan tertinggi bulan ini',
+        };
+    }
 
     protected static ?int $sort = 4;
 
@@ -24,18 +42,43 @@ class TopKecamatanChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $topKecamatan = Donasi::query()
+        $query = Donasi::query()
             ->join('donaturs', 'donasis.donatur_id', '=', 'donaturs.id')
-            ->whereYear('donasis.tgl_donasi', now()->year)
-            ->whereMonth('donasis.tgl_donasi', now()->month)
             ->where('donasis.status', 'terverifikasi')
             ->whereNotNull('donaturs.kecamatan')
-            ->where('donaturs.kecamatan', '!=', '')
+            ->where('donaturs.kecamatan', '!=', '');
+
+        if ($this->filter === 'year') {
+            $query->whereYear('donasis.tgl_donasi', now()->year);
+        } elseif ($this->filter === 'all') {
+            // Tanpa batasan periode
+        } else {
+            $query->whereYear('donasis.tgl_donasi', now()->year)
+                ->whereMonth('donasis.tgl_donasi', now()->month);
+        }
+
+        $topKecamatan = $query
             ->groupBy('donaturs.kecamatan')
             ->selectRaw('donaturs.kecamatan, SUM(donasis.jumlah) as total')
             ->orderByDesc('total')
             ->limit(5)
             ->get();
+
+        if ($topKecamatan->isEmpty()) {
+            return [
+                'datasets' => [
+                    [
+                        'label' => 'Total Donasi (Rp)',
+                        'data' => [0],
+                        'backgroundColor' => '#cbd5e1',
+                        'borderColor' => '#94a3b8',
+                        'borderWidth' => 1,
+                        'borderRadius' => 4,
+                    ],
+                ],
+                'labels' => ['Belum ada transaksi donasi pada periode ini'],
+            ];
+        }
 
         $labels = [];
         $totals = [];
@@ -84,7 +127,6 @@ class TopKecamatanChartWidget extends ChartWidget
                     y: {
                         beginAtZero: true,
                         min: 0,
-                        suggestedMax: 5000000,
                         ticks: {
                             precision: 0,
                             callback: (value) => {

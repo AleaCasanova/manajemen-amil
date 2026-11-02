@@ -137,6 +137,21 @@ class AbsensisTable
                     ->badge()
                     ->color('gray'),
 
+                TextColumn::make('total_jam_kerja')
+                    ->label('Total Jam Kerja')
+                    ->state(function (Amil $record): string {
+                        $stats = $record->getTotalJamKerjaBulan();
+
+                        return $stats['formatted'];
+                    })
+                    ->description(function (Amil $record): string {
+                        $stats = $record->getTotalJamKerjaBulan();
+
+                        return "Rata-rata: {$stats['rata_rata_jam_harian']}j/hari";
+                    })
+                    ->badge()
+                    ->color('success'),
+
                 TextColumn::make('persentase_kehadiran')
                     ->label('Tingkat Kehadiran')
                     ->state(function (Amil $record): string {

@@ -384,6 +384,47 @@
                         @endif
                     @endif
                 </div>
+
+                @if ($absensiToday?->jam_masuk)
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <div>
+                            <span class="text-slate-400 block text-[10px] font-medium">Durasi Kerja Hari Ini</span>
+                            <span class="font-extrabold text-slate-800 text-sm">
+                                {{ $absensiToday->durasi_kerja_formatted }}
+                            </span>
+                        </div>
+                        @if ($absensiToday->jam_pulang)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                Selesai
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping"></span>
+                                Sedang Bekerja
+                            </span>
+                        @endif
+                    </div>
+                @endif
+            </div>
+
+            <!-- Kartu Akumulasi Jam Kerja Bulan Ini -->
+            @php
+                $jamKerjaAmil = $amil->getTotalJamKerjaBulan();
+            @endphp
+            <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-emerald-200/80 text-xs space-y-2 shadow-2xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Akumulasi Bulan {{ now()->translatedFormat('F Y') }}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">{{ $jamKerjaAmil['hari_kerja'] }} Hari Hadir</span>
+                </div>
+                <div class="flex items-baseline justify-between gap-2">
+                    <div>
+                        <div class="text-xl sm:text-2xl font-black text-emerald-950 tracking-tight">{{ $jamKerjaAmil['formatted'] }}</div>
+                        <p class="text-[11px] text-emerald-700 font-medium mt-0.5">Rata-rata: {{ $jamKerjaAmil['rata_rata_jam_harian'] }} Jam / hari kerja</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -438,10 +479,12 @@
                                 @endif
                             </div>
 
-                            <div class="flex items-center gap-3 text-[11px] text-slate-500 font-mono">
+                            <div class="flex items-center gap-2 text-[11px] text-slate-500 font-mono flex-wrap">
                                 <span>Masuk: <strong class="text-slate-800">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '--:--' }}</strong></span>
                                 <span>•</span>
                                 <span>Pulang: <strong class="text-slate-800">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '--:--' }}</strong></span>
+                                <span>•</span>
+                                <span>Durasi: <strong class="text-emerald-700 font-bold">{{ $h->durasi_kerja_formatted }}</strong></span>
                             </div>
 
                             @if ($h->keterangan || $h->keterangan_pulang)
@@ -474,6 +517,7 @@
                             <th class="py-3 px-4">Tanggal</th>
                             <th class="py-3 px-4">Jam Masuk</th>
                             <th class="py-3 px-4">Jam Pulang</th>
+                            <th class="py-3 px-4 text-center">Durasi Kerja</th>
                             <th class="py-3 px-4 text-center">Status</th>
                             <th class="py-3 px-4 text-center">Foto Masuk</th>
                         </tr>
@@ -493,6 +537,25 @@
                                         <span class="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 font-sans">
                                             Pulang Lebih Awal
                                         </span>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    @if ($h->jam_masuk && $h->jam_pulang)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-mono">
+                                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            {{ $h->durasi_kerja_formatted }}
+                                        </span>
+                                    @elseif ($h->jam_masuk && ! $h->jam_pulang)
+                                        @if ($h->tanggal && $h->tanggal->isToday())
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+                                                Sedang Bekerja
+                                            </span>
+                                        @else
+                                            <span class="text-[10px] text-slate-400 italic">Belum Pulang</span>
+                                        @endif
+                                    @else
+                                        <span class="text-slate-400">-</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-center">
