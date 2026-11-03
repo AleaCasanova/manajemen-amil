@@ -58,14 +58,15 @@ class KwitansiService
             $ttdBendahara = 'data:image/jpeg;base64,'.base64_encode(file_get_contents(public_path('image/ttd_bendahara.jpeg')));
         }
 
-        $institutionName = Setting::get('app_institution', 'LAZ Gerak Sedekah Cilacap (GSC)');
+        $institutionName = Setting::get('app_institution', 'LAZ Gerak Sedekah Cilacap');
         $institutionName = str_ireplace(
-            ['Yayasan Gerak Sedekah Cilacap', 'Yayasan GSC', 'Gerakan Sedekah Cepat', 'Sedekah Cepat', 'Gerakan Sedekah'],
-            ['LAZ Gerak Sedekah Cilacap', 'LAZ GSC', 'Gerak Sedekah Cilacap', 'Gerak Sedekah Cilacap', 'Gerak Sedekah'],
+            ['(GSC)', 'Yayasan Gerak Sedekah Cilacap', 'Yayasan GSC', 'Gerakan Sedekah Cepat', 'Sedekah Cepat', 'Gerakan Sedekah'],
+            ['', 'LAZ Gerak Sedekah Cilacap', 'LAZ Gerak Sedekah Cilacap', 'Gerak Sedekah Cilacap', 'Gerak Sedekah Cilacap', 'Gerak Sedekah'],
             $institutionName
         );
+        $institutionName = trim(preg_replace('/\s+/', ' ', $institutionName));
         if (! str_contains(strtolower($institutionName), 'cilacap')) {
-            $institutionName = 'LAZ Gerak Sedekah Cilacap (GSC)';
+            $institutionName = 'LAZ Gerak Sedekah Cilacap';
         }
 
         $address = Setting::get('app_address', 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224');
