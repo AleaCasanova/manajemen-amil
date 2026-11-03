@@ -205,7 +205,7 @@ class DatabaseSeeder extends Seeder
         // 8. Default Settings
         $settings = [
             ['key' => 'app_name', 'value' => 'Sistem Manajemen Amil GSC', 'grup' => 'general', 'deskripsi' => 'Nama Aplikasi'],
-            ['key' => 'app_institution', 'value' => 'Yayasan Gerak Sedekah Cilacap (GSC)', 'grup' => 'general', 'deskripsi' => 'Nama Lembaga'],
+            ['key' => 'app_institution', 'value' => 'LAZ Gerak Sedekah Cilacap (GSC)', 'grup' => 'general', 'deskripsi' => 'Nama Lembaga'],
             ['key' => 'app_phone', 'value' => '+62 857-0122-3333', 'grup' => 'contact', 'deskripsi' => 'No Telepon / WhatsApp Resmi'],
             ['key' => 'app_email', 'value' => 'geraksedekahcilacap@gmail.com', 'grup' => 'contact', 'deskripsi' => 'Email Resmi Lembaga'],
             ['key' => 'app_address', 'value' => 'Jalan Sulawesi, Perum Puri Tanjung Intan No.B2, Karang Lor, Gunungsimping, Cilacap Tengah 53224', 'grup' => 'contact', 'deskripsi' => 'Alamat Kantor'],

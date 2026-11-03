@@ -153,7 +153,7 @@
             <div class="status-badge">
                 ✓ KWITANSI VALID & ASLI
             </div>
-            <h1>Gerak Sedekah Cilacap (GSC)</h1>
+            <h1>{{ \App\Models\Setting::get('app_institution', 'LAZ Gerak Sedekah Cilacap (GSC)') }}</h1>
             <p>Sistem Manajemen Amil & Donasi ZISWAF</p>
         </div>
 

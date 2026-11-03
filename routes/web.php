@@ -165,7 +165,7 @@ Route::get('/clear-cache', function () {
         try {
             DB::table('settings')
                 ->where('key', 'app_institution')
-                ->update(['value' => 'Yayasan Gerak Sedekah Cilacap (GSC)']);
+                ->update(['value' => 'LAZ Gerak Sedekah Cilacap (GSC)']);
 
             DB::table('settings')
                 ->where('key', 'app_address')
