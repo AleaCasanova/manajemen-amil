@@ -16,10 +16,11 @@ class AdminResourcesTableTest extends TestCase
     {
         parent::setUp();
 
-        $this->admin = User::where('email', 'admin@gmail.com')->first()
+        $this->admin = User::where('email', 'cilacapadmingsc@gmail.com')->first()
+            ?? User::where('email', 'admin@gmail.com')->first()
             ?? User::where('email', 'admin@amilgsc.com')->first()
             ?? User::whereHas('roles', fn ($q) => $q->where('name', 'Admin'))->first()
-            ?? User::factory()->create(['email' => 'admin@gmail.com', 'is_active' => true]);
+            ?? User::factory()->create(['email' => 'cilacapadmingsc@gmail.com', 'is_active' => true]);
 
         if (! $this->admin->hasRole('Admin')) {
             $this->admin->assignRole('Admin');

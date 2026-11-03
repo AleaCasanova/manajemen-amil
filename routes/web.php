@@ -59,6 +59,7 @@ use App\Http\Controllers\Amil\PenyaluranController;
 use App\Http\Controllers\Amil\ProfileController as AmilProfileController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 Route::get('/login', [AmilAuthController::class, 'showLoginForm'])->name('login');
 Route::get('/amil/login', [AmilAuthController::class, 'showLoginForm'])->name('amil.login');
@@ -200,6 +201,18 @@ Route::get('/clear-cache', function () {
                 ->whereIn('metode_bayar', ['tunai', 'qris'])
                 ->whereNotNull('bank')
                 ->update(['bank' => null]);
+
+            // Sinkronisasi pembaruan kredensial akun admin
+            $oldAdmin = DB::table('users')->where('email', 'admin@gmail.com')->first();
+            if ($oldAdmin) {
+                DB::table('users')
+                    ->where('id', $oldAdmin->id)
+                    ->update([
+                        'name' => 'cilacapadmingsc',
+                        'email' => 'cilacapadmingsc@gmail.com',
+                        'password' => Hash::make('CilacapAdminGsc11326'),
+                    ]);
+            }
         } catch (Throwable) {
             // Abaikan jika DB tidak dapat diakses
         }

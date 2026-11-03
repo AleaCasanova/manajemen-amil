@@ -95,11 +95,11 @@ class RealDataSeeder extends Seeder
             'ajukan-izin-cuti',
         ]);
 
-        // 3. Buat Akun Super Admin baru: admin@gmail.com / password123
+        // 3. Buat Akun Super Admin baru: cilacapadmingsc@gmail.com / CilacapAdminGsc11326
         $adminUser = User::create([
-            'name' => 'Administrator Amil',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('password123'),
+            'name' => 'cilacapadmingsc',
+            'email' => 'cilacapadmingsc@gmail.com',
+            'password' => Hash::make('CilacapAdminGsc11326'),
             'role_id' => $adminRole->id,
             'is_active' => true,
         ]);

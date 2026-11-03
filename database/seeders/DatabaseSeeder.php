@@ -64,10 +64,10 @@ class DatabaseSeeder extends Seeder
 
         // 2. Default User Admin
         $admin = User::firstOrCreate(
-            ['email' => 'admin@gmail.com'],
+            ['email' => 'cilacapadmingsc@gmail.com'],
             [
-                'name' => 'Administrator Amil',
-                'password' => Hash::make('password123'),
+                'name' => 'cilacapadmingsc',
+                'password' => Hash::make('CilacapAdminGsc11326'),
                 'role_id' => $adminRole->id,
                 'is_active' => true,
             ]

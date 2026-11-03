@@ -29,7 +29,9 @@ class DummyDataSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminUser = User::where('email', 'admin@gmail.com')->first() ?? User::first();
+        $adminUser = User::where('email', 'cilacapadmingsc@gmail.com')->first()
+            ?? User::where('email', 'admin@gmail.com')->first()
+            ?? User::first();
         $adminId = $adminUser?->id ?? 1;
 
         $amils = Amil::all();
