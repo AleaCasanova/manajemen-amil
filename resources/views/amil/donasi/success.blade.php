@@ -144,51 +144,54 @@
     </div>
 
     @php
-        // Siapkan Link WhatsApp
         $rawPhone = $donasi->donatur?->no_hp ?? '';
         $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
         if (str_starts_with($cleanPhone, '0')) {
             $cleanPhone = '62' . substr($cleanPhone, 1);
         }
-
-        $namaPenerima = $donasi->donatur?->is_anonim ? 'Bapak/Ibu' : ($donasi->donatur?->nama ?? 'Bapak/Ibu');
-        $verifyUrl = route('kwitansi.verify', $donasi->no_kwitansi);
-
-        $barangText = '';
-        if ($donasi->donasiBarangs && $donasi->donasiBarangs->isNotEmpty()) {
-            $barangList = $donasi->donasiBarangs->map(function ($b) {
-                return $b->deskripsi . ($b->estimasi_nilai > 0 ? ' (Est: Rp ' . number_format($b->estimasi_nilai, 0, ',', '.') . ')' : '');
-            })->implode(', ');
-            $barangText = "\n📦 *Donasi Barang/Natura:* {$barangList}";
-        }
-
-        $waText = "Assalamu'alaikum Warahmatullahi Wabarakatuh,\n\n"
-            . "Yth. *{$namaPenerima}*,\n"
-            . "Terima kasih atas kepercayaan Anda menyalurkan donasi melalui *Gerak Sedekah Cilacap (GSC)*.\n\n"
-            . "Berikut adalah rincian kwitansi elektronik Anda:\n"
-            . "📄 *No. Kwitansi:* {$donasi->no_kwitansi}\n"
-            . "📅 *Waktu Transaksi:* " . $waktuDonasi->translatedFormat('d F Y, H:i') . " WIB\n"
-            . "🤲 *Jenis Dana:* " . ($donasi->jenisDana?->nama ?? 'Donasi') . "\n"
-            . "💰 *Nominal:* Rp " . number_format($donasi->jumlah, 0, ',', '.') . "{$barangText}\n"
-            . "👤 *Amil Penghimpun:* " . ($donasi->amil?->nama ?? 'Amil GSC') . "\n\n"
-            . "🔗 *Cek & Verifikasi Keaslian Kwitansi Resmi:*\n"
-            . "{$verifyUrl}\n\n"
-            . "Semoga Allah SWT membalas dengan pahala berlipat ganda, membersihkan harta, dan melimpahkan keberkahan bagi Anda dan keluarga. Aamiin ya Rabbal 'Alamin.\n\n"
-            . "_Salam hangat,_\n*Gerak Sedekah Cilacap*";
-
-        $waLink = "https://wa.me/{$cleanPhone}?text=" . urlencode($waText);
+        $waSentLog = $waSentLog ?? app(\App\Services\FonnteService::class)->getSentLog((int) $donasi->id);
     @endphp
 
     <!-- ACTION BUTTONS -->
     <div class="space-y-3">
         @if ($cleanPhone)
-            <!-- Kirim WhatsApp Button -->
-            <a href="{{ $waLink }}" target="_blank" class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2.5">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"/>
-                </svg>
-                <span>Kirim Bukti Kwitansi via WhatsApp</span>
-            </a>
+            @if ($waSentLog)
+                <!-- Status Sudah Terkirim (Anti-Spam) -->
+                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-3 shadow-sm">
+                    <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <div class="text-xs leading-relaxed">
+                        <span class="font-extrabold text-emerald-900 block text-sm">WhatsApp Kwitansi Sudah Terkirim!</span>
+                        <span class="text-emerald-800 block mt-0.5">
+                            Terkirim otomatis melalui <strong>Nomor Resmi Admin LAZ GSC</strong> ke nomor <strong>+{{ $waSentLog['target'] }}</strong> pada <strong>{{ $waSentLog['sent_at'] }}</strong> (oleh {{ $waSentLog['sent_by'] }}).
+                        </span>
+                    </div>
+                </div>
+
+                <button type="button" disabled class="w-full py-3.5 px-4 rounded-2xl bg-slate-200 text-slate-500 font-extrabold text-sm cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
+                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Kwitansi Sudah Terkirim ke WhatsApp (Terkunci Anti-Spam)</span>
+                </button>
+            @else
+                <!-- Form Kirim WhatsApp via Nomor Admin Resmi (Fonnte API) -->
+                <form action="{{ route('amil.donasi.send-wa', $donasi->id) }}" method="POST" id="sendWaForm" onsubmit="const btn = document.getElementById('sendWaBtn'); btn.disabled = true; btn.classList.add('opacity-75', 'cursor-wait'); document.getElementById('sendWaBtnText').innerText = 'Sedang Mengirim dari Nomor Admin GSC...';">
+                    @csrf
+                    <button type="submit" id="sendWaBtn" class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2.5">
+                        <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"/>
+                        </svg>
+                        <span id="sendWaBtnText">Kirim Bukti Kwitansi via WhatsApp Resmi GSC</span>
+                    </button>
+                </form>
+                <p class="text-[11px] text-center text-slate-500">
+                    Pesan akan dikirim langsung oleh <strong>Nomor Resmi Admin LAZ Gerak Sedekah Cilacap</strong> ke nomor <strong>{{ $donasi->donatur?->no_hp }}</strong>.
+                </p>
+            @endif
         @endif
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">

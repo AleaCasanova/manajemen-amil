@@ -43,6 +43,30 @@ Route::get('/system-clear-cache', function () {
     ]);
 });
 
+// Route praktis untuk menyimpan Token API Fonnte tanpa menyentuh database / .env
+Route::get('/system-set-fonnte-token', function () {
+    $key = request()->query('key');
+    if ($key !== 'gsc2026' && (! auth()->check() || ! auth()->user()->hasRole('Admin'))) {
+        abort(403, 'Akses ditolak. Gunakan key keamanan yang valid.');
+    }
+
+    $token = trim((string) request()->query('token', ''));
+    if ($token === '') {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Parameter ?token= wajib diisi. Contoh: /system-set-fonnte-token?key=gsc2026&token=TOKEN_FONNTE_ANDA',
+        ], 422);
+    }
+
+    app(FonnteService::class)->saveToken($token);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Token API Fonnte berhasil disimpan ke sistem! Pengiriman WhatsApp Nomor Resmi Admin GSC sudah siap digunakan.',
+        'time' => now()->toDateTimeString(),
+    ]);
+});
+
 // ==========================================
 // PORTAL AMIL (Blade + Tailwind)
 // ==========================================
@@ -57,6 +81,7 @@ use App\Http\Controllers\Amil\IzinCutiController as AmilIzinCutiController;
 use App\Http\Controllers\Amil\PengumumanController;
 use App\Http\Controllers\Amil\PenyaluranController;
 use App\Http\Controllers\Amil\ProfileController as AmilProfileController;
+use App\Services\FonnteService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -105,6 +130,7 @@ Route::middleware(['auth'])->prefix('amil')->name('amil.')->group(function () {
     Route::get('/donasi/create', [AmilDonasiController::class, 'create'])->name('donasi.create');
     Route::post('/donasi', [AmilDonasiController::class, 'store'])->name('donasi.store');
     Route::get('/donasi/{donasi}/success', [AmilDonasiController::class, 'success'])->name('donasi.success');
+    Route::post('/donasi/{donasi}/send-wa', [AmilDonasiController::class, 'sendWhatsapp'])->name('donasi.send-wa');
 
     // Modul Donatur
     Route::get('/donatur', [AmilDonaturController::class, 'index'])->name('donatur.index');

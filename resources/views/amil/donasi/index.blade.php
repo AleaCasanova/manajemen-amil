@@ -88,7 +88,14 @@
                                 <a href="{{ route('amil.donasi.success', $d->id) }}" class="font-mono font-bold text-emerald-700 hover:underline">
                                     {{ $d->no_kwitansi }}
                                 </a>
-                                <span class="block text-[10px] text-slate-400 capitalize">{{ $d->metode_bayar }}</span>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="text-[10px] text-slate-400 capitalize">{{ $d->metode_bayar }}</span>
+                                    @if (app(\App\Services\FonnteService::class)->getSentLog((int) $d->id))
+                                        <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" title="Kwitansi sudah dikirim ke WhatsApp donatur">
+                                            ✓ WA Terkirim
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="py-3.5 px-4 text-slate-600 font-medium">
                                 <span class="block text-slate-800 font-bold">{{ $d->tgl_donasi ? $d->tgl_donasi->translatedFormat('d M Y') : '-' }}</span>
@@ -153,9 +160,16 @@
             @foreach ($donasis as $d)
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                        <a href="{{ route('amil.donasi.success', $d->id) }}" class="font-mono font-bold text-xs text-emerald-700">
-                            {{ $d->no_kwitansi }}
-                        </a>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('amil.donasi.success', $d->id) }}" class="font-mono font-bold text-xs text-emerald-700">
+                                {{ $d->no_kwitansi }}
+                            </a>
+                            @if (app(\App\Services\FonnteService::class)->getSentLog((int) $d->id))
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    ✓ WA Terkirim
+                                </span>
+                            @endif
+                        </div>
                         @if ($d->status === 'terverifikasi')
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Terverifikasi</span>
                         @elseif ($d->status === 'ditolak')

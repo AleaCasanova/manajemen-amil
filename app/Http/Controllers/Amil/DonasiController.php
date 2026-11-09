@@ -10,6 +10,7 @@ use App\Models\DonaturKategori;
 use App\Models\JenisDana;
 use App\Models\Program;
 use App\Services\DonasiService;
+use App\Services\FonnteService;
 use App\Services\KwitansiService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -20,7 +21,8 @@ class DonasiController extends Controller
 {
     public function __construct(
         protected DonasiService $donasiService,
-        protected KwitansiService $kwitansiService
+        protected KwitansiService $kwitansiService,
+        protected FonnteService $fonnteService
     ) {}
 
     /**
@@ -263,13 +265,40 @@ class DonasiController extends Controller
         $amil = Auth::user()->amil;
 
         // Validasi amil hanya bisa melihat donasi miliknya
-        if ($donasi->amil_id !== $amil->id && ! Auth::user()->hasRole('Admin')) {
+        if ($amil && $donasi->amil_id !== $amil->id && ! Auth::user()->hasRole('Admin')) {
             abort(403);
         }
 
         $donasi->load(['donatur', 'jenisDana', 'program', 'amil', 'donasiBarangs']);
+        $waSentLog = $this->fonnteService->getSentLog((int) $donasi->id);
+        $fonnteConfigured = $this->fonnteService->isConfigured();
 
-        return view('amil.donasi.success', compact('donasi', 'amil'));
+        return view('amil.donasi.success', compact('donasi', 'amil', 'waSentLog', 'fonnteConfigured'));
+    }
+
+    /**
+     * Kirim kwitansi donasi ke WhatsApp donatur melalui Nomor Resmi Admin (Fonnte API)
+     */
+    public function sendWhatsapp(Donasi $donasi)
+    {
+        $amil = Auth::user()->amil;
+
+        if ($amil && $donasi->amil_id !== $amil->id && ! Auth::user()->hasRole('Admin')) {
+            abort(403);
+        }
+
+        $senderName = $amil?->nama ?? Auth::user()->name ?? 'Amil GSC';
+        $result = $this->fonnteService->sendKwitansi($donasi, $senderName);
+
+        if ($result['success']) {
+            return redirect()
+                ->route('amil.donasi.success', $donasi->id)
+                ->with('success', $result['message']);
+        }
+
+        return redirect()
+            ->route('amil.donasi.success', $donasi->id)
+            ->with('error', $result['message']);
     }
 
     /**
