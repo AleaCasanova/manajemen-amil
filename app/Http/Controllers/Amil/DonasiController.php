@@ -38,7 +38,7 @@ class DonasiController extends Controller
 
         $query = Donasi::where('amil_id', $amil->id)
             ->with(['donatur', 'jenisDana', 'program', 'donasiBarangs'])
-            ->latest('tgl_donasi');
+            ->orderByDesc('id');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -244,7 +244,7 @@ class DonasiController extends Controller
 
             // 3. Simpan Donasi
             $tglDonasi = Carbon::parse($validated['tgl_donasi']);
-            if ($tglDonasi->isToday() && $tglDonasi->format('H:i:s') === '00:00:00') {
+            if ($tglDonasi->format('H:i:s') === '00:00:00') {
                 $tglDonasi = $tglDonasi->setTime(now()->hour, now()->minute, now()->second);
             }
 

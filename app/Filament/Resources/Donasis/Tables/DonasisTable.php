@@ -25,12 +25,12 @@ class DonasisTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('tgl_donasi', 'desc')
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('no_kwitansi')
                     ->label('No. Kwitansi')
                     ->searchable()
-                    ->sortable()
+                    ->sortable(query: fn ($query, string $direction) => $query->orderBy('id', $direction))
                     ->weight('bold')
                     ->copyable(),
                 ImageColumn::make('bukti_transfer')

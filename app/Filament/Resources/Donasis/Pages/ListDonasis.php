@@ -13,6 +13,15 @@ class ListDonasis extends ListRecords
 {
     protected static string $resource = DonasiResource::class;
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        if ($this->tableSort === 'tgl_donasi:asc') {
+            $this->tableSort = null;
+        }
+    }
+
     protected function getHeaderActions(): array
     {
         return [

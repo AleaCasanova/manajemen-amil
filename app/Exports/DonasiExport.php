@@ -21,8 +21,8 @@ class DonasiExport implements FromCollection, ShouldAutoSize, WithHeadings, With
     public function collection(): Enumerable
     {
         return $this->query
-            ? $this->query->with(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser'])->get()
-            : Donasi::with(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser'])->latest()->get();
+            ? $this->query->with(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser'])->orderByDesc('id')->get()
+            : Donasi::with(['donatur', 'amil', 'jenisDana', 'program', 'verifiedByUser'])->orderByDesc('id')->get();
     }
 
     public function headings(): array
