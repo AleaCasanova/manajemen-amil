@@ -13,60 +13,16 @@ class TopKecamatanChartWidget extends ChartWidget
 
     protected function getFilters(): ?array
     {
-        $year = now()->year;
-        $bulanIndo = [
-            1 => 'Januari',
-            2 => 'Februari',
-            3 => 'Maret',
-            4 => 'April',
-            5 => 'Mei',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'Agustus',
-            9 => 'September',
-            10 => 'Oktober',
-            11 => 'November',
-            12 => 'Desember',
-        ];
-
-        $filters = [
+        return [
             'month' => 'Bulan Ini',
             'last_month' => 'Bulan Lalu',
-            'year' => 'Tahun Ini ('.$year.')',
+            'year' => 'Tahun Ini',
             'all' => 'Semua Waktu',
         ];
-
-        foreach ($bulanIndo as $num => $nama) {
-            $filters['m_'.$num] = $nama.' '.$year;
-        }
-
-        return $filters;
     }
 
     public function getHeading(): ?string
     {
-        $bulanIndo = [
-            1 => 'Januari',
-            2 => 'Februari',
-            3 => 'Maret',
-            4 => 'April',
-            5 => 'Mei',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'Agustus',
-            9 => 'September',
-            10 => 'Oktober',
-            11 => 'November',
-            12 => 'Desember',
-        ];
-
-        if ($this->filter && str_starts_with($this->filter, 'm_')) {
-            $m = (int) substr($this->filter, 2);
-            $namaBulan = $bulanIndo[$m] ?? '';
-
-            return 'Top 5 amil pendapatan tertinggi ('.strtolower($namaBulan).' '.now()->year.')';
-        }
-
         return match ($this->filter) {
             'last_month' => 'Top 5 amil pendapatan tertinggi (bulan lalu)',
             'year' => 'Top 5 amil pendapatan tertinggi (tahun ini)',
@@ -92,11 +48,7 @@ class TopKecamatanChartWidget extends ChartWidget
             ->join('amils', 'donasis.amil_id', '=', 'amils.id')
             ->where('donasis.status', 'terverifikasi');
 
-        if ($this->filter && str_starts_with($this->filter, 'm_')) {
-            $m = (int) substr($this->filter, 2);
-            $query->whereYear('donasis.tgl_donasi', now()->year)
-                ->whereMonth('donasis.tgl_donasi', $m);
-        } elseif ($this->filter === 'year') {
+        if ($this->filter === 'year') {
             $query->whereYear('donasis.tgl_donasi', now()->year);
         } elseif ($this->filter === 'all') {
             // Tanpa batasan periode
