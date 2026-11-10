@@ -479,20 +479,23 @@
                                 @endif
                             </div>
 
+                            @php
+                                $isHadirStatus = in_array($h->status, ['hadir', 'terlambat'], true);
+                            @endphp
                             <div class="flex items-center gap-2 text-[11px] text-slate-500 font-mono flex-wrap">
-                                <span>Masuk: <strong class="text-slate-800">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '--:--' }}</strong></span>
+                                <span>Masuk: <strong class="text-slate-800">{{ $isHadirStatus && $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '--:--' }}</strong></span>
                                 <span>•</span>
-                                <span>Pulang: <strong class="text-slate-800">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '--:--' }}</strong></span>
+                                <span>Pulang: <strong class="text-slate-800">{{ $isHadirStatus && $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '--:--' }}</strong></span>
                                 <span>•</span>
-                                <span>Durasi: <strong class="text-emerald-700 font-bold">{{ $h->durasi_kerja_formatted }}</strong></span>
+                                <span>Durasi: <strong class="text-emerald-700 font-bold">{{ $isHadirStatus ? $h->durasi_kerja_formatted : '-' }}</strong></span>
                             </div>
 
                             @if ($h->keterangan || $h->keterangan_pulang)
                                 <div class="text-[10px] text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-0.5">
                                     @if ($h->keterangan)
-                                        <div class="line-clamp-1"><strong class="text-slate-700">Masuk:</strong> {{ $h->keterangan }}</div>
+                                        <div class="line-clamp-1"><strong class="text-slate-700">{{ $isHadirStatus ? 'Masuk:' : 'Ket:' }}</strong> {{ $h->keterangan }}</div>
                                     @endif
-                                    @if ($h->keterangan_pulang)
+                                    @if ($isHadirStatus && $h->keterangan_pulang)
                                         <div class="line-clamp-2"><strong class="text-slate-700">Pulang:</strong> {{ $h->keterangan_pulang }}</div>
                                     @endif
                                 </div>

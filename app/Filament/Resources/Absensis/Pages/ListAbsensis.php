@@ -45,12 +45,6 @@ class ListAbsensis extends ListRecords
                         ->label('Tanggal Presensi')
                         ->default(now()->toDateString())
                         ->required(),
-                    TimePicker::make('jam_masuk')
-                        ->label('Jam Masuk')
-                        ->default('08:00'),
-                    TimePicker::make('jam_pulang')
-                        ->label('Jam Pulang')
-                        ->default('16:30'),
                     Select::make('status')
                         ->label('Status Kehadiran')
                         ->options([
@@ -61,7 +55,16 @@ class ListAbsensis extends ListRecords
                             'alpa' => 'Alpa',
                         ])
                         ->default('hadir')
+                        ->live()
                         ->required(),
+                    TimePicker::make('jam_masuk')
+                        ->label('Jam Masuk')
+                        ->default('08:00')
+                        ->visible(fn ($get): bool => in_array($get('status'), ['hadir', 'terlambat'], true)),
+                    TimePicker::make('jam_pulang')
+                        ->label('Jam Pulang')
+                        ->default('16:30')
+                        ->visible(fn ($get): bool => in_array($get('status'), ['hadir', 'terlambat'], true)),
                     Select::make('tipe_masuk')
                         ->label('Tipe Presensi')
                         ->options([
@@ -69,7 +72,8 @@ class ListAbsensis extends ListRecords
                             'dinas_luar' => '🚗 Tugas Luar / Lapangan',
                         ])
                         ->default('kantor')
-                        ->required(),
+                        ->visible(fn ($get): bool => in_array($get('status'), ['hadir', 'terlambat'], true))
+                        ->required(fn ($get): bool => in_array($get('status'), ['hadir', 'terlambat'], true)),
                     Textarea::make('keterangan')
                         ->label('Keterangan')
                         ->placeholder('Catatan atau alasan jika terlambat/izin/tugas luar...')
@@ -77,6 +81,7 @@ class ListAbsensis extends ListRecords
                 ])
                 ->action(function (array $data): void {
                     $amil = Amil::find($data['amil_id']);
+                    $isHadir = in_array($data['status'], ['hadir', 'terlambat'], true);
 
                     Absensi::updateOrCreate(
                         [
@@ -84,9 +89,10 @@ class ListAbsensis extends ListRecords
                             'tanggal' => $data['tanggal'],
                         ],
                         [
-                            'jam_masuk' => $data['jam_masuk'],
-                            'jam_pulang' => $data['jam_pulang'],
-                            'tipe_masuk' => $data['tipe_masuk'] ?? 'kantor',
+                            'jam_masuk' => $isHadir ? ($data['jam_masuk'] ?? null) : null,
+                            'jam_pulang' => $isHadir ? ($data['jam_pulang'] ?? null) : null,
+                            'tipe_masuk' => $isHadir ? ($data['tipe_masuk'] ?? 'kantor') : null,
+                            'tipe_pulang' => $isHadir ? ($data['tipe_masuk'] ?? 'kantor') : null,
                             'status' => $data['status'],
                             'keterangan' => $data['keterangan'] ?? 'Presensi dicatat admin',
                         ]

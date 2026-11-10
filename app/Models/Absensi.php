@@ -85,7 +85,7 @@ class Absensi extends Model
      */
     public function getDurasiMenitAttribute(): int
     {
-        if (empty($this->jam_masuk) || empty($this->jam_pulang)) {
+        if (! in_array($this->status, ['hadir', 'terlambat'], true) || empty($this->jam_masuk) || empty($this->jam_pulang)) {
             return 0;
         }
 
@@ -145,6 +145,10 @@ class Absensi extends Model
      */
     public function getDurasiKerjaFormattedAttribute(): string
     {
+        if (! in_array($this->status, ['hadir', 'terlambat'], true)) {
+            return '-';
+        }
+
         if (! empty($this->jam_masuk) && ! empty($this->jam_pulang)) {
             $menit = $this->durasi_menit;
             $jam = intdiv($menit, 60);

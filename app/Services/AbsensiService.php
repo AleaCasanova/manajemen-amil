@@ -155,6 +155,18 @@ class AbsensiService
      */
     public function autoSyncPastAlpa(): int
     {
+        // Bersihkan jam_masuk & jam_pulang pada status izin, cuti, atau alpa jika ada sisa input manual
+        Absensi::whereIn('status', ['izin', 'cuti', 'alpa'])
+            ->where(function ($q): void {
+                $q->whereNotNull('jam_masuk')->orWhereNotNull('jam_pulang');
+            })
+            ->update([
+                'jam_masuk' => null,
+                'jam_pulang' => null,
+                'tipe_masuk' => null,
+                'tipe_pulang' => null,
+            ]);
+
         $now = Carbon::now('Asia/Jakarta');
 
         // Cari tanggal pertama absensi tercatat di bulan berjalan sebagai titik awal operasional bulan ini
