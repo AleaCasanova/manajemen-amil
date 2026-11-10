@@ -163,8 +163,6 @@ class AbsensiService
             ->update([
                 'jam_masuk' => null,
                 'jam_pulang' => null,
-                'tipe_masuk' => null,
-                'tipe_pulang' => null,
             ]);
 
         $now = Carbon::now('Asia/Jakarta');

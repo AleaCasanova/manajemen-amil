@@ -75,8 +75,6 @@ class IzinCuti extends Model
                 [
                     'jam_masuk' => null,
                     'jam_pulang' => null,
-                    'tipe_masuk' => null,
-                    'tipe_pulang' => null,
                     'status' => in_array($this->jenis, ['cuti', 'izin']) ? $this->jenis : 'izin',
                     'keterangan' => 'Pengajuan '.ucfirst($this->jenis).' Disetujui: '.($this->alasan ?? ''),
                 ]

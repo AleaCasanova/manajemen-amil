@@ -308,8 +308,8 @@ class AbsensisTable
                             [
                                 'jam_masuk' => $isHadir ? ($data['jam_masuk'] ?? null) : null,
                                 'jam_pulang' => $isHadir ? ($data['jam_pulang'] ?? null) : null,
-                                'tipe_masuk' => $isHadir ? ($data['tipe_masuk'] ?? 'kantor') : null,
-                                'tipe_pulang' => $isHadir ? ($data['tipe_masuk'] ?? 'kantor') : null,
+                                'tipe_masuk' => $isHadir ? ($data['tipe_masuk'] ?? 'kantor') : 'kantor',
+                                'tipe_pulang' => $isHadir ? ($data['tipe_masuk'] ?? 'kantor') : 'kantor',
                                 'status' => $data['status'],
                                 'keterangan' => $data['keterangan'] ?? 'Presensi manual dicatat oleh admin',
                             ]
