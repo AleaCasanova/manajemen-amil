@@ -25,6 +25,7 @@ class DonasisTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('tgl_donasi', 'desc')
             ->columns([
                 TextColumn::make('no_kwitansi')
                     ->label('No. Kwitansi')
@@ -45,7 +46,7 @@ class DonasisTable
                 TextColumn::make('tgl_donasi')
                     ->label('Tanggal')
                     ->dateTime('d M Y H:i')
-                    ->sortable(),
+                    ->sortable(query: fn ($query, string $direction) => $query->orderBy('tgl_donasi', $direction)->orderBy('id', $direction)),
                 TextColumn::make('donatur.nama')
                     ->label('Donatur')
                     ->searchable()

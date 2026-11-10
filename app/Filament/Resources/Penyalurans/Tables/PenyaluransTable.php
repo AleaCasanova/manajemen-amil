@@ -21,6 +21,7 @@ class PenyaluransTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('tgl_salur', 'desc')
             ->columns([
                 TextColumn::make('mustahik.nama')
                     ->label('Penerima (Mustahik)')

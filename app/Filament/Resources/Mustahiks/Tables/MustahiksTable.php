@@ -23,6 +23,7 @@ class MustahiksTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('nama')
                     ->label('Nama Mustahik')

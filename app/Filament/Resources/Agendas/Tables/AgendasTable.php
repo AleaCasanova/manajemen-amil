@@ -15,6 +15,7 @@ class AgendasTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('mulai', 'desc')
             ->columns([
                 TextColumn::make('judul')
                     ->label('Judul Agenda')
