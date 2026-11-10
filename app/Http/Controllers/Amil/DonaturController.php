@@ -87,7 +87,7 @@ class DonaturController extends Controller
             'no_hp' => ['required', 'string', 'max:25'],
             'email' => ['nullable', 'email', 'max:255'],
             'alamat' => ['nullable', 'string'],
-            'kecamatan' => ['nullable', 'string', 'max:100'],
+            'kecamatan' => ['required', 'string', 'max:100'],
             'kota' => ['nullable', 'string', 'max:100'],
             'provinsi' => ['nullable', 'string', 'max:100'],
             'kode_pos' => ['nullable', 'string', 'max:10'],
@@ -154,5 +154,42 @@ class DonaturController extends Controller
             ->paginate(10);
 
         return view('amil.donatur.show', compact('donatur', 'donasis', 'amil'));
+    }
+
+    /**
+     * Perbarui data domisili / kecamatan donatur binaan
+     */
+    public function update(Request $request, Donatur $donatur)
+    {
+        $amil = Auth::user()->amil;
+
+        if ($amil && ! $amil->canAccessDonasi()) {
+            return redirect()->route('amil.dashboard')->with('error', 'Petugas magang tidak memiliki akses ke database donatur.');
+        }
+
+        if ($donatur->amil_pic_id !== $amil->id && $donatur->created_by !== Auth::id() && ! Auth::user()->hasRole('Admin')) {
+            abort(403, 'Akses Ditolak: Anda hanya diperkenankan mengubah data donatur binaan Anda sendiri.');
+        }
+
+        $validated = $request->validate([
+            'kecamatan' => ['required', 'string', 'max:100'],
+            'kota' => ['nullable', 'string', 'max:100'],
+            'alamat' => ['nullable', 'string'],
+        ]);
+
+        $kecamatan = trim($validated['kecamatan']);
+        $kota = ! empty($validated['kota'])
+            ? trim($validated['kota'])
+            : ($kecamatan !== 'Luar Cilacap' ? 'Cilacap' : ($donatur->kota ?? null));
+
+        $donatur->update([
+            'kecamatan' => $kecamatan,
+            'kota' => $kota,
+            'provinsi' => $kecamatan !== 'Luar Cilacap' ? ($donatur->provinsi ?: 'Jawa Tengah') : $donatur->provinsi,
+            'alamat' => $validated['alamat'] ?? $donatur->alamat,
+        ]);
+
+        return redirect()->route('amil.donatur.show', $donatur->id)
+            ->with('success', "Data domisili & kecamatan donatur {$donatur->nama} berhasil diperbarui!");
     }
 }

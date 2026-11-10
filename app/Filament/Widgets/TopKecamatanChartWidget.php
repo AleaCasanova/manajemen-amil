@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Donasi;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TopKecamatanChartWidget extends ChartWidget
@@ -44,11 +45,11 @@ class TopKecamatanChartWidget extends ChartWidget
 
     protected function getData(): array
     {
+        $kecamatanExpr = "COALESCE(NULLIF(TRIM(donaturs.kecamatan), ''), 'Belum Diisi')";
+
         $query = Donasi::query()
             ->join('donaturs', 'donasis.donatur_id', '=', 'donaturs.id')
-            ->where('donasis.status', 'terverifikasi')
-            ->whereNotNull('donaturs.kecamatan')
-            ->where('donaturs.kecamatan', '!=', '');
+            ->where('donasis.status', 'terverifikasi');
 
         if ($this->filter === 'year') {
             $query->whereYear('donasis.tgl_donasi', now()->year);
@@ -64,8 +65,8 @@ class TopKecamatanChartWidget extends ChartWidget
         }
 
         $topKecamatan = $query
-            ->groupBy('donaturs.kecamatan')
-            ->selectRaw('donaturs.kecamatan, SUM(donasis.jumlah) as total')
+            ->groupBy(DB::raw($kecamatanExpr))
+            ->selectRaw("{$kecamatanExpr} as kecamatan, SUM(donasis.jumlah) as total")
             ->orderByDesc('total')
             ->limit(5)
             ->get();

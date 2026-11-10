@@ -65,13 +65,41 @@
                 </div>
 
                 <div>
+                    <span class="text-slate-400 block mb-0.5">Kecamatan</span>
+                    @if ($donatur->kecamatan)
+                        <span class="font-bold text-emerald-700">{{ $donatur->kecamatan }}</span>
+                    @else
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800">Belum Diisi</span>
+                    @endif
+                </div>
+
+                <div>
                     <span class="text-slate-400 block mb-0.5">Domisili / Kota</span>
-                    <span class="font-semibold text-slate-700">{{ $donatur->kota ?? '-' }}, {{ $donatur->provinsi ?? '' }}</span>
+                    <span class="font-semibold text-slate-700">{{ $donatur->kota ?? '-' }}{{ $donatur->provinsi ? ', ' . $donatur->provinsi : '' }}</span>
                 </div>
 
                 <div>
                     <span class="text-slate-400 block mb-0.5">Alamat</span>
                     <span class="text-slate-600">{{ $donatur->alamat ?? '-' }}</span>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100">
+                    <form action="{{ route('amil.donatur.update', $donatur->id) }}" method="POST" class="space-y-2.5">
+                        @csrf
+                        @method('PUT')
+                        <label class="block text-[11px] font-bold text-slate-700">
+                            {{ $donatur->kecamatan ? 'Perbarui Kecamatan Domisili:' : '⚠️ Lengkapi Kecamatan Domisili:' }}
+                        </label>
+                        <select name="kecamatan" required class="w-full rounded-xl border border-slate-300 py-2 px-2.5 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            <option value="">-- Pilih Kecamatan --</option>
+                            @foreach (['Adipala', 'Bantarsari', 'Binangun', 'Cilacap Selatan', 'Cilacap Tengah', 'Cilacap Utara', 'Cimanggu', 'Cipari', 'Dayeuhluhur', 'Gandrungmangu', 'Jeruklegi', 'Kampung Laut', 'Karangpucung', 'Kawunganten', 'Kedungreja', 'Kesugihan', 'Kroya', 'Majenang', 'Maos', 'Nusawungu', 'Patimuan', 'Sampang', 'Sidareja', 'Wanareja', 'Luar Cilacap'] as $kecOption)
+                                <option value="{{ $kecOption }}" {{ $donatur->kecamatan === $kecOption ? 'selected' : '' }}>{{ $kecOption }}{{ $kecOption !== 'Luar Cilacap' ? ' (Cilacap)' : '' }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm cursor-pointer">
+                            Simpan Kecamatan
+                        </button>
+                    </form>
                 </div>
 
                 @if ($donatur->nik)

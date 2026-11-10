@@ -135,6 +135,8 @@ class DonasiController extends Controller
             // Mode donatur: existing atau new
             'donatur_mode' => ['required', 'in:existing,new'],
             'donatur_id' => ['required_if:donatur_mode,existing', 'nullable', 'exists:donaturs,id'],
+            'existing_kecamatan' => ['nullable', 'string', 'max:100'],
+            'existing_kota' => ['nullable', 'string', 'max:100'],
 
             // Data donatur baru jika mode 'new'
             'nama_donatur' => ['required_if:donatur_mode,new', 'nullable', 'string', 'max:255'],
@@ -143,7 +145,7 @@ class DonasiController extends Controller
             'no_hp' => ['required_if:donatur_mode,new', 'nullable', 'string', 'max:25'],
             'email' => ['nullable', 'email', 'max:255'],
             'alamat' => ['nullable', 'string'],
-            'kecamatan' => ['nullable', 'string', 'max:100'],
+            'kecamatan' => ['required_if:donatur_mode,new', 'nullable', 'string', 'max:100'],
             'kota' => ['nullable', 'string', 'max:100'],
             'provinsi' => ['nullable', 'string', 'max:100'],
             'kode_pos' => ['nullable', 'string', 'max:10'],
@@ -177,12 +179,35 @@ class DonasiController extends Controller
             // 1. Tentukan Donatur
             if ($validated['donatur_mode'] === 'existing') {
                 $donatur = Donatur::findOrFail($validated['donatur_id']);
+
+                if (! empty($validated['existing_kecamatan'])) {
+                    $kecBaru = trim($validated['existing_kecamatan']);
+                    $kotaBaru = ! empty($validated['existing_kota'])
+                        ? trim($validated['existing_kota'])
+                        : ($kecBaru !== 'Luar Cilacap' ? 'Cilacap' : ($donatur->kota ?? null));
+
+                    $donatur->update([
+                        'kecamatan' => $kecBaru,
+                        'kota' => $kotaBaru,
+                        'provinsi' => $kecBaru !== 'Luar Cilacap' ? ($donatur->provinsi ?: 'Jawa Tengah') : $donatur->provinsi,
+                    ]);
+                }
             } else {
                 // Cek duplikasi nomor HP jika mode new
                 $existingPhone = $this->donasiService->checkDuplicatePhone($validated['no_hp']);
 
                 if ($existingPhone) {
                     $donatur = $existingPhone;
+
+                    if (empty($donatur->kecamatan) && ! empty($validated['kecamatan'])) {
+                        $kecBaru = trim($validated['kecamatan']);
+                        $donatur->update([
+                            'kecamatan' => $kecBaru,
+                            'kota' => $validated['kota'] ?? ($kecBaru !== 'Luar Cilacap' ? 'Cilacap' : $donatur->kota),
+                            'provinsi' => $validated['provinsi'] ?? ($kecBaru !== 'Luar Cilacap' ? 'Jawa Tengah' : $donatur->provinsi),
+                            'alamat' => $donatur->alamat ?: ($validated['alamat'] ?? null),
+                        ]);
+                    }
                 } else {
                     $donatur = Donatur::create([
                         'kode_donatur' => 'DNT-'.date('Ym').rand(1000, 9999),

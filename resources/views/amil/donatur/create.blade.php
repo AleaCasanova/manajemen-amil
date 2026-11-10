@@ -13,7 +13,7 @@
         <p class="text-sm text-slate-500">Tambahkan muzakki / donatur ke dalam binaan Anda</p>
     </div>
 
-    <form action="{{ route('amil.donatur.store') }}" method="POST" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-5">
+    <form action="{{ route('amil.donatur.store') }}" method="POST" id="formDonaturBaru" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-5">
         @csrf
 
         <!-- Live Duplicate Phone Alert Box -->
@@ -334,6 +334,11 @@
             btnClearKecamatan.classList.toggle('hidden', val.length === 0);
             renderKecamatanDropdown(val);
 
+            if (!val) {
+                hiddenKecamatan.value = '';
+                return;
+            }
+
             // Cek apakah ketikan persis sama dengan salah satu kecamatan
             const match = DAFTAR_KECAMATAN_CILACAP.find(k => k.toLowerCase() === val.toLowerCase());
             if (match) {
@@ -343,6 +348,35 @@
             } else if (val.toLowerCase().includes('luar')) {
                 hiddenKecamatan.value = 'Luar Cilacap';
                 boxKotaLuar.classList.remove('hidden');
+            } else {
+                const partialMatches = DAFTAR_KECAMATAN_CILACAP.filter(k => k.toLowerCase().includes(val.toLowerCase()));
+                if (partialMatches.length === 1) {
+                    hiddenKecamatan.value = partialMatches[0];
+                    hiddenKota.value = 'Cilacap';
+                } else {
+                    hiddenKecamatan.value = val;
+                    hiddenKota.value = 'Cilacap';
+                }
+            }
+        });
+
+        inputKecamatanSearch.addEventListener('blur', function() {
+            const val = this.value.trim();
+            if (!val) return;
+            const exact = DAFTAR_KECAMATAN_CILACAP.find(k => k.toLowerCase() === val.toLowerCase());
+            if (exact) {
+                this.value = exact;
+                hiddenKecamatan.value = exact;
+                hiddenKota.value = 'Cilacap';
+            } else {
+                const partialMatches = DAFTAR_KECAMATAN_CILACAP.filter(k => k.toLowerCase().includes(val.toLowerCase()));
+                if (partialMatches.length === 1) {
+                    this.value = partialMatches[0];
+                    hiddenKecamatan.value = partialMatches[0];
+                    hiddenKota.value = 'Cilacap';
+                } else if (!hiddenKecamatan.value) {
+                    hiddenKecamatan.value = val;
+                }
             }
         });
 
@@ -350,6 +384,23 @@
         document.addEventListener('click', function(e) {
             if (containerKecamatan && !containerKecamatan.contains(e.target)) {
                 if (dropdownKecamatan) dropdownKecamatan.classList.add('hidden');
+            }
+        });
+    }
+
+    const formDonaturBaruEl = document.getElementById('formDonaturBaru');
+    if (formDonaturBaruEl) {
+        formDonaturBaruEl.addEventListener('submit', function(e) {
+            if (inputKecamatanSearch && !hiddenKecamatan.value.trim() && inputKecamatanSearch.value.trim()) {
+                hiddenKecamatan.value = inputKecamatanSearch.value.trim();
+            }
+            if (hiddenKecamatan && !hiddenKecamatan.value.trim()) {
+                e.preventDefault();
+                if (inputKecamatanSearch) {
+                    inputKecamatanSearch.focus();
+                    renderKecamatanDropdown('');
+                }
+                alert('Mohon pilih atau isi Kecamatan / Domisili donatur terlebih dahulu.');
             }
         });
     }

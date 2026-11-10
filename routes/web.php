@@ -137,6 +137,7 @@ Route::middleware(['auth'])->prefix('amil')->name('amil.')->group(function () {
     Route::get('/donatur/create', [AmilDonaturController::class, 'create'])->name('donatur.create');
     Route::post('/donatur', [AmilDonaturController::class, 'store'])->name('donatur.store');
     Route::get('/donatur/{donatur}', [AmilDonaturController::class, 'show'])->name('donatur.show');
+    Route::put('/donatur/{donatur}', [AmilDonaturController::class, 'update'])->name('donatur.update');
 
     // Modul Penyaluran & Mustahik
     Route::get('/penyaluran', [PenyaluranController::class, 'index'])->name('penyaluran.index');

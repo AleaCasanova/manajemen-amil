@@ -69,7 +69,7 @@
                                     </span>
                                     <span id="selectedDonaturKotaWrapper" class="flex items-center gap-1">
                                         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-                                        <span id="selectedDonaturKota">{{ $selectedDonatur?->kota ?? 'Cilacap' }}</span>
+                                        <span id="selectedDonaturKota">{{ $selectedDonatur?->kecamatan ? $selectedDonatur->kecamatan . ', ' . ($selectedDonatur->kota ?? 'Cilacap') : ($selectedDonatur?->kota ?? 'Cilacap') }}</span>
                                     </span>
                                 </div>
                             </div>
@@ -79,6 +79,19 @@
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             <span>Ganti Donatur</span>
                         </button>
+                    </div>
+
+                    <!-- Box Lengkapi Kecamatan (Muncul otomatis jika donatur terdaftar belum memiliki data kecamatan) -->
+                    <div id="existingKecamatanMissingBox" class="{{ ($selectedDonatur && empty($selectedDonatur->kecamatan)) ? 'block' : 'hidden' }} mt-3 pt-3 border-t border-emerald-200/80">
+                        <label class="block text-[11px] font-bold text-amber-800 mb-1.5 flex items-center gap-1.5">
+                            <span>⚠️ Data Kecamatan donatur ini belum tercatat. Pilih Kecamatan untuk melengkapi:</span>
+                        </label>
+                        <select name="existing_kecamatan" id="selectExistingKecamatan" class="w-full rounded-xl border border-amber-300 bg-white py-2 px-3 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            <option value="">-- Pilih Kecamatan Domisili Donatur --</option>
+                            @foreach (['Adipala', 'Bantarsari', 'Binangun', 'Cilacap Selatan', 'Cilacap Tengah', 'Cilacap Utara', 'Cimanggu', 'Cipari', 'Dayeuhluhur', 'Gandrungmangu', 'Jeruklegi', 'Kampung Laut', 'Karangpucung', 'Kawunganten', 'Kedungreja', 'Kesugihan', 'Kroya', 'Majenang', 'Maos', 'Nusawungu', 'Patimuan', 'Sampang', 'Sidareja', 'Wanareja', 'Luar Cilacap'] as $kecOption)
+                                <option value="{{ $kecOption }}">{{ $kecOption }}{{ $kecOption !== 'Luar Cilacap' ? ' (Kab. Cilacap)' : '' }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -555,7 +568,20 @@
         document.getElementById('selectedDonaturKode').innerText = item.kode_donatur || '-';
         document.getElementById('selectedDonaturPhone').innerText = item.no_hp || '-';
         document.getElementById('selectedDonaturInitials').innerText = (item.nama || 'D').substring(0, 2).toUpperCase();
-        document.getElementById('selectedDonaturKota').innerText = item.kota || item.alamat || '-';
+        document.getElementById('selectedDonaturKota').innerText = item.kecamatan
+            ? `${item.kecamatan}, ${item.kota || 'Cilacap'}`
+            : (item.kota || item.alamat || 'Kecamatan belum diisi');
+
+        const missingBox = document.getElementById('existingKecamatanMissingBox');
+        const selectExistingKec = document.getElementById('selectExistingKecamatan');
+        if (missingBox) {
+            if (!item.kecamatan) {
+                missingBox.classList.remove('hidden');
+            } else {
+                missingBox.classList.add('hidden');
+                if (selectExistingKec) selectExistingKec.value = '';
+            }
+        }
 
         selectedDonaturCard.classList.remove('hidden');
         donaturSearchContainer.classList.add('hidden');
@@ -565,6 +591,10 @@
     function clearSelectedDonatur() {
         selectedDonaturIdInput.value = '';
         selectedDonaturCard.classList.add('hidden');
+        const missingBox = document.getElementById('existingKecamatanMissingBox');
+        const selectExistingKec = document.getElementById('selectExistingKecamatan');
+        if (missingBox) missingBox.classList.add('hidden');
+        if (selectExistingKec) selectExistingKec.value = '';
         donaturSearchContainer.classList.remove('hidden');
         donaturSearchInput.value = '';
         donaturClearBtn.classList.add('hidden');
@@ -904,6 +934,11 @@
             btnClearKecamatan.classList.toggle('hidden', val.length === 0);
             renderKecamatanDropdown(val);
 
+            if (!val) {
+                hiddenKecamatan.value = '';
+                return;
+            }
+
             // Cek apakah ketikan persis sama dengan salah satu kecamatan
             const match = DAFTAR_KECAMATAN_CILACAP.find(k => k.toLowerCase() === val.toLowerCase());
             if (match) {
@@ -913,6 +948,36 @@
             } else if (val.toLowerCase().includes('luar')) {
                 hiddenKecamatan.value = 'Luar Cilacap';
                 boxKotaLuar.classList.remove('hidden');
+            } else {
+                // Jika hanya ada 1 kecamatan yang cocok sebagian, atau simpan teks ketikan agar tidak pernah NULL
+                const partialMatches = DAFTAR_KECAMATAN_CILACAP.filter(k => k.toLowerCase().includes(val.toLowerCase()));
+                if (partialMatches.length === 1) {
+                    hiddenKecamatan.value = partialMatches[0];
+                    hiddenKota.value = 'Cilacap';
+                } else {
+                    hiddenKecamatan.value = val;
+                    hiddenKota.value = 'Cilacap';
+                }
+            }
+        });
+
+        inputKecamatanSearch.addEventListener('blur', function() {
+            const val = this.value.trim();
+            if (!val) return;
+            const exact = DAFTAR_KECAMATAN_CILACAP.find(k => k.toLowerCase() === val.toLowerCase());
+            if (exact) {
+                this.value = exact;
+                hiddenKecamatan.value = exact;
+                hiddenKota.value = 'Cilacap';
+            } else {
+                const partialMatches = DAFTAR_KECAMATAN_CILACAP.filter(k => k.toLowerCase().includes(val.toLowerCase()));
+                if (partialMatches.length === 1) {
+                    this.value = partialMatches[0];
+                    hiddenKecamatan.value = partialMatches[0];
+                    hiddenKota.value = 'Cilacap';
+                } else if (!hiddenKecamatan.value) {
+                    hiddenKecamatan.value = val;
+                }
             }
         });
 
@@ -920,6 +985,26 @@
         document.addEventListener('click', function(e) {
             if (containerKecamatan && !containerKecamatan.contains(e.target)) {
                 if (dropdownKecamatan) dropdownKecamatan.classList.add('hidden');
+            }
+        });
+    }
+
+    const formDonasiEl = document.getElementById('formDonasi');
+    if (formDonasiEl) {
+        formDonasiEl.addEventListener('submit', function(e) {
+            const mode = document.getElementById('donaturMode')?.value;
+            if (mode === 'new') {
+                if (inputKecamatanSearch && !hiddenKecamatan.value.trim() && inputKecamatanSearch.value.trim()) {
+                    hiddenKecamatan.value = inputKecamatanSearch.value.trim();
+                }
+                if (hiddenKecamatan && !hiddenKecamatan.value.trim()) {
+                    e.preventDefault();
+                    if (inputKecamatanSearch) {
+                        inputKecamatanSearch.focus();
+                        renderKecamatanDropdown('');
+                    }
+                    alert('Mohon pilih atau isi Kecamatan / Domisili donatur terlebih dahulu.');
+                }
             }
         });
     }

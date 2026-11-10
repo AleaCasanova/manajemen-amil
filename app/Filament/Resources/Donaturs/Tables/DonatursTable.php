@@ -48,6 +48,13 @@ class DonatursTable
                     ->label('WhatsApp')
                     ->searchable()
                     ->url(fn ($record) => $record->no_hp ? 'https://wa.me/'.preg_replace('/[^0-9]/', '', $record->no_hp) : null, true),
+                TextColumn::make('kecamatan')
+                    ->label('Kecamatan')
+                    ->default('Belum Diisi')
+                    ->badge()
+                    ->color(fn (string $state): string => $state === 'Belum Diisi' ? 'warning' : 'success')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('amilPic.nama')
                     ->label('Amil PIC')
                     ->default('-')
