@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Absensi;
 use App\Models\Amil;
 use App\Models\IzinCuti;
+use App\Services\AbsensiService;
 use Carbon\Carbon;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -20,6 +21,10 @@ class MarkAlpaAmilCommand extends Command
     public function handle(): int
     {
         $dateInput = $this->option('date');
+        if (! $dateInput) {
+            app(AbsensiService::class)->autoSyncPastAlpa();
+        }
+
         $targetDate = $dateInput
             ? Carbon::createFromFormat('Y-m-d', $dateInput, 'Asia/Jakarta')->startOfDay()
             : Carbon::today('Asia/Jakarta');

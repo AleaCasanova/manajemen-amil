@@ -29,6 +29,8 @@ class AbsensiController extends Controller
             return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk presensi kehadiran.');
         }
 
+        $this->absensiService->autoSyncPastAlpa();
+
         $today = Carbon::today('Asia/Jakarta');
         $absensiToday = $this->absensiService->getTodayAbsensi($amil);
 

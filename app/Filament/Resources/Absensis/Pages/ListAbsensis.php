@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Absensis\Pages;
 use App\Filament\Resources\Absensis\AbsensiResource;
 use App\Models\Absensi;
 use App\Models\Amil;
+use App\Services\AbsensiService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -17,6 +18,12 @@ use Illuminate\Support\Facades\Artisan;
 class ListAbsensis extends ListRecords
 {
     protected static string $resource = AbsensiResource::class;
+
+    public function mount(): void
+    {
+        app(AbsensiService::class)->autoSyncPastAlpa();
+        parent::mount();
+    }
 
     protected function getHeaderActions(): array
     {
