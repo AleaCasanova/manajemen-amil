@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use App\Models\Donasi;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TopKecamatanChartWidget extends ChartWidget
@@ -45,8 +44,6 @@ class TopKecamatanChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $kecamatanExpr = "COALESCE(NULLIF(TRIM(donaturs.kecamatan), ''), 'Belum Diisi')";
-
         $query = Donasi::query()
             ->join('donaturs', 'donasis.donatur_id', '=', 'donaturs.id')
             ->where('donasis.status', 'terverifikasi');
@@ -64,14 +61,24 @@ class TopKecamatanChartWidget extends ChartWidget
                 ->whereMonth('donasis.tgl_donasi', now()->month);
         }
 
-        $topKecamatan = $query
-            ->groupBy(DB::raw($kecamatanExpr))
-            ->selectRaw("{$kecamatanExpr} as kecamatan, SUM(donasis.jumlah) as total")
-            ->orderByDesc('total')
-            ->limit(5)
+        $rawKecamatan = $query
+            ->groupBy('donaturs.kecamatan')
+            ->selectRaw('donaturs.kecamatan, SUM(donasis.jumlah) as total')
             ->get();
 
-        if ($topKecamatan->isEmpty()) {
+        $grouped = [];
+        foreach ($rawKecamatan as $item) {
+            $nama = trim((string) ($item->kecamatan ?? ''));
+            if ($nama === '') {
+                $nama = 'Belum Diisi';
+            }
+            $grouped[$nama] = ($grouped[$nama] ?? 0.0) + (float) $item->total;
+        }
+
+        arsort($grouped);
+        $topKecamatan = array_slice($grouped, 0, 5, true);
+
+        if (empty($topKecamatan)) {
             return [
                 'datasets' => [
                     [
@@ -90,9 +97,9 @@ class TopKecamatanChartWidget extends ChartWidget
         $labels = [];
         $totals = [];
 
-        foreach ($topKecamatan as $item) {
-            $labels[] = Str::limit($item->kecamatan, 20);
-            $totals[] = (float) $item->total;
+        foreach ($topKecamatan as $namaKecamatan => $total) {
+            $labels[] = Str::limit((string) $namaKecamatan, 20);
+            $totals[] = (float) $total;
         }
 
         return [
