@@ -4,8 +4,10 @@ namespace App\Filament\Resources\Absensis\Tables;
 
 use App\Models\Absensi;
 use App\Models\Amil;
+use App\Models\Divisi;
 use Carbon\Carbon;
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -13,8 +15,11 @@ use Filament\Forms\Components\TimePicker;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AbsensisTable
 {
@@ -229,9 +234,69 @@ class AbsensisTable
                     }),
             ])
             ->filters([
-                SelectFilter::make('divisi_id')
-                    ->relationship('divisi', 'nama')
-                    ->label('Filter Divisi'),
+                Filter::make('tanpa_relawan')
+                    ->label('Sembunyikan Relawan (Bebas Absen)')
+                    ->query(fn (Builder $query): Builder => $query->where('jabatan', '!=', 'relawan'))
+                    ->indicator('Tanpa Relawan'),
+
+                Filter::make('divisi_id')
+                    ->form([
+                        CheckboxList::make('values')
+                            ->label('Filter Divisi (Centang yang Ditampilkan)')
+                            ->options(fn (): array => Divisi::query()->orderBy('id')->pluck('nama', 'id')->all())
+                            ->bulkToggleable(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $values = array_filter($data['values'] ?? []);
+                        if (! empty($values)) {
+                            $query->whereIn('divisi_id', $values);
+                        }
+
+                        return $query;
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $values = array_filter($data['values'] ?? []);
+                        if (empty($values)) {
+                            return [];
+                        }
+
+                        $names = Divisi::whereIn('id', $values)->pluck('nama')->join(', ');
+
+                        return [Indicator::make('Divisi: '.$names)->removeField('values')];
+                    }),
+
+                Filter::make('jabatan')
+                    ->form([
+                        CheckboxList::make('values')
+                            ->label('Filter Jabatan / Peran')
+                            ->options([
+                                'ketua' => 'Ketua',
+                                'staff' => 'Staff',
+                                'driver' => 'Driver',
+                                'magang' => 'Magang',
+                                'relawan' => 'Relawan (Bebas Absen)',
+                            ])
+                            ->bulkToggleable(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $values = array_filter($data['values'] ?? []);
+                        if (! empty($values)) {
+                            $query->whereIn('jabatan', $values);
+                        }
+
+                        return $query;
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $values = array_filter($data['values'] ?? []);
+                        if (empty($values)) {
+                            return [];
+                        }
+
+                        $labels = collect($values)->map(fn (string $v): string => ucfirst($v))->join(', ');
+
+                        return [Indicator::make('Jabatan: '.$labels)->removeField('values')];
+                    }),
+
                 SelectFilter::make('status')
                     ->options([
                         'aktif' => 'Amil Aktif',

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Absensis\Pages;
 
+use App\Exports\AbsensiExport;
 use App\Filament\Resources\Absensis\AbsensiResource;
 use App\Models\Absensi;
 use App\Models\Amil;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\TimePicker;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Artisan;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ListAbsensis extends ListRecords
 {
@@ -28,6 +30,20 @@ class ListAbsensis extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('exportExcel')
+                ->label('Unduh Rekap Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->action(function () {
+                    $query = $this->getFilteredSortedTableQuery() ?? Amil::query()->where('status', 'aktif');
+                    $amils = (clone $query)->with(['divisi', 'absensis'])->get();
+
+                    return Excel::download(
+                        new AbsensiExport($amils),
+                        'rekap-absensi-amil-'.now('Asia/Jakarta')->format('Ymd-His').'.xlsx'
+                    );
+                }),
+
             Action::make('catat_presensi_baru')
                 ->label('Catat Presensi Amil')
                 ->icon('heroicon-o-plus')
