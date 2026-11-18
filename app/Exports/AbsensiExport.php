@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\Export;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -40,7 +41,7 @@ class AbsensiExport implements Export, WithMultipleSheets
     }
 }
 
-class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStyles, WithTitle
+class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStrictNullComparison, WithStyles, WithTitle
 {
     public function __construct(
         protected Collection $amils,
@@ -63,7 +64,6 @@ class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStyles,
         $rows = [
             ['REKAPITULASI KEHADIRAN AMIL — LAZ GERAK SEDEKAH CILACAP'],
             ["Periode Rekap: {$periodeLabel}  |  Dicetak pada: {$waktuCetak}  |  Total Personel: {$this->amils->count()} Orang"],
-            [],
             [
                 'No',
                 'NIP',
@@ -161,7 +161,7 @@ class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStyles,
 
     public function styles(Worksheet $sheet): array
     {
-        $lastRow = max(4, 4 + $this->amils->count());
+        $lastRow = max(3, 3 + $this->amils->count());
 
         $sheet->mergeCells('A1:O1');
         $sheet->mergeCells('A2:O2');
@@ -176,7 +176,7 @@ class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStyles,
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
         ]);
 
-        $sheet->getStyle('A4:O4')->applyFromArray([
+        $sheet->getStyle('A3:O3')->applyFromArray([
             'font' => ['bold' => true, 'size' => 10, 'color' => ['argb' => 'FFFFFFFF']],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -188,10 +188,10 @@ class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStyles,
             ],
         ]);
 
-        $sheet->getRowDimension(4)->setRowHeight(24);
+        $sheet->getRowDimension(3)->setRowHeight(24);
 
-        if ($lastRow >= 5) {
-            $sheet->getStyle("A4:O{$lastRow}")->applyFromArray([
+        if ($lastRow >= 4) {
+            $sheet->getStyle("A3:O{$lastRow}")->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
@@ -203,16 +203,16 @@ class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStyles,
                 ],
             ]);
 
-            $sheet->getStyle("A5:B{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("D5:L{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("M5:O{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("A4:B{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("D4:L{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("M4:O{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
 
         return [];
     }
 }
 
-class AbsensiRincianHarianSheet implements FromArray, ShouldAutoSize, WithStyles, WithTitle
+class AbsensiRincianHarianSheet implements FromArray, ShouldAutoSize, WithStrictNullComparison, WithStyles, WithTitle
 {
     protected int $rowCount = 0;
 
@@ -237,7 +237,6 @@ class AbsensiRincianHarianSheet implements FromArray, ShouldAutoSize, WithStyles
         $rows = [
             ['RINCIAN LOG PRESENSI HARIAN AMIL — LAZ GERAK SEDEKAH CILACAP'],
             ["Periode: {$periodeLabel}  |  Dicetak pada: {$waktuCetak}"],
-            [],
             [
                 'No',
                 'Tanggal',
@@ -315,7 +314,7 @@ class AbsensiRincianHarianSheet implements FromArray, ShouldAutoSize, WithStyles
 
     public function styles(Worksheet $sheet): array
     {
-        $lastRow = max(4, 4 + $this->rowCount);
+        $lastRow = max(3, 3 + $this->rowCount);
 
         $sheet->mergeCells('A1:M1');
         $sheet->mergeCells('A2:M2');
@@ -330,7 +329,7 @@ class AbsensiRincianHarianSheet implements FromArray, ShouldAutoSize, WithStyles
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
         ]);
 
-        $sheet->getStyle('A4:M4')->applyFromArray([
+        $sheet->getStyle('A3:M3')->applyFromArray([
             'font' => ['bold' => true, 'size' => 10, 'color' => ['argb' => 'FFFFFFFF']],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -342,10 +341,10 @@ class AbsensiRincianHarianSheet implements FromArray, ShouldAutoSize, WithStyles
             ],
         ]);
 
-        $sheet->getRowDimension(4)->setRowHeight(24);
+        $sheet->getRowDimension(3)->setRowHeight(24);
 
-        if ($lastRow >= 5) {
-            $sheet->getStyle("A4:M{$lastRow}")->applyFromArray([
+        if ($lastRow >= 4) {
+            $sheet->getStyle("A3:M{$lastRow}")->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
@@ -357,8 +356,8 @@ class AbsensiRincianHarianSheet implements FromArray, ShouldAutoSize, WithStyles
                 ],
             ]);
 
-            $sheet->getStyle("A5:D{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("F5:L{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("A4:D{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("F4:L{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
 
         return [];
