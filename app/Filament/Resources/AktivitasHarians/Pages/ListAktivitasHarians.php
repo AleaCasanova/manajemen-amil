@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AktivitasHarians\Pages;
 
+use App\Exports\AktivitasHarianExport;
 use App\Filament\Resources\AktivitasHarians\AktivitasHarianResource;
 use App\Models\AktivitasHarian;
 use App\Models\Amil;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ListAktivitasHarians extends ListRecords
 {
@@ -46,6 +48,77 @@ class ListAktivitasHarians extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('exportExcel')
+                ->label('Unduh Rekap Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->modalHeading('Unduh Rekap Laporan Aktivitas Harian')
+                ->modalDescription('Pilih periode bulan dan filter status aktivitas yang ingin diunduh dalam format Excel.')
+                ->modalSubmitActionLabel('Unduh File Excel')
+                ->form([
+                    Select::make('bulan')
+                        ->label('Pilih Bulan')
+                        ->options([
+                            1 => 'Januari',
+                            2 => 'Februari',
+                            3 => 'Maret',
+                            4 => 'April',
+                            5 => 'Mei',
+                            6 => 'Juni',
+                            7 => 'Juli',
+                            8 => 'Agustus',
+                            9 => 'September',
+                            10 => 'Oktober',
+                            11 => 'November',
+                            12 => 'Desember',
+                        ])
+                        ->default((int) now('Asia/Jakarta')->month)
+                        ->required(),
+                    Select::make('tahun')
+                        ->label('Pilih Tahun')
+                        ->options(function () {
+                            $current = (int) now('Asia/Jakarta')->year;
+                            $years = [];
+                            for ($y = $current - 2; $y <= $current + 1; $y++) {
+                                $years[$y] = (string) $y;
+                            }
+
+                            return $years;
+                        })
+                        ->default((int) now('Asia/Jakarta')->year)
+                        ->required(),
+                    Select::make('status')
+                        ->label('Status Review Laporan')
+                        ->options([
+                            'semua' => 'Semua Status (Disetujui, Menunggu Review & Ditolak)',
+                            'disetujui' => 'Hanya yang Disetujui (Terverifikasi)',
+                            'diajukan' => 'Hanya yang Menunggu Review',
+                            'ditolak' => 'Hanya yang Ditolak',
+                        ])
+                        ->default('semua')
+                        ->required(),
+                ])
+                ->action(function (array $data) {
+                    $month = (int) $data['bulan'];
+                    $year = (int) $data['tahun'];
+                    $status = $data['status'] ?? 'semua';
+
+                    $query = $this->getFilteredSortedTableQuery() ?? Amil::query()->where('status', 'aktif');
+                    $amils = (clone $query)->with(['divisi', 'aktivitasHarians'])->get();
+
+                    $filename = sprintf(
+                        'rekap-aktivitas-amil-%04d-%02d-%s.xlsx',
+                        $year,
+                        $month,
+                        now('Asia/Jakarta')->format('His')
+                    );
+
+                    return Excel::download(
+                        new AktivitasHarianExport($amils, $month, $year, $status),
+                        $filename
+                    );
+                }),
+
             Action::make('buat_laporan_baru')
                 ->label('Buat Laporan Aktivitas')
                 ->icon('heroicon-o-plus')

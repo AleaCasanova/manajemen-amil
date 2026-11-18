@@ -16,7 +16,9 @@ use Filament\Schemas\Components\View;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AktivitasHariansTable
 {
@@ -97,7 +99,19 @@ class AktivitasHariansTable
             ->filters([
                 SelectFilter::make('divisi_id')
                     ->relationship('divisi', 'nama')
-                    ->label('Filter Divisi'),
+                    ->label('Filter Divisi')
+                    ->multiple()
+                    ->preload(),
+                TernaryFilter::make('tanpa_relawan')
+                    ->label('Sembunyikan Relawan')
+                    ->placeholder('Tampilkan Semua Personel')
+                    ->trueLabel('Hanya Amil & Magang (Tanpa Relawan)')
+                    ->falseLabel('Hanya Relawan')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('jabatan', '!=', 'relawan'),
+                        false: fn (Builder $query) => $query->where('jabatan', 'relawan'),
+                        blank: fn (Builder $query) => $query,
+                    ),
                 SelectFilter::make('status')
                     ->options([
                         'aktif' => 'Amil Aktif',

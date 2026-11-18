@@ -34,13 +34,59 @@ class ListAbsensis extends ListRecords
                 ->label('Unduh Rekap Excel')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
-                ->action(function () {
+                ->modalHeading('Unduh Rekap Presensi Amil')
+                ->modalDescription('Pilih periode bulan dan tahun presensi yang ingin diunduh ke Excel.')
+                ->modalSubmitActionLabel('Unduh File Excel')
+                ->form([
+                    Select::make('bulan')
+                        ->label('Pilih Bulan')
+                        ->options([
+                            1 => 'Januari',
+                            2 => 'Februari',
+                            3 => 'Maret',
+                            4 => 'April',
+                            5 => 'Mei',
+                            6 => 'Juni',
+                            7 => 'Juli',
+                            8 => 'Agustus',
+                            9 => 'September',
+                            10 => 'Oktober',
+                            11 => 'November',
+                            12 => 'Desember',
+                        ])
+                        ->default((int) now('Asia/Jakarta')->month)
+                        ->required(),
+                    Select::make('tahun')
+                        ->label('Pilih Tahun')
+                        ->options(function () {
+                            $current = (int) now('Asia/Jakarta')->year;
+                            $years = [];
+                            for ($y = $current - 2; $y <= $current + 1; $y++) {
+                                $years[$y] = (string) $y;
+                            }
+
+                            return $years;
+                        })
+                        ->default((int) now('Asia/Jakarta')->year)
+                        ->required(),
+                ])
+                ->action(function (array $data) {
+                    $month = (int) $data['bulan'];
+                    $year = (int) $data['tahun'];
+
                     $query = $this->getFilteredSortedTableQuery() ?? Amil::query()->where('status', 'aktif');
                     $amils = (clone $query)->with(['divisi', 'absensis'])->get();
 
+                    $filename = sprintf(
+                        'rekap-absensi-amil-%04d-%02d-%s.xlsx',
+                        $year,
+                        $month,
+                        now('Asia/Jakarta')->format('His')
+                    );
+
                     return Excel::download(
-                        new AbsensiExport($amils),
-                        'rekap-absensi-amil-'.now('Asia/Jakarta')->format('Ymd-His').'.xlsx'
+                        new AbsensiExport($amils, $month, $year),
+                        $filename
                     );
                 }),
 
