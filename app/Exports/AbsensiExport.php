@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Amil;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\Export;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AbsensiExport implements WithMultipleSheets
+class AbsensiExport implements Export, WithMultipleSheets
 {
     protected Collection $amils;
 
