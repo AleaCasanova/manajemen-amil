@@ -78,16 +78,20 @@ class AuthController extends Controller
                 ])->onlyInput('login');
             }
 
-            Auth::login($user, $request->boolean('remember'));
-            $request->session()->regenerate();
+            // Jika user adalah admin murni tanpa profil amil, login ke guard admin & redirect ke panel admin
+            if (! $user->amil && ! $user->hasRole('Amil') && $user->isAdmin()) {
+                Auth::guard('admin')->login($user, $request->boolean('remember'));
+                $request->session()->regenerate();
 
-            // Jika user adalah admin murni tanpa profil amil, redirect ke panel admin
-            if (! $user->amil && $user->isAdmin()) {
-                return redirect()->intended('/admin')
+                return redirect('/admin')
                     ->with('success', 'Selamat datang kembali di Panel Admin, '.$user->name.'!');
             }
 
-            return redirect()->intended(route('amil.dashboard'))
+            Auth::login($user, $request->boolean('remember'));
+            $request->session()->regenerate();
+
+            // Selalu arahkan user amil ke Portal Amil (meski merangkap Admin, akses admin tetap lewat tombol Login Admin di profil)
+            return redirect()->route('amil.dashboard')
                 ->with('success', 'Selamat datang kembali, '.($user->amil?->nama ?? $user->name).'!');
         }
 

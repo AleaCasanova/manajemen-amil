@@ -21,6 +21,11 @@ class User extends Authenticatable implements FilamentUser
     use HasFactory, HasRoles, Notifiable;
 
     /**
+     * Pastikan Spatie Permission selalu menggunakan guard 'web' meski user login via guard 'admin'.
+     */
+    protected string $guard_name = 'web';
+
+    /**
      * Cek apakah user berstatus aktif dan memiliki hak akses sebagai administrator.
      */
     public function isAdmin(): bool

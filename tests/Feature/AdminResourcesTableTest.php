@@ -31,19 +31,19 @@ class AdminResourcesTableTest extends TestCase
 
     public function test_admin_can_access_absensi_amil_table(): void
     {
-        $response = $this->actingAs($this->admin)->get('/admin/absensis');
+        $response = $this->actingAs($this->admin, 'admin')->get('/admin/absensis');
         $response->assertStatus(200);
     }
 
     public function test_admin_can_access_izin_cuti_table(): void
     {
-        $response = $this->actingAs($this->admin)->get('/admin/izin-cutis');
+        $response = $this->actingAs($this->admin, 'admin')->get('/admin/izin-cutis');
         $response->assertStatus(200);
     }
 
     public function test_admin_can_access_aktivitas_harian_table(): void
     {
-        $response = $this->actingAs($this->admin)->get('/admin/aktivitas-harians');
+        $response = $this->actingAs($this->admin, 'admin')->get('/admin/aktivitas-harians');
         $response->assertStatus(200);
     }
 
