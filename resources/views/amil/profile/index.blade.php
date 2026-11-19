@@ -93,33 +93,53 @@
     </div>
 
     @if($user->isAdmin())
-        <!-- Card Khusus Akses Administrator -->
-        <div class="bg-gradient-to-r from-amber-500 via-amber-600 to-emerald-700 rounded-2xl p-5 sm:p-6 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-amber-300/40 relative overflow-hidden">
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 text-white shadow-inner border border-white/20">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Card Khusus Akses Administrator (Hanya tampil bagi akun dengan akses Admin) -->
+        <div style="background: linear-gradient(135deg, #b45309 0%, #065f46 100%); color: #ffffff;" class="rounded-2xl p-5 sm:p-6 shadow-lg border border-amber-300/40 relative overflow-hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
+                <div class="flex items-start gap-4">
+                    <div style="background-color: rgba(255, 255, 255, 0.18);" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 text-white shadow-inner border border-white/20">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="font-extrabold text-base sm:text-lg text-white">Hak Akses Administrator Aktif</h3>
+                            <span style="background-color: rgba(255, 255, 255, 0.2);" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider text-white">Panel Admin</span>
+                        </div>
+                        <p style="color: #fef3c7;" class="text-xs max-w-xl leading-relaxed">
+                            Akun Anda memiliki izin sebagai Administrator untuk mengelola data amil, program, persetujuan izin, verifikasi donasi, dan pengaturan sistem.
+                        </p>
+
+                        <!-- Info Kredensial Login Admin -->
+                        <div style="background-color: rgba(0, 0, 0, 0.22); border-color: rgba(255, 255, 255, 0.18);" class="mt-2 p-3 rounded-xl border text-xs space-y-1.5 max-w-xl">
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                <div>
+                                    <span style="color: #fde68a;" class="font-bold">Email Admin:</span>
+                                    <span class="font-mono font-extrabold text-white select-all">{{ $user->email }}</span>
+                                </div>
+                                <div>
+                                    <span style="color: #fde68a;" class="font-bold">Password:</span>
+                                    <span class="text-white font-semibold">Sama dengan password Portal Amil Anda</span>
+                                </div>
+                            </div>
+                            <p style="color: #d1fae5;" class="text-[11px]">
+                                * Gunakan email &amp; password di atas saat masuk di halaman Login Admin Filament.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{{ url('/admin') }}" class="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-900 hover:bg-amber-50 active:bg-amber-100 font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition shrink-0 cursor-pointer group">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <h3 class="font-extrabold text-base sm:text-lg text-white">Hak Akses Administrator Aktif</h3>
-                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-sm">Panel Admin</span>
-                    </div>
-                    <p class="text-xs text-amber-100 mt-1 max-w-xl">
-                        Akun Anda memiliki izin sebagai Administrator. Anda dapat mengelola data amil, program, persetujuan izin, verifikasi donasi, dan pengaturan sistem di Panel Admin Filament.
-                    </p>
-                </div>
+                    <span>Login Admin</span>
+                    <svg class="w-4 h-4 text-amber-600 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
             </div>
-            <a href="{{ url('/admin') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-900 hover:bg-amber-50 active:bg-amber-100 font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition shrink-0 cursor-pointer relative z-10 group">
-                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span>Login Admin</span>
-                <svg class="w-4 h-4 text-amber-600 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-            </a>
         </div>
     @endif
 
