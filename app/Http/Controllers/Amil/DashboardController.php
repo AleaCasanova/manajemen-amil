@@ -19,6 +19,10 @@ class DashboardController extends Controller
         $amil = $user->amil;
 
         if (! $amil) {
+            if ($user->isAdmin()) {
+                return redirect('/admin');
+            }
+
             abort(403, 'Profil data Amil tidak ditemukan untuk akun ini.');
         }
 

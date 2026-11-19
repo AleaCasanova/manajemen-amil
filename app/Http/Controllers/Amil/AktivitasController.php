@@ -16,7 +16,11 @@ class AktivitasController extends Controller
     {
         $amil = Auth::user()->amil;
 
-        if ($amil && $amil->isRelawan()) {
+        if (! $amil) {
+            return redirect()->route('amil.dashboard')->with('error', 'Akun Anda belum terhubung dengan profil data amil.');
+        }
+
+        if ($amil->isRelawan()) {
             return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk membuat laporan aktivitas harian.');
         }
 
@@ -48,7 +52,11 @@ class AktivitasController extends Controller
     {
         $amil = Auth::user()->amil;
 
-        if ($amil && $amil->isRelawan()) {
+        if (! $amil) {
+            return redirect()->route('amil.dashboard')->with('error', 'Akun Anda belum terhubung dengan profil data amil.');
+        }
+
+        if ($amil->isRelawan()) {
             return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk membuat laporan aktivitas harian.');
         }
 
@@ -62,7 +70,11 @@ class AktivitasController extends Controller
     {
         $amil = Auth::user()->amil;
 
-        if ($amil && $amil->isRelawan()) {
+        if (! $amil) {
+            return redirect()->route('amil.dashboard')->with('error', 'Akun Anda belum terhubung dengan profil data amil.');
+        }
+
+        if ($amil->isRelawan()) {
             return redirect()->route('amil.dashboard')->with('info', 'Petugas relawan tidak diwajibkan untuk membuat laporan aktivitas harian.');
         }
 

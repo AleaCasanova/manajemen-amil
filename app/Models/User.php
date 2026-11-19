@@ -21,12 +21,20 @@ class User extends Authenticatable implements FilamentUser
     use HasFactory, HasRoles, Notifiable;
 
     /**
+     * Cek apakah user berstatus aktif dan memiliki hak akses sebagai administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_active && ($this->hasRole('Admin') || $this->role_id === 1);
+    }
+
+    /**
      * Tentukan apakah user dapat mengakses panel Filament tertentu.
      */
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            return (bool) $this->is_active && ($this->hasRole('Admin') || $this->role_id === 1);
+            return $this->isAdmin();
         }
 
         return true;

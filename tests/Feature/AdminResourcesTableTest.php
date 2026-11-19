@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AdminResourcesTableTest extends TestCase
@@ -22,6 +23,7 @@ class AdminResourcesTableTest extends TestCase
             ?? User::whereHas('roles', fn ($q) => $q->where('name', 'Admin'))->first()
             ?? User::factory()->create(['email' => 'cilacapadmingsc@gmail.com', 'is_active' => true]);
 
+        Role::firstOrCreate(['name' => 'Admin']);
         if (! $this->admin->hasRole('Admin')) {
             $this->admin->assignRole('Admin');
         }

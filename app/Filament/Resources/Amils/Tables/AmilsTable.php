@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Amils\Tables;
 
 use App\Models\Amil;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -16,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class AmilsTable
 {
@@ -38,7 +40,14 @@ class AmilsTable
                     ->label('Nama Amil')
                     ->searchable()
                     ->sortable()
-                    ->description(fn (Amil $record): string => $record->user?->email ?? '-'),
+                    ->description(function (Amil $record): string {
+                        $email = $record->user?->email ?? '-';
+                        if ($record->isAdmin()) {
+                            return "🛡️ Admin • {$email}";
+                        }
+
+                        return $email;
+                    }),
                 TextColumn::make('divisi.nama')
                     ->label('Divisi')
                     ->badge()
@@ -98,6 +107,79 @@ class AmilsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('toggleAdmin')
+                    ->label(fn (Amil $record): string => $record->isAdmin() ? 'Cabut Admin' : 'Jadikan Admin')
+                    ->icon(fn (Amil $record): string => $record->isAdmin() ? 'heroicon-o-shield-exclamation' : 'heroicon-o-shield-check')
+                    ->color(fn (Amil $record): string => $record->isAdmin() ? 'danger' : 'success')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn (Amil $record): string => $record->isAdmin() ? 'Cabut Hak Akses Administrator' : 'Jadikan Administrator')
+                    ->modalDescription(fn (Amil $record): string => $record->isAdmin()
+                        ? "Apakah Anda yakin ingin mencabut hak akses Admin untuk {$record->nama}? Petugas ini tidak akan dapat lagi mengakses Panel Manajemen Admin Filament."
+                        : "Apakah Anda yakin ingin memberikan hak akses Admin kepada {$record->nama}? Petugas ini akan dapat membuka Panel Manajemen Admin Filament dan mengelola seluruh data yayasan.")
+                    ->action(function (Amil $record): void {
+                        $currentUser = auth()->user();
+
+                        // Cegah mencabut akses admin untuk akun sendiri
+                        if ($record->user_id && $currentUser && $record->user_id === $currentUser->id) {
+                            Notification::make()
+                                ->title('Aksi Ditolak')
+                                ->body('Anda tidak dapat mencabut hak akses Admin untuk akun Anda sendiri!')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        $roleAdmin = Role::firstOrCreate(['name' => 'Admin']);
+                        $roleAmil = Role::firstOrCreate(['name' => 'Amil']);
+
+                        $user = $record->user;
+
+                        // Jika amil belum memiliki user, buatkan otomatis
+                        if (! $user) {
+                            $user = User::create([
+                                'name' => $record->nama,
+                                'email' => strtolower(str_replace(' ', '', $record->nama)).'@amilgsc.com',
+                                'password' => Hash::make('password123'),
+                                'role_id' => $roleAdmin->id,
+                                'is_active' => true,
+                            ]);
+                            $user->assignRole($roleAdmin);
+                            $user->assignRole($roleAmil);
+                            $record->update(['user_id' => $user->id]);
+
+                            Notification::make()
+                                ->title('Akun Dibuat & Menjadi Admin')
+                                ->body("Akun user {$record->nama} berhasil dibuat dan resmi menjadi Administrator.")
+                                ->success()
+                                ->send();
+
+                            return;
+                        }
+
+                        if ($user->isAdmin()) {
+                            // Cabut akses Admin
+                            $user->removeRole('Admin');
+                            $user->assignRole($roleAmil);
+                            $user->update(['role_id' => $roleAmil->id]);
+
+                            Notification::make()
+                                ->title('Akses Admin Dicabut')
+                                ->body("Hak akses Administrator untuk {$record->nama} berhasil dicabut.")
+                                ->warning()
+                                ->send();
+                        } else {
+                            // Berikan akses Admin
+                            $user->assignRole($roleAdmin);
+                            $user->update(['role_id' => $roleAdmin->id]);
+
+                            Notification::make()
+                                ->title('Berhasil Menjadi Admin')
+                                ->body("{$record->nama} sekarang resmi memiliki hak akses Administrator Panel Admin.")
+                                ->success()
+                                ->send();
+                        }
+                    }),
                 Action::make('resetPassword')
                     ->label('Reset Password')
                     ->icon('heroicon-o-key')

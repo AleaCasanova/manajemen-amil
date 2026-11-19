@@ -16,11 +16,11 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            if (Auth::user()->hasRole('Amil') || Auth::user()->amil) {
+            if (Auth::user()->amil || Auth::user()->hasRole('Amil')) {
                 return redirect()->route('amil.dashboard');
             }
 
-            if (Auth::user()->hasRole('Admin')) {
+            if (Auth::user()->isAdmin()) {
                 return redirect('/admin');
             }
         }
@@ -67,19 +67,25 @@ class AuthController extends Controller
         if ($user && Hash::check($password, $user->password)) {
             if (! $user->is_active) {
                 return back()->withErrors([
-                    'login' => 'Akun amil Anda sedang dinonaktifkan oleh Administrator.',
+                    'login' => 'Akun Anda sedang dinonaktifkan oleh Administrator.',
                 ])->onlyInput('login');
             }
 
-            // Pastikan user memiliki profil amil atau role Amil
-            if (! $user->amil && ! $user->hasRole('Amil')) {
+            // Pastikan user memiliki profil amil, role Amil, atau hak akses Admin
+            if (! $user->amil && ! $user->hasRole('Amil') && ! $user->isAdmin()) {
                 return back()->withErrors([
-                    'login' => 'Akun ini bukan akun Petugas Amil yang terdaftar.',
+                    'login' => 'Akun ini tidak memiliki hak akses ke sistem.',
                 ])->onlyInput('login');
             }
 
             Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
+
+            // Jika user adalah admin murni tanpa profil amil, redirect ke panel admin
+            if (! $user->amil && $user->isAdmin()) {
+                return redirect()->intended('/admin')
+                    ->with('success', 'Selamat datang kembali di Panel Admin, '.$user->name.'!');
+            }
 
             return redirect()->intended(route('amil.dashboard'))
                 ->with('success', 'Selamat datang kembali, '.($user->amil?->nama ?? $user->name).'!');

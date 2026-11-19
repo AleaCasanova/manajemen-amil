@@ -16,6 +16,7 @@ use App\Models\SaldoCuti;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AmilWorkflowTest extends TestCase
@@ -33,6 +34,8 @@ class AmilWorkflowTest extends TestCase
         // Siapkan akun amil pengujian
         $existingAmilUser = User::where('email', 'amil@amilgsc.com')->first()
             ?? User::whereHas('roles', fn ($q) => $q->where('name', 'Amil'))->first();
+
+        Role::firstOrCreate(['name' => 'Amil']);
 
         if (! $existingAmilUser) {
             $this->user = User::factory()->create(['email' => 'testamil@amilgsc.com', 'is_active' => true]);

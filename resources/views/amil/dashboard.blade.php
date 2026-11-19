@@ -16,6 +16,14 @@
                     <span class="inline-block px-2.5 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider {{ $amil->isRelawan() ? 'bg-amber-400 text-amber-950 font-black' : ($amil->isMagang() ? 'bg-cyan-400 text-cyan-950 font-black' : 'bg-emerald-900/80 text-emerald-100') }}">
                         {{ $amil->jabatan_label }}
                     </span>
+                    @if(Auth::user()->isAdmin())
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-amber-400 text-amber-950 text-[10px] sm:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <span>Admin</span>
+                        </span>
+                    @endif
                 </div>
                 <h1 class="text-lg sm:text-2xl font-extrabold tracking-tight truncate">Assalamu'alaikum, {{ $amil->nama }}</h1>
                 <p class="text-xs sm:text-sm text-emerald-100/90 mt-0.5 sm:mt-1 truncate">
@@ -24,7 +32,16 @@
             </div>
 
             <!-- Quick Action Button -->
-            <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
+            <div class="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+                @if(Auth::user()->isAdmin())
+                    <a href="{{ url('/admin') }}" class="py-2 px-3 sm:py-2.5 sm:px-3.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-1.5 shrink-0">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        <span>Panel Admin</span>
+                    </a>
+                @endif
+
                 @if($amil->isMagang())
                     <a href="{{ route('amil.aktivitas.create') }}" style="background-color: #ffffff !important; color: #0f766e !important;" class="py-2 px-3.5 sm:py-2.5 sm:px-4 bg-white font-bold text-xs sm:text-sm rounded-xl shadow-md hover:bg-teal-50 active:scale-95 transition flex items-center gap-1.5 shrink-0">
                         <svg class="w-4 h-4 shrink-0" style="color: #0d9488 !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

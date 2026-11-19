@@ -5,11 +5,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        if (auth()->user()->hasRole('Amil') || auth()->user()->amil) {
+        if (auth()->user()->amil || auth()->user()->hasRole('Amil')) {
             return redirect()->route('amil.dashboard');
         }
 
-        return redirect('/admin');
+        if (auth()->user()->isAdmin()) {
+            return redirect('/admin');
+        }
     }
 
     return redirect()->route('login');

@@ -7,6 +7,7 @@ use App\Models\Amil;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class HariKerjaDanAlpaTest extends TestCase
@@ -22,6 +23,8 @@ class HariKerjaDanAlpaTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        Role::firstOrCreate(['name' => 'Amil']);
 
         // 1. Setup Staf (6 Hari Kerja: Senin - Sabtu)
         $staffUser = User::factory()->create([

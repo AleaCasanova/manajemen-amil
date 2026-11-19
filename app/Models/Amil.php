@@ -39,6 +39,14 @@ class Amil extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Cek apakah amil ini memiliki akses administrator ke panel Filament.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->user ? $this->user->isAdmin() : false;
+    }
+
     public function divisi(): BelongsTo
     {
         return $this->belongsTo(Divisi::class);
