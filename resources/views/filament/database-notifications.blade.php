@@ -20,13 +20,20 @@
         .gsc-notif-header-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             width: 100%;
+            padding-right: 36px; /* Ruang aman agar tidak bertabrakan dengan tombol X close modal */
+            box-sizing: border-box;
         }
-        .gsc-notif-header-top {
+        .gsc-notif-title-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+        }
+        .gsc-notif-actions-row {
+            display: flex;
+            align-items: center;
             width: 100%;
         }
         .gsc-notif-tabs-bar {
@@ -34,11 +41,12 @@
             align-items: center;
             gap: 6px;
             overflow-x: auto;
-            padding: 10px 0 4px 0;
+            padding: 8px 0 2px 0;
             border-top: 1px solid #e2e8f0;
             scrollbar-width: none;
             -ms-overflow-style: none;
             width: 100%;
+            margin-top: 2px;
         }
         .gsc-notif-tabs-bar::-webkit-scrollbar {
             display: none;
@@ -194,10 +202,12 @@
         @if ($hasAnyNotifications)
             <x-slot name="header">
                 <div class="gsc-notif-header-wrapper">
-                    <div class="gsc-notif-header-top">
+                    {{-- Baris 1: Judul Notifikasi (Notifikasi 142) --}}
+                    <div class="gsc-notif-title-row">
                         <h2
                             id="database-notifications.heading"
                             class="fi-modal-heading"
+                            style="margin: 0; display: inline-flex; align-items: center; gap: 8px;"
                         >
                             {{ __('filament-notifications::database.modal.heading') }}
 
@@ -213,8 +223,11 @@
                                 </span>
                             @endif
                         </h2>
+                    </div>
 
-                        <div class="fi-ac">
+                    {{-- Baris 2: Aksi (Tandai semua sudah dibaca & Bersihkan di sisi kiri/bawah) --}}
+                    <div class="gsc-notif-actions-row">
+                        <div class="fi-ac" style="display: flex; align-items: center; gap: 14px;">
                             @if ($unreadNotificationsCount && $this->markAllNotificationsAsReadAction?->isVisible())
                                 {{ $this->markAllNotificationsAsReadAction }}
                             @endif
@@ -225,7 +238,7 @@
                         </div>
                     </div>
 
-                    {{-- Navigasi Tab Kategori (Sticky bersama Header) --}}
+                    {{-- Baris 3: Navigasi Tab Kategori (Sticky bersama Header Modal) --}}
                     <div class="gsc-notif-tabs-bar">
                         {{-- Tab: Semua --}}
                         <button
