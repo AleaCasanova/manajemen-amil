@@ -137,19 +137,33 @@ class DonasiChartWidget extends ChartWidget
             {
                 maintainAspectRatio: false,
                 onClick: (event, elements, chart) => {
+                    const evt = event.native || event;
                     let target = elements;
                     if (!target || !target.length) {
-                        target = chart.getElementsAtEventForMode(event.native, 'nearest', { intersect: false }, true);
+                        if (chart && typeof chart.getElementsAtEventForMode === 'function') {
+                            target = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
+                        }
                     }
                     if (target && target.length > 0) {
                         const index = target[0].index;
                         const month = index + 1;
-                        Livewire.dispatch('dashboardMonthSelected', { month: month });
+                        if (typeof Livewire !== 'undefined') {
+                            Livewire.dispatch('dashboardMonthSelected', { month: month });
+                        } else if (window.Livewire) {
+                            window.Livewire.dispatch('dashboardMonthSelected', { month: month });
+                        }
                     }
                 },
                 onHover: (event, elements, chart) => {
                     if (chart && chart.canvas) {
-                        chart.canvas.style.cursor = (elements && elements.length > 0) ? 'pointer' : 'default';
+                        const evt = event.native || event;
+                        let target = elements;
+                        if (!target || !target.length) {
+                            if (typeof chart.getElementsAtEventForMode === 'function') {
+                                target = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
+                            }
+                        }
+                        chart.canvas.style.cursor = (target && target.length > 0) ? 'pointer' : 'default';
                     }
                 },
                 scales: {
