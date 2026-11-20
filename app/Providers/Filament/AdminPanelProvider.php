@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Livewire\AdminDatabaseNotifications;
 use App\Filament\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -39,7 +40,10 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Emerald,
             ])
-            ->databaseNotifications()
+            ->databaseNotifications(
+                livewireComponent: AdminDatabaseNotifications::class
+            )
+            ->databaseNotificationsPolling('30s')
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
                 fn () => view('filament.hooks.login-amil-banner')

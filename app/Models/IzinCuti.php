@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ReviewNotificationService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,29 @@ class IzinCuti extends Model
         'approved_by',
         'catatan_admin',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (IzinCuti $izin) {
+            if ($izin->status === 'diajukan') {
+                ReviewNotificationService::notifyAllAdminsForIzinCuti($izin);
+            }
+        });
+
+        static::updated(function (IzinCuti $izin) {
+            if ($izin->isDirty('status')) {
+                if ($izin->status !== 'diajukan') {
+                    ReviewNotificationService::removeNotification('izin_cuti', (int) $izin->id);
+                } else {
+                    ReviewNotificationService::notifyAllAdminsForIzinCuti($izin);
+                }
+            }
+        });
+
+        static::deleted(function (IzinCuti $izin) {
+            ReviewNotificationService::removeNotification('izin_cuti', (int) $izin->id);
+        });
+    }
 
     protected function casts(): array
     {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ReviewNotificationService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,6 +45,29 @@ class Donasi extends Model
         'verified_by',
         'verified_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (Donasi $donasi) {
+            if ($donasi->status === 'menunggu_verifikasi') {
+                ReviewNotificationService::notifyAllAdminsForDonasi($donasi);
+            }
+        });
+
+        static::updated(function (Donasi $donasi) {
+            if ($donasi->isDirty('status')) {
+                if ($donasi->status !== 'menunggu_verifikasi') {
+                    ReviewNotificationService::removeNotification('donasi', (int) $donasi->id);
+                } else {
+                    ReviewNotificationService::notifyAllAdminsForDonasi($donasi);
+                }
+            }
+        });
+
+        static::deleted(function (Donasi $donasi) {
+            ReviewNotificationService::removeNotification('donasi', (int) $donasi->id);
+        });
+    }
 
     protected function casts(): array
     {

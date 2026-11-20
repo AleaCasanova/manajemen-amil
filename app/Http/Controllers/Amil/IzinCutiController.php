@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Amil;
 use App\Http\Controllers\Controller;
 use App\Models\IzinCuti;
 use App\Models\SaldoCuti;
-use App\Models\User;
 use Carbon\Carbon;
-use Filament\Notifications\Actions\Action as FilamentAction;
-use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -119,26 +116,6 @@ class IzinCutiController extends Controller
             'lampiran' => $lampiranPath,
             'status' => 'diajukan',
         ]);
-
-        // Kirim Notifikasi ke Admin via Filament Database Notification
-        try {
-            $admins = User::role('admin')->get();
-            if ($admins->isNotEmpty()) {
-                FilamentNotification::make()
-                    ->title('Pengajuan '.ucfirst($validated['jenis']).' Baru')
-                    ->body("Amil {$amil->nama} mengajukan ".ucfirst($validated['jenis'])." ({$validated['tgl_mulai']} s/d {$validated['tgl_selesai']}).")
-                    ->icon('heroicon-o-calendar')
-                    ->actions([
-                        FilamentAction::make('view')
-                            ->label('Lihat Detail')
-                            ->button()
-                            ->url(route('filament.admin.resources.izin-cutis.index')),
-                    ])
-                    ->sendToDatabase($admins);
-            }
-        } catch (\Throwable $e) {
-            // Background notification silently handled if any context error occurs
-        }
 
         return redirect()->route('amil.izin-cuti.index')
             ->with('success', 'Pengajuan '.strtoupper($validated['jenis']).' berhasil dikirim ke Administrator.');
