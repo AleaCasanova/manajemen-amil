@@ -5,30 +5,38 @@ namespace App\Filament\Widgets;
 use App\Models\Donasi;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 
 class DonasiProgramChartWidget extends ChartWidget
 {
-    public ?string $filter = 'month';
+    public ?int $selectedMonth = null;
 
-    protected function getFilters(): ?array
+    public ?int $selectedYear = null;
+
+    public function mount(): void
     {
-        return [
-            'month' => 'Bulan Ini',
-            'last_month' => 'Bulan Lalu',
-            'year' => 'Tahun Ini',
-            'all' => 'Semua Waktu',
-        ];
+        $this->selectedMonth = now()->month;
+        $this->selectedYear = now()->year;
+        parent::mount();
+    }
+
+    #[On('dashboardFilterUpdated')]
+    public function updateFilter(int $month, int $year): void
+    {
+        $this->selectedMonth = $month;
+        $this->selectedYear = $year;
+        $this->cachedData = null;
     }
 
     public function getHeading(): ?string
     {
-        return match ($this->filter) {
-            'last_month' => 'Donasi per program (bulan lalu)',
-            'year' => 'Donasi per program (tahun '.now()->year.')',
-            'all' => 'Donasi per program (semua waktu)',
-            default => 'Donasi per program ('.now()->translatedFormat('F Y').')',
-        };
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        return "Donasi per program ({$monthName})";
     }
 
     protected static ?int $sort = 6;
@@ -44,24 +52,14 @@ class DonasiProgramChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $query = Donasi::query()
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+
+        $items = Donasi::query()
             ->join('programs', 'donasis.program_id', '=', 'programs.id')
-            ->where('donasis.status', 'terverifikasi');
-
-        if ($this->filter === 'year') {
-            $query->whereYear('donasis.tgl_donasi', now()->year);
-        } elseif ($this->filter === 'last_month') {
-            $last = now()->subMonth();
-            $query->whereYear('donasis.tgl_donasi', $last->year)
-                ->whereMonth('donasis.tgl_donasi', $last->month);
-        } elseif ($this->filter === 'all') {
-            // Tanpa batasan tanggal
-        } else {
-            $query->whereYear('donasis.tgl_donasi', now()->year)
-                ->whereMonth('donasis.tgl_donasi', now()->month);
-        }
-
-        $items = $query
+            ->where('donasis.status', 'terverifikasi')
+            ->whereYear('donasis.tgl_donasi', $year)
+            ->whereMonth('donasis.tgl_donasi', $month)
             ->groupBy('programs.id', 'programs.nama')
             ->selectRaw('programs.nama, SUM(donasis.jumlah) as total, COUNT(donasis.id) as total_transaksi')
             ->orderByDesc('total')
@@ -81,12 +79,7 @@ class DonasiProgramChartWidget extends ChartWidget
         ];
 
         if ($items->isEmpty()) {
-            $periodText = match ($this->filter) {
-                'last_month' => 'bulan lalu',
-                'year' => 'tahun ini',
-                'all' => 'saat ini',
-                default => 'bulan ini',
-            };
+            $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
 
             return [
                 'datasets' => [
@@ -95,7 +88,7 @@ class DonasiProgramChartWidget extends ChartWidget
                         'backgroundColor' => ['#e2e8f0'],
                     ],
                 ],
-                'labels' => ["Belum ada donasi program ({$periodText})"],
+                'labels' => ["Belum ada donasi program ({$monthName})"],
             ];
         }
 

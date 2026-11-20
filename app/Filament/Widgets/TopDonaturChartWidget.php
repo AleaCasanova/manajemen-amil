@@ -5,30 +5,38 @@ namespace App\Filament\Widgets;
 use App\Models\Donasi;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 
 class TopDonaturChartWidget extends ChartWidget
 {
-    public ?string $filter = 'month';
+    public ?int $selectedMonth = null;
 
-    protected function getFilters(): ?array
+    public ?int $selectedYear = null;
+
+    public function mount(): void
     {
-        return [
-            'month' => 'Bulan Ini',
-            'last_month' => 'Bulan Lalu',
-            'year' => 'Tahun Ini',
-            'all' => 'Semua Waktu',
-        ];
+        $this->selectedMonth = now()->month;
+        $this->selectedYear = now()->year;
+        parent::mount();
+    }
+
+    #[On('dashboardFilterUpdated')]
+    public function updateFilter(int $month, int $year): void
+    {
+        $this->selectedMonth = $month;
+        $this->selectedYear = $year;
+        $this->cachedData = null;
     }
 
     public function getHeading(): ?string
     {
-        return match ($this->filter) {
-            'last_month' => 'Top 5 donatur tertinggi (bulan lalu)',
-            'year' => 'Top 5 donatur tertinggi (tahun ini)',
-            'all' => 'Top 5 donatur tertinggi (semua waktu)',
-            default => 'Top 5 donatur tertinggi (bulan ini)',
-        };
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        return "Top 5 donatur tertinggi ({$monthName})";
     }
 
     protected static ?int $sort = 3;
@@ -44,24 +52,14 @@ class TopDonaturChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $query = Donasi::query()
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+
+        $topDonaturs = Donasi::query()
             ->join('donaturs', 'donasis.donatur_id', '=', 'donaturs.id')
-            ->where('donasis.status', 'terverifikasi');
-
-        if ($this->filter === 'year') {
-            $query->whereYear('donasis.tgl_donasi', now()->year);
-        } elseif ($this->filter === 'all') {
-            // Tanpa filter tanggal
-        } elseif ($this->filter === 'last_month') {
-            $last = now()->subMonth();
-            $query->whereYear('donasis.tgl_donasi', $last->year)
-                ->whereMonth('donasis.tgl_donasi', $last->month);
-        } else {
-            $query->whereYear('donasis.tgl_donasi', now()->year)
-                ->whereMonth('donasis.tgl_donasi', now()->month);
-        }
-
-        $topDonaturs = $query
+            ->where('donasis.status', 'terverifikasi')
+            ->whereYear('donasis.tgl_donasi', $year)
+            ->whereMonth('donasis.tgl_donasi', $month)
             ->groupBy('donaturs.id', 'donaturs.nama')
             ->selectRaw('donaturs.nama, SUM(donasis.jumlah) as total')
             ->orderByDesc('total')
@@ -69,6 +67,8 @@ class TopDonaturChartWidget extends ChartWidget
             ->get();
 
         if ($topDonaturs->isEmpty()) {
+            $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
             return [
                 'datasets' => [
                     [
@@ -80,7 +80,7 @@ class TopDonaturChartWidget extends ChartWidget
                         'borderRadius' => 4,
                     ],
                 ],
-                'labels' => ['Belum ada transaksi donasi pada periode ini'],
+                'labels' => ["Belum ada transaksi donasi ({$monthName})"],
             ];
         }
 
@@ -123,11 +123,23 @@ class TopDonaturChartWidget extends ChartWidget
                     },
                     tooltip: {
                         callbacks: {
-                            label: (context) => 'Total Donasi: Rp ' + Number(context.raw).toLocaleString('id-ID'),
+                            label: (context) => 'Total: Rp ' + Number(context.raw).toLocaleString('id-ID'),
                         },
                     },
                 },
                 scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                        },
+                        ticks: {
+                            maxRotation: 20,
+                            minRotation: 20,
+                            font: {
+                                size: 10,
+                            },
+                        },
+                    },
                     y: {
                         beginAtZero: true,
                         min: 0,
@@ -137,11 +149,6 @@ class TopDonaturChartWidget extends ChartWidget
                                 if (value % 1 !== 0) return null;
                                 return 'Rp ' + Number(value).toLocaleString('id-ID');
                             },
-                        },
-                    },
-                    x: {
-                        grid: {
-                            display: false,
                         },
                     },
                 },

@@ -5,30 +5,38 @@ namespace App\Filament\Widgets;
 use App\Models\Donasi;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 
 class TopKecamatanChartWidget extends ChartWidget
 {
-    public ?string $filter = 'month';
+    public ?int $selectedMonth = null;
 
-    protected function getFilters(): ?array
+    public ?int $selectedYear = null;
+
+    public function mount(): void
     {
-        return [
-            'month' => 'Bulan Ini',
-            'last_month' => 'Bulan Lalu',
-            'year' => 'Tahun Ini',
-            'all' => 'Semua Waktu',
-        ];
+        $this->selectedMonth = now()->month;
+        $this->selectedYear = now()->year;
+        parent::mount();
+    }
+
+    #[On('dashboardFilterUpdated')]
+    public function updateFilter(int $month, int $year): void
+    {
+        $this->selectedMonth = $month;
+        $this->selectedYear = $year;
+        $this->cachedData = null;
     }
 
     public function getHeading(): ?string
     {
-        return match ($this->filter) {
-            'last_month' => 'Top 5 amil pendapatan tertinggi (bulan lalu)',
-            'year' => 'Top 5 amil pendapatan tertinggi (tahun ini)',
-            'all' => 'Top 5 amil pendapatan tertinggi (semua waktu)',
-            default => 'Top 5 amil pendapatan tertinggi (bulan ini)',
-        };
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        return "Top 5 amil pendapatan tertinggi ({$monthName})";
     }
 
     protected static ?int $sort = 4;
@@ -44,24 +52,14 @@ class TopKecamatanChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $query = Donasi::query()
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+
+        $topAmils = Donasi::query()
             ->join('amils', 'donasis.amil_id', '=', 'amils.id')
-            ->where('donasis.status', 'terverifikasi');
-
-        if ($this->filter === 'year') {
-            $query->whereYear('donasis.tgl_donasi', now()->year);
-        } elseif ($this->filter === 'all') {
-            // Tanpa batasan periode
-        } elseif ($this->filter === 'last_month') {
-            $last = now()->subMonth();
-            $query->whereYear('donasis.tgl_donasi', $last->year)
-                ->whereMonth('donasis.tgl_donasi', $last->month);
-        } else {
-            $query->whereYear('donasis.tgl_donasi', now()->year)
-                ->whereMonth('donasis.tgl_donasi', now()->month);
-        }
-
-        $topAmils = $query
+            ->where('donasis.status', 'terverifikasi')
+            ->whereYear('donasis.tgl_donasi', $year)
+            ->whereMonth('donasis.tgl_donasi', $month)
             ->groupBy('amils.id', 'amils.nama')
             ->selectRaw('amils.nama, SUM(donasis.jumlah) as total')
             ->orderByDesc('total')
@@ -69,10 +67,12 @@ class TopKecamatanChartWidget extends ChartWidget
             ->get();
 
         if ($topAmils->isEmpty()) {
+            $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
             return [
                 'datasets' => [
                     [
-                        'label' => 'Total Penghimpunan (Rp)',
+                        'label' => 'Total Pendapatan (Rp)',
                         'data' => [0],
                         'backgroundColor' => '#cbd5e1',
                         'borderColor' => '#94a3b8',
@@ -80,7 +80,7 @@ class TopKecamatanChartWidget extends ChartWidget
                         'borderRadius' => 4,
                     ],
                 ],
-                'labels' => ['Belum ada penghimpunan amil pada periode ini'],
+                'labels' => ["Belum ada transaksi amil ({$monthName})"],
             ];
         }
 
@@ -88,14 +88,14 @@ class TopKecamatanChartWidget extends ChartWidget
         $totals = [];
 
         foreach ($topAmils as $item) {
-            $labels[] = Str::limit((string) $item->nama, 20);
+            $labels[] = Str::limit($item->nama, 20);
             $totals[] = (float) $item->total;
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Penghimpunan (Rp)',
+                    'label' => 'Total Pendapatan (Rp)',
                     'data' => $totals,
                     'backgroundColor' => '#10b981',
                     'borderColor' => '#059669',
@@ -123,11 +123,23 @@ class TopKecamatanChartWidget extends ChartWidget
                     },
                     tooltip: {
                         callbacks: {
-                            label: (context) => 'Total Penghimpunan: Rp ' + Number(context.raw).toLocaleString('id-ID'),
+                            label: (context) => 'Total: Rp ' + Number(context.raw).toLocaleString('id-ID'),
                         },
                     },
                 },
                 scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                        },
+                        ticks: {
+                            maxRotation: 20,
+                            minRotation: 20,
+                            font: {
+                                size: 10,
+                            },
+                        },
+                    },
                     y: {
                         beginAtZero: true,
                         min: 0,
@@ -137,11 +149,6 @@ class TopKecamatanChartWidget extends ChartWidget
                                 if (value % 1 !== 0) return null;
                                 return 'Rp ' + Number(value).toLocaleString('id-ID');
                             },
-                        },
-                    },
-                    x: {
-                        grid: {
-                            display: false,
                         },
                     },
                 },

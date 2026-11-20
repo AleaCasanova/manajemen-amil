@@ -11,6 +11,7 @@ use App\Models\DonaturKategori;
 use App\Models\JenisDana;
 use App\Models\Program;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -67,10 +68,12 @@ class DonasiProgramChartWidgetTest extends TestCase
     {
         $this->actingAs($this->adminUser);
 
+        $currentMonthName = now()->translatedFormat('F Y');
+
         Livewire::test(DonasiProgramChartWidget::class)
             ->assertSuccessful()
             ->assertSee('Donasi per program')
-            ->assertSee('Belum ada donasi program (bulan ini)');
+            ->assertSee("Belum ada donasi program ({$currentMonthName})");
     }
 
     public function test_widget_displays_program_donations_aggregated_and_sorted(): void
@@ -134,14 +137,14 @@ class DonasiProgramChartWidgetTest extends TestCase
         $this->assertEquals(3000000.0, $data['datasets'][0]['data'][1]);
     }
 
-    public function test_widget_respects_filter_periode(): void
+    public function test_widget_synchronizes_with_dashboard_filter_updated_event(): void
     {
         $this->actingAs($this->adminUser);
 
         $program = Program::create(['nama' => 'Renovasi Masjid']);
 
         // Donasi bulan lalu
-        $lastMonth = now()->subMonth();
+        $targetDate = Carbon::create(2026, 5, 10);
         Donasi::create([
             'no_kwitansi' => 'KWT-TST-004',
             'donatur_id' => $this->donatur->id,
@@ -150,21 +153,22 @@ class DonasiProgramChartWidgetTest extends TestCase
             'program_id' => $program->id,
             'jumlah' => 1500000,
             'metode_bayar' => 'transfer',
-            'tgl_donasi' => $lastMonth->toDateString(),
+            'tgl_donasi' => $targetDate->toDateString(),
             'status' => 'terverifikasi',
         ]);
 
-        // Pada filter 'month' (default), donasi bulan lalu tidak muncul
+        // Default: bulan ini (belum ada donasi untuk bulan ini)
         $component = Livewire::test(DonasiProgramChartWidget::class)
             ->assertSuccessful();
         $ref = new \ReflectionMethod($component->instance(), 'getData');
-        $dataMonth = $ref->invoke($component->instance());
-        $this->assertStringContainsString('Belum ada donasi program', $dataMonth['labels'][0]);
+        $dataDefault = $ref->invoke($component->instance());
+        $this->assertStringContainsString('Belum ada donasi program', $dataDefault['labels'][0]);
 
-        // Ganti filter ke 'last_month'
-        $component->set('filter', 'last_month');
-        $dataLastMonth = $ref->invoke($component->instance());
-        $this->assertEquals('Renovasi Masjid', $dataLastMonth['labels'][0]);
-        $this->assertEquals(1500000.0, $dataLastMonth['datasets'][0]['data'][0]);
+        // Kirim event sinkronisasi bulan ke-5 (Mei) tahun 2026
+        $component->dispatch('dashboardFilterUpdated', month: 5, year: 2026);
+
+        $dataUpdated = $ref->invoke($component->instance());
+        $this->assertEquals('Renovasi Masjid', $dataUpdated['labels'][0]);
+        $this->assertEquals(1500000.0, $dataUpdated['datasets'][0]['data'][0]);
     }
 }

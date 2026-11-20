@@ -5,12 +5,37 @@ namespace App\Filament\Widgets;
 use App\Models\Donasi;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Carbon;
+use Livewire\Attributes\On;
 
 class AkumulasiPendapatanBulananChartWidget extends ChartWidget
 {
+    public ?int $selectedMonth = null;
+
+    public ?int $selectedYear = null;
+
+    public function mount(): void
+    {
+        $this->selectedMonth = now()->month;
+        $this->selectedYear = now()->year;
+        parent::mount();
+    }
+
+    #[On('dashboardFilterUpdated')]
+    public function updateFilter(int $month, int $year): void
+    {
+        $this->selectedMonth = $month;
+        $this->selectedYear = $year;
+        $this->cachedData = null;
+    }
+
     public function getHeading(): ?string
     {
-        return 'Akumulasi pendapatan perbulan ('.now()->translatedFormat('F Y').')';
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+        $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
+        return "Akumulasi pendapatan perbulan ({$monthName})";
     }
 
     protected static ?int $sort = 5;
@@ -26,10 +51,13 @@ class AkumulasiPendapatanBulananChartWidget extends ChartWidget
 
     protected function getData(): array
     {
+        $month = $this->selectedMonth ?? now()->month;
+        $year = $this->selectedYear ?? now()->year;
+
         $items = Donasi::query()
             ->join('jenis_danas', 'donasis.jenis_dana_id', '=', 'jenis_danas.id')
-            ->whereYear('donasis.tgl_donasi', now()->year)
-            ->whereMonth('donasis.tgl_donasi', now()->month)
+            ->whereYear('donasis.tgl_donasi', $year)
+            ->whereMonth('donasis.tgl_donasi', $month)
             ->where('donasis.status', 'terverifikasi')
             ->groupBy('jenis_danas.id', 'jenis_danas.nama')
             ->selectRaw('jenis_danas.nama, SUM(donasis.jumlah) as total')
@@ -48,6 +76,8 @@ class AkumulasiPendapatanBulananChartWidget extends ChartWidget
         ];
 
         if ($items->isEmpty()) {
+            $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+
             return [
                 'datasets' => [
                     [
@@ -55,7 +85,7 @@ class AkumulasiPendapatanBulananChartWidget extends ChartWidget
                         'backgroundColor' => ['#e2e8f0'],
                     ],
                 ],
-                'labels' => ['Belum ada transaksi bulan ini'],
+                'labels' => ["Belum ada transaksi ({$monthName})"],
             ];
         }
 
