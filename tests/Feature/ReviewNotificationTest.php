@@ -32,6 +32,9 @@ class ReviewNotificationTest extends TestCase
 
         // Bersihkan data tes terdahulu
         DB::table('notifications')->truncate();
+        IzinCuti::query()->forceDelete();
+        AktivitasHarian::query()->forceDelete();
+        Donasi::query()->forceDelete();
 
         // Pastikan role Admin & Amil ada
         Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
@@ -267,5 +270,89 @@ class ReviewNotificationTest extends TestCase
         $this->assertDatabaseMissing('notifications', [
             'id' => $notif->id,
         ]);
+    }
+
+    public function test_tabs_and_counts_filtering_in_admin_database_notifications(): void
+    {
+        $this->actingAs($this->adminUser, 'admin');
+
+        // Buat 1 cuti, 1 aktivitas, 1 donasi
+        $cuti = IzinCuti::create([
+            'amil_id' => $this->amil->id,
+            'jenis' => 'cuti',
+            'tgl_mulai' => now()->toDateString(),
+            'tgl_selesai' => now()->addDay()->toDateString(),
+            'alasan' => 'Uji cuti tabs',
+            'status' => 'diajukan',
+        ]);
+
+        $aktivitas = AktivitasHarian::create([
+            'amil_id' => $this->amil->id,
+            'tanggal' => now()->toDateString(),
+            'judul' => 'Uji aktivitas tabs',
+            'deskripsi' => 'Uji aktivitas tabs deskripsi',
+            'status' => 'diajukan',
+        ]);
+
+        $kategori = DonaturKategori::firstOrCreate(['nama' => 'Individu']);
+        $donatur = Donatur::firstOrCreate(
+            ['no_hp' => '086666666666'],
+            ['kode_donatur' => 'DNT-TAB-999', 'nama' => 'Donatur Tab', 'jenis' => 'individu', 'kategori_id' => $kategori->id]
+        );
+        $jenisDana = JenisDana::firstOrCreate(['nama' => 'Infaq'], ['kategori' => 'infaq', 'kode' => 'INF']);
+
+        $donasi = Donasi::create([
+            'no_kwitansi' => 'KW-TAB-001',
+            'donatur_id' => $donatur->id,
+            'amil_id' => $this->amil->id,
+            'jenis_dana_id' => $jenisDana->id,
+            'jumlah' => 200000,
+            'metode_bayar' => 'tunai',
+            'tgl_donasi' => now(),
+            'status' => 'menunggu_verifikasi',
+        ]);
+
+        $component = Livewire::test(AdminDatabaseNotifications::class);
+
+        // Verifikasi tab counts
+        $counts = $component->instance()->getTabCounts();
+        $this->assertEquals(3, $counts['all']);
+        $this->assertEquals(1, $counts['donasi']);
+        $this->assertEquals(1, $counts['aktivitas_harian']);
+        $this->assertEquals(1, $counts['izin_cuti']);
+
+        // Ganti tab ke donasi
+        $component->call('setTab', 'donasi')
+            ->assertSet('activeTab', 'donasi');
+
+        $donasiNotifications = $component->instance()->getNotifications();
+        $this->assertCount(1, $donasiNotifications);
+        $firstDonasi = $donasiNotifications->first();
+        $this->assertEquals('donasi', $firstDonasi->data['review_type']);
+
+        // Ganti tab ke aktivitas
+        $component->call('setTab', 'aktivitas_harian')
+            ->assertSet('activeTab', 'aktivitas_harian');
+
+        $aktivitasNotifications = $component->instance()->getNotifications();
+        $this->assertCount(1, $aktivitasNotifications);
+        $firstAktivitas = $aktivitasNotifications->first();
+        $this->assertEquals('aktivitas_harian', $firstAktivitas->data['review_type']);
+
+        // Ganti tab ke izin cuti
+        $component->call('setTab', 'izin_cuti')
+            ->assertSet('activeTab', 'izin_cuti');
+
+        $cutiNotifications = $component->instance()->getNotifications();
+        $this->assertCount(1, $cutiNotifications);
+        $firstCuti = $cutiNotifications->first();
+        $this->assertEquals('izin_cuti', $firstCuti->data['review_type']);
+
+        // Kembali ke semua
+        $component->call('setTab', 'all')
+            ->assertSet('activeTab', 'all');
+
+        $allNotifications = $component->instance()->getNotifications();
+        $this->assertCount(3, $allNotifications);
     }
 }
