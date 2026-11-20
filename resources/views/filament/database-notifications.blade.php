@@ -17,24 +17,34 @@
 
 <div class="fi-no-database">
     <style>
+        .gsc-notif-header-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+        .gsc-notif-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
         .gsc-notif-tabs-bar {
             display: flex;
             align-items: center;
             gap: 6px;
             overflow-x: auto;
-            padding: 10px 16px;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            margin: -1.5rem -1.5rem 1rem -1.5rem;
+            padding: 10px 0 4px 0;
+            border-top: 1px solid #e2e8f0;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            width: 100%;
         }
         .gsc-notif-tabs-bar::-webkit-scrollbar {
             display: none;
         }
         .dark .gsc-notif-tabs-bar {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.08);
+            border-top-color: rgba(255, 255, 255, 0.08);
         }
         .gsc-notif-tab-btn {
             display: inline-flex;
@@ -183,100 +193,102 @@
 
         @if ($hasAnyNotifications)
             <x-slot name="header">
-                <div>
-                    <h2
-                        id="database-notifications.heading"
-                        class="fi-modal-heading"
-                    >
-                        {{ __('filament-notifications::database.modal.heading') }}
+                <div class="gsc-notif-header-wrapper">
+                    <div class="gsc-notif-header-top">
+                        <h2
+                            id="database-notifications.heading"
+                            class="fi-modal-heading"
+                        >
+                            {{ __('filament-notifications::database.modal.heading') }}
 
-                        @if ($unreadNotificationsCount)
-                            <span
-                                {{
-                                    (new FilamentComponentAttributeBag)->color(BadgeComponent::class, 'primary')->class([
-                                        'fi-badge fi-size-xs',
-                                    ])
-                                }}
-                            >
-                                {{ $unreadNotificationsCount }}
-                            </span>
-                        @endif
-                    </h2>
+                            @if ($unreadNotificationsCount)
+                                <span
+                                    {{
+                                        (new FilamentComponentAttributeBag)->color(BadgeComponent::class, 'primary')->class([
+                                            'fi-badge fi-size-xs',
+                                        ])
+                                    }}
+                                >
+                                    {{ $unreadNotificationsCount }}
+                                </span>
+                            @endif
+                        </h2>
 
-                    <div class="fi-ac">
-                        @if ($unreadNotificationsCount && $this->markAllNotificationsAsReadAction?->isVisible())
-                            {{ $this->markAllNotificationsAsReadAction }}
-                        @endif
+                        <div class="fi-ac">
+                            @if ($unreadNotificationsCount && $this->markAllNotificationsAsReadAction?->isVisible())
+                                {{ $this->markAllNotificationsAsReadAction }}
+                            @endif
 
-                        @if ($this->clearNotificationsAction?->isVisible())
-                            {{ $this->clearNotificationsAction }}
-                        @endif
+                            @if ($this->clearNotificationsAction?->isVisible())
+                                {{ $this->clearNotificationsAction }}
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Navigasi Tab Kategori (Sticky bersama Header) --}}
+                    <div class="gsc-notif-tabs-bar">
+                        {{-- Tab: Semua --}}
+                        <button
+                            type="button"
+                            wire:click="setTab('all')"
+                            class="gsc-notif-tab-btn {{ $activeTab === 'all' ? 'active' : '' }}"
+                        >
+                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            <span>Semua</span>
+                            @if(($tabCounts['all'] ?? 0) > 0)
+                                <span class="gsc-notif-tab-badge">
+                                    {{ $tabCounts['all'] }}
+                                </span>
+                            @endif
+                        </button>
+
+                        {{-- Tab: Donasi --}}
+                        <button
+                            type="button"
+                            wire:click="setTab('donasi')"
+                            class="gsc-notif-tab-btn {{ $activeTab === 'donasi' ? 'active' : '' }}"
+                        >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <span>Donasi</span>
+                            @if(($tabCounts['donasi'] ?? 0) > 0)
+                                <span class="gsc-notif-tab-badge highlight">
+                                    {{ $tabCounts['donasi'] }}
+                                </span>
+                            @endif
+                        </button>
+
+                        {{-- Tab: Laporan Aktivitas --}}
+                        <button
+                            type="button"
+                            wire:click="setTab('aktivitas_harian')"
+                            class="gsc-notif-tab-btn {{ $activeTab === 'aktivitas_harian' ? 'active' : '' }}"
+                        >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <span>Laporan</span>
+                            @if(($tabCounts['aktivitas_harian'] ?? 0) > 0)
+                                <span class="gsc-notif-tab-badge highlight">
+                                    {{ $tabCounts['aktivitas_harian'] }}
+                                </span>
+                            @endif
+                        </button>
+
+                        {{-- Tab: Izin & Cuti --}}
+                        <button
+                            type="button"
+                            wire:click="setTab('izin_cuti')"
+                            class="gsc-notif-tab-btn {{ $activeTab === 'izin_cuti' ? 'active' : '' }}"
+                        >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span>Izin & Cuti</span>
+                            @if(($tabCounts['izin_cuti'] ?? 0) > 0)
+                                <span class="gsc-notif-tab-badge highlight">
+                                    {{ $tabCounts['izin_cuti'] }}
+                                </span>
+                            @endif
+                        </button>
                     </div>
                 </div>
             </x-slot>
-
-            {{-- Navigasi Tab Kategori Filter --}}
-            <div class="gsc-notif-tabs-bar">
-                {{-- Tab: Semua --}}
-                <button
-                    type="button"
-                    wire:click="setTab('all')"
-                    class="gsc-notif-tab-btn {{ $activeTab === 'all' ? 'active' : '' }}"
-                >
-                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span>Semua</span>
-                    @if(($tabCounts['all'] ?? 0) > 0)
-                        <span class="gsc-notif-tab-badge">
-                            {{ $tabCounts['all'] }}
-                        </span>
-                    @endif
-                </button>
-
-                {{-- Tab: Donasi --}}
-                <button
-                    type="button"
-                    wire:click="setTab('donasi')"
-                    class="gsc-notif-tab-btn {{ $activeTab === 'donasi' ? 'active' : '' }}"
-                >
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <span>Donasi</span>
-                    @if(($tabCounts['donasi'] ?? 0) > 0)
-                        <span class="gsc-notif-tab-badge highlight">
-                            {{ $tabCounts['donasi'] }}
-                        </span>
-                    @endif
-                </button>
-
-                {{-- Tab: Laporan Aktivitas --}}
-                <button
-                    type="button"
-                    wire:click="setTab('aktivitas_harian')"
-                    class="gsc-notif-tab-btn {{ $activeTab === 'aktivitas_harian' ? 'active' : '' }}"
-                >
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span>Laporan</span>
-                    @if(($tabCounts['aktivitas_harian'] ?? 0) > 0)
-                        <span class="gsc-notif-tab-badge highlight">
-                            {{ $tabCounts['aktivitas_harian'] }}
-                        </span>
-                    @endif
-                </button>
-
-                {{-- Tab: Izin & Cuti --}}
-                <button
-                    type="button"
-                    wire:click="setTab('izin_cuti')"
-                    class="gsc-notif-tab-btn {{ $activeTab === 'izin_cuti' ? 'active' : '' }}"
-                >
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <span>Izin & Cuti</span>
-                    @if(($tabCounts['izin_cuti'] ?? 0) > 0)
-                        <span class="gsc-notif-tab-badge highlight">
-                            {{ $tabCounts['izin_cuti'] }}
-                        </span>
-                    @endif
-                </button>
-            </div>
 
             @if ($hasFilteredNotifications)
                 <div
