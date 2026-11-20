@@ -164,6 +164,8 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 14px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .gsc-section-title {
             font-size: 14px;
@@ -212,10 +214,13 @@
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 14px;
-            padding: 16px 18px;
+            padding: 14px 16px;
             margin-bottom: 12px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04);
             transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         .dark .gsc-act-card {
             background: #0f172a;
@@ -225,33 +230,65 @@
             border-color: #f59e0b;
             box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
         }
-        .gsc-act-top {
+
+        /* Card Header Row (Date + Status on Left, Photo + Buttons on Right) */
+        .gsc-act-header-row {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
-            gap: 16px;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
         }
-        .gsc-act-info {
-            flex: 1;
-            min-width: 0;
+        .dark .gsc-act-header-row {
+            border-bottom-color: #1e293b;
         }
         .gsc-act-head-pills {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 6px;
             flex-wrap: wrap;
         }
+        .gsc-act-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        @media (max-width: 480px) {
+            .gsc-act-header-row {
+                align-items: flex-start;
+            }
+            .gsc-act-head-pills {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .gsc-btn-group {
+                flex-direction: column;
+                gap: 4px;
+            }
+            .gsc-btn {
+                width: 100%;
+                padding: 4px 8px !important;
+                font-size: 10.5px !important;
+                justify-content: center;
+            }
+        }
+
         .gsc-date-pill {
             font-size: 11px;
             font-weight: 600;
             background: #f1f5f9;
             color: #334155;
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 6px;
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            line-height: 1.3;
         }
         .dark .gsc-date-pill {
             background: #1e293b;
@@ -260,7 +297,7 @@
         .gsc-badge {
             display: inline-flex;
             align-items: center;
-            padding: 2px 9px;
+            padding: 3px 9px;
             border-radius: 9999px;
             font-size: 11px;
             font-weight: 700;
@@ -297,12 +334,20 @@
             border-color: rgba(248, 113, 113, 0.3);
         }
 
+        /* Card Content Body (Full Width from Left to Right) */
+        .gsc-act-body {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
         .gsc-act-title {
             font-size: 15px;
             font-weight: 700;
             color: #0f172a;
-            margin: 4px 0 6px 0;
-            line-height: 1.35;
+            margin: 0;
+            line-height: 1.4;
+            word-break: break-word;
         }
         .dark .gsc-act-title {
             color: #f8fafc;
@@ -313,6 +358,7 @@
             line-height: 1.55;
             margin: 0;
             white-space: pre-line;
+            word-break: break-word;
         }
         .dark .gsc-act-desc {
             color: #cbd5e1;
@@ -322,22 +368,25 @@
         .gsc-loc-strip {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 4px;
             flex-wrap: wrap;
             font-size: 12px;
         }
         .gsc-loc-badge {
             display: inline-flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 5px;
-            padding: 3px 10px;
+            padding: 4px 10px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
             color: #475569;
             font-size: 11px;
             font-weight: 500;
+            line-height: 1.4;
+            max-width: 100%;
+            word-break: break-word;
         }
         .dark .gsc-loc-badge {
             background: #1e293b;
@@ -348,7 +397,7 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 3px 10px;
+            padding: 4px 10px;
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
             border-radius: 6px;
@@ -357,6 +406,8 @@
             font-weight: 600;
             text-decoration: none;
             transition: all 0.2s;
+            line-height: 1.4;
+            flex-shrink: 0;
         }
         .dark .gsc-map-link {
             background: rgba(16, 185, 129, 0.15);
@@ -368,20 +419,13 @@
             color: #ffffff;
         }
 
-        /* Photo & Actions Right */
-        .gsc-act-side {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
-            flex-shrink: 0;
-        }
+        /* Photo Thumbnail */
         .gsc-thumb-img {
-            width: 88px !important;
-            height: 66px !important;
-            min-width: 88px !important;
-            max-width: 88px !important;
-            max-height: 66px !important;
+            width: 52px !important;
+            height: 52px !important;
+            min-width: 52px !important;
+            max-width: 52px !important;
+            max-height: 52px !important;
             border-radius: 8px !important;
             object-fit: cover !important;
             border: 1px solid #cbd5e1;
@@ -389,9 +433,10 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.06);
             transition: transform 0.2s;
             cursor: pointer;
+            flex-shrink: 0;
         }
         .gsc-thumb-img:hover {
-            transform: scale(1.05);
+            transform: scale(1.06);
         }
 
         /* Buttons */
@@ -413,6 +458,7 @@
             transition: background-color 0.2s;
             text-decoration: none;
             line-height: 1.3;
+            white-space: nowrap;
         }
         .gsc-btn-approve {
             background: #10b981;
@@ -563,41 +609,18 @@
                     @endphp
 
                     <div class="gsc-act-card {{ $isPending ? 'pending' : '' }}">
-                        <div class="gsc-act-top">
-                            <div class="gsc-act-info">
-                                <div class="gsc-act-head-pills">
-                                    <span class="gsc-date-pill">
-                                        📅 {{ $tgl->translatedFormat('d F Y') }}
-                                    </span>
-                                    <span class="gsc-badge {{ $badgeClass }}">
-                                        {{ $statusLabel }}
-                                    </span>
-                                </div>
-
-                                <div class="gsc-act-title">{{ $item->judul }}</div>
-                                <div class="gsc-act-desc">{{ $item->deskripsi }}</div>
-
-                                {{-- Location & GPS --}}
-                                @if ($item->lokasi || ($item->lat && $item->lng))
-                                    <div class="gsc-loc-strip">
-                                        @if ($item->lokasi)
-                                            <div class="gsc-loc-badge">
-                                                <svg width="14" height="14" fill="none" stroke="#ef4444" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                                <span>{{ $item->lokasi }}</span>
-                                            </div>
-                                        @endif
-
-                                        @if ($item->lat && $item->lng)
-                                            <a href="https://www.google.com/maps?q={{ $item->lat }},{{ $item->lng }}" target="_blank" class="gsc-map-link">
-                                                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                                Peta GPS ({{ round($item->lat, 4) }}, {{ round($item->lng, 4) }})
-                                            </a>
-                                        @endif
-                                    </div>
-                                @endif
+                        {{-- Top Header Row: Date & Status (Left), Photo & Actions (Right) --}}
+                        <div class="gsc-act-header-row">
+                            <div class="gsc-act-head-pills">
+                                <span class="gsc-date-pill">
+                                    📅 {{ $tgl->translatedFormat('d F Y') }}
+                                </span>
+                                <span class="gsc-badge {{ $badgeClass }}">
+                                    {{ $statusLabel }}
+                                </span>
                             </div>
 
-                            <div class="gsc-act-side">
+                            <div class="gsc-act-header-right">
                                 @if ($item->foto)
                                     <a href="{{ asset('storage/' . $item->foto) }}" target="_blank" title="Klik untuk membuka ukuran penuh">
                                         <img src="{{ asset('storage/' . $item->foto) }}" alt="{{ $item->judul }}" class="gsc-thumb-img" />
@@ -611,7 +634,7 @@
                                             wire:click="setujuiAktivitas({{ $item->id }})" 
                                             wire:confirm="Setujui laporan kegiatan ini?"
                                             class="gsc-btn gsc-btn-approve">
-                                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                                             Setujui
                                         </button>
                                         <button 
@@ -619,12 +642,39 @@
                                             wire:click="tolakAktivitas({{ $item->id }})" 
                                             wire:confirm="Tolak laporan kegiatan ini?"
                                             class="gsc-btn gsc-btn-reject">
-                                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                             Tolak
                                         </button>
                                     </div>
                                 @endif
                             </div>
+                        </div>
+
+                        {{-- Body: Title, Description, and Location full width from left to right --}}
+                        <div class="gsc-act-body">
+                            <div class="gsc-act-title">{{ $item->judul }}</div>
+                            @if ($item->deskripsi)
+                                <div class="gsc-act-desc">{{ $item->deskripsi }}</div>
+                            @endif
+
+                            {{-- Location & GPS --}}
+                            @if ($item->lokasi || ($item->lat && $item->lng))
+                                <div class="gsc-loc-strip">
+                                    @if ($item->lokasi)
+                                        <div class="gsc-loc-badge">
+                                            <svg width="14" height="14" fill="none" stroke="#ef4444" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            <span>{{ $item->lokasi }}</span>
+                                        </div>
+                                    @endif
+
+                                    @if ($item->lat && $item->lng)
+                                        <a href="https://www.google.com/maps?q={{ $item->lat }},{{ $item->lng }}" target="_blank" class="gsc-map-link">
+                                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                            Peta GPS ({{ round($item->lat, 4) }}, {{ round($item->lng, 4) }})
+                                        </a>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
