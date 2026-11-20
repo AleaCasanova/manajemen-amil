@@ -185,6 +185,27 @@
         .dark .gsc-section-count {
             color: #94a3b8;
         }
+        .gsc-btn-approve-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25);
+            line-height: 1.2;
+            text-decoration: none;
+        }
+        .gsc-btn-approve-all:hover {
+            background: #059669;
+            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.35);
+        }
 
         /* Activity Card */
         .gsc-act-card {
@@ -498,7 +519,20 @@
                 <svg width="18" height="18" fill="none" stroke="#10b981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 Daftar Riwayat Laporan Aktivitas
             </h4>
-            <span class="gsc-section-count">Total: {{ $aktivitasList->count() }} Laporan</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                @if ($pendingCount > 0)
+                    <button
+                        type="button"
+                        wire:click="setujuiSemuaAktivitas({{ $amil->id }})"
+                        wire:confirm="Apakah Anda yakin ingin menyetujui sekaligus seluruh ({{ $pendingCount }}) laporan aktivitas dari {{ $amil->nama }} yang masih menunggu review?"
+                        class="gsc-btn-approve-all"
+                    >
+                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Setujui Semua ({{ $pendingCount }})</span>
+                    </button>
+                @endif
+                <span class="gsc-section-count">Total: {{ $aktivitasList->count() }} Laporan</span>
+            </div>
         </div>
 
         @if ($aktivitasList->isEmpty())

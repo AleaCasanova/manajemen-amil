@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Livewire\AdminDatabaseNotifications;
+use App\Filament\Resources\AktivitasHarians\Pages\ListAktivitasHarians;
 use App\Models\AktivitasHarian;
 use App\Models\Amil;
 use App\Models\Divisi;
@@ -354,5 +355,36 @@ class ReviewNotificationTest extends TestCase
 
         $allNotifications = $component->instance()->getNotifications();
         $this->assertCount(3, $allNotifications);
+    }
+
+    public function test_setujui_semua_aktivitas_approves_all_pending_activities_for_amil(): void
+    {
+        $this->actingAs($this->adminUser, 'admin');
+
+        // Buat 3 aktivitas pending untuk amil ini
+        for ($i = 1; $i <= 3; $i++) {
+            AktivitasHarian::create([
+                'amil_id' => $this->amil->id,
+                'tanggal' => now()->toDateString(),
+                'judul' => "Aktivitas Massal {$i}",
+                'deskripsi' => "Deskripsi massal {$i}",
+                'status' => 'diajukan',
+            ]);
+        }
+
+        $this->assertEquals(3, AktivitasHarian::where('amil_id', $this->amil->id)->where('status', 'diajukan')->count());
+        $this->assertEquals(3, DB::table('notifications')->where('notifiable_id', $this->adminUser->id)->count());
+
+        // Jalankan setujuiSemuaAktivitas di ListAktivitasHarians
+        Livewire::test(ListAktivitasHarians::class)
+            ->call('setujuiSemuaAktivitas', $this->amil->id)
+            ->assertNotified('Semua Laporan Berhasil Disetujui');
+
+        // Pastikan semua aktivitas sekarang berstatus 'disetujui'
+        $this->assertEquals(0, AktivitasHarian::where('amil_id', $this->amil->id)->where('status', 'diajukan')->count());
+        $this->assertEquals(3, AktivitasHarian::where('amil_id', $this->amil->id)->where('status', 'disetujui')->count());
+
+        // Pastikan semua notifikasi di database sudah terhapus
+        $this->assertEquals(0, DB::table('notifications')->where('notifiable_id', $this->adminUser->id)->count());
     }
 }

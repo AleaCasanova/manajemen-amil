@@ -33,6 +33,36 @@ class ListAktivitasHarians extends ListRecords
             ->send();
     }
 
+    public function setujuiSemuaAktivitas(int $amilId): void
+    {
+        $amil = Amil::findOrFail($amilId);
+        $pendingActivities = AktivitasHarian::where('amil_id', $amilId)
+            ->where('status', 'diajukan')
+            ->get();
+
+        $count = $pendingActivities->count();
+
+        if ($count === 0) {
+            Notification::make()
+                ->title('Tidak Ada Laporan Pending')
+                ->body("Semua laporan untuk {$amil->nama} sudah berstatus disetujui atau ditolak.")
+                ->info()
+                ->send();
+
+            return;
+        }
+
+        foreach ($pendingActivities as $aktivitas) {
+            $aktivitas->update(['status' => 'disetujui']);
+        }
+
+        Notification::make()
+            ->title('Semua Laporan Berhasil Disetujui')
+            ->body("Sebanyak {$count} laporan aktivitas dari {$amil->nama} berhasil disetujui sekaligus.")
+            ->success()
+            ->send();
+    }
+
     public function tolakAktivitas(int $id): void
     {
         $aktivitas = AktivitasHarian::findOrFail($id);
