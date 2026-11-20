@@ -5,12 +5,30 @@ namespace App\Filament\Widgets;
 use App\Models\Donasi;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Str;
 
-class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
+class DonasiProgramChartWidget extends ChartWidget
 {
+    public ?string $filter = 'month';
+
+    protected function getFilters(): ?array
+    {
+        return [
+            'month' => 'Bulan Ini',
+            'last_month' => 'Bulan Lalu',
+            'year' => 'Tahun Ini',
+            'all' => 'Semua Waktu',
+        ];
+    }
+
     public function getHeading(): ?string
     {
-        return 'Akumulasi pendapatan pertahun ('.now()->year.')';
+        return match ($this->filter) {
+            'last_month' => 'Donasi per program (bulan lalu)',
+            'year' => 'Donasi per program (tahun '.now()->year.')',
+            'all' => 'Donasi per program (semua waktu)',
+            default => 'Donasi per program ('.now()->translatedFormat('F Y').')',
+        };
     }
 
     protected static ?int $sort = 6;
@@ -26,27 +44,50 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $items = Donasi::query()
-            ->join('jenis_danas', 'donasis.jenis_dana_id', '=', 'jenis_danas.id')
-            ->whereYear('donasis.tgl_donasi', now()->year)
-            ->where('donasis.status', 'terverifikasi')
-            ->groupBy('jenis_danas.id', 'jenis_danas.nama')
-            ->selectRaw('jenis_danas.nama, SUM(donasis.jumlah) as total')
+        $query = Donasi::query()
+            ->join('programs', 'donasis.program_id', '=', 'programs.id')
+            ->where('donasis.status', 'terverifikasi');
+
+        if ($this->filter === 'year') {
+            $query->whereYear('donasis.tgl_donasi', now()->year);
+        } elseif ($this->filter === 'last_month') {
+            $last = now()->subMonth();
+            $query->whereYear('donasis.tgl_donasi', $last->year)
+                ->whereMonth('donasis.tgl_donasi', $last->month);
+        } elseif ($this->filter === 'all') {
+            // Tanpa batasan tanggal
+        } else {
+            $query->whereYear('donasis.tgl_donasi', now()->year)
+                ->whereMonth('donasis.tgl_donasi', now()->month);
+        }
+
+        $items = $query
+            ->groupBy('programs.id', 'programs.nama')
+            ->selectRaw('programs.nama, SUM(donasis.jumlah) as total, COUNT(donasis.id) as total_transaksi')
             ->orderByDesc('total')
             ->get();
 
         $palette = [
             '#10b981', // Emerald
-            '#f43f5e', // Rose
+            '#0284c7', // Sky Blue
             '#f59e0b', // Amber
             '#8b5cf6', // Violet
-            '#0284c7', // Sky Blue
-            '#06b6d4', // Cyan
             '#ec4899', // Pink
+            '#06b6d4', // Cyan
+            '#f43f5e', // Rose
             '#14b8a6', // Teal
+            '#6366f1', // Indigo
+            '#84cc16', // Lime
         ];
 
         if ($items->isEmpty()) {
+            $periodText = match ($this->filter) {
+                'last_month' => 'bulan lalu',
+                'year' => 'tahun ini',
+                'all' => 'saat ini',
+                default => 'bulan ini',
+            };
+
             return [
                 'datasets' => [
                     [
@@ -54,7 +95,7 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
                         'backgroundColor' => ['#e2e8f0'],
                     ],
                 ],
-                'labels' => ['Belum ada transaksi tahun ini'],
+                'labels' => ["Belum ada donasi program ({$periodText})"],
             ];
         }
 
@@ -63,7 +104,7 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
         $backgroundColors = [];
 
         foreach ($items as $index => $item) {
-            $labels[] = $item->nama;
+            $labels[] = Str::limit($item->nama, 28);
             $totals[] = (float) $item->total;
             $backgroundColors[] = $palette[$index % count($palette)];
         }
@@ -71,7 +112,7 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Pendapatan (Rp)',
+                    'label' => 'Total Donasi Program (Rp)',
                     'data' => $totals,
                     'backgroundColor' => $backgroundColors,
                     'borderWidth' => 2,
@@ -100,7 +141,7 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
                             boxHeight: 12,
                             usePointStyle: true,
                             pointStyle: 'circle',
-                            padding: 14,
+                            padding: 12,
                             font: {
                                 size: 12,
                             },
@@ -113,7 +154,7 @@ class AkumulasiPendapatanTahunanChartWidget extends ChartWidget
                                 const value = Number(context.raw) || 0;
                                 const dataset = context.dataset;
                                 const total = dataset.data.reduce((acc, curr) => acc + Number(curr), 0);
-                                const percentage = total > 0 ? ((value / total) * 100).toFixed(2) + '%' : '0%';
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
                                 return ' ' + label + ': Rp ' + value.toLocaleString('id-ID') + ' (' + percentage + ')';
                             },
                         },
