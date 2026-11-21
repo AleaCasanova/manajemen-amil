@@ -19,7 +19,18 @@ Route::get('/', function () {
 
 // Blokir total akses publik ke path default /admin demi keamanan data internal
 if (config('filament.admin_path', 'portal-internal-gsc') !== 'admin') {
-    Route::any('/admin/{any?}', function () {
+    Route::any('/admin/{any?}', function ($any = null) {
+        $target = config('filament.admin_path', 'portal-internal-gsc');
+
+        // Jika user adalah admin yang sudah login, arahkan langsung ke path panel admin
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            return redirect('/'.$target.($any ? '/'.$any : ''));
+        }
+
+        if (auth('admin')->check() && auth('admin')->user()->isAdmin()) {
+            return redirect('/'.$target.($any ? '/'.$any : ''));
+        }
+
         abort(404);
     })->where('any', '.*');
 }

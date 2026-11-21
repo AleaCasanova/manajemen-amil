@@ -73,4 +73,12 @@ class AdminSecurityPathAndRateLimitTest extends TestCase
 
         $component->assertNotified('Akses Dibatasi Sementara');
     }
+
+    public function test_authenticated_admin_accessing_admin_is_redirected_to_custom_path(): void
+    {
+        $adminPath = config('filament.admin_path', 'portal-internal-gsc');
+
+        $response = $this->actingAs($this->adminUser)->get('/admin');
+        $response->assertRedirect('/'.$adminPath);
+    }
 }

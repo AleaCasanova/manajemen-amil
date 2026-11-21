@@ -78,9 +78,13 @@ class AuthController extends Controller
                 ])->onlyInput('login');
             }
 
-            // Jika user adalah admin murni tanpa profil amil, login ke guard admin & redirect ke panel admin
-            if (! $user->amil && ! $user->hasRole('Amil') && $user->isAdmin()) {
+            // Jika user adalah admin, sinkronkan login ke guard admin agar akses panel admin langsung aktif
+            if ($user->isAdmin()) {
                 Auth::guard('admin')->login($user, $request->boolean('remember'));
+            }
+
+            // Jika user adalah admin murni tanpa profil amil, redirect langsung ke panel admin
+            if (! $user->amil && ! $user->hasRole('Amil') && $user->isAdmin()) {
                 $request->session()->regenerate();
 
                 return redirect('/'.config('filament.admin_path', 'portal-internal-gsc'))
@@ -106,6 +110,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
+        Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

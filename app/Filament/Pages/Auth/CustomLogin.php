@@ -9,6 +9,7 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Timebox;
 
@@ -125,6 +126,9 @@ class CustomLogin extends BaseLogin
         }
 
         session()->regenerate();
+
+        // Sinkronkan login ke guard web agar admin dapat langsung mengakses portal amil tanpa login ulang
+        Auth::login($user, $remember);
 
         Log::info('Admin berhasil login: '.$user->name.' ('.$user->email.') dari IP: '.request()->ip());
 
