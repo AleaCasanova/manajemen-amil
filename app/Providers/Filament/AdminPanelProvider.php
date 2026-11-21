@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Livewire\AdminDatabaseNotifications;
+use App\Filament\Pages\Auth\CustomLogin;
 use App\Filament\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -29,9 +30,9 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path(config('filament.admin_path', 'portal-internal-gsc'))
             ->authGuard('admin')
-            ->login()
+            ->login(CustomLogin::class)
             ->brandName('Manajemen Amil GSC')
             ->brandLogo(fn () => asset('logo_gsc.png'))
             ->brandLogoHeight('3.5rem')

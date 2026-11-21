@@ -34,7 +34,7 @@
             <!-- Quick Action Button -->
             <div class="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
                 @if(Auth::user()->isAdmin())
-                    <a href="{{ url('/admin') }}" class="py-2 px-3 sm:py-2.5 sm:px-3.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-1.5 shrink-0">
+                    <a href="{{ url(config('filament.admin_path', 'portal-internal-gsc')) }}" class="py-2 px-3 sm:py-2.5 sm:px-3.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-1.5 shrink-0">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>

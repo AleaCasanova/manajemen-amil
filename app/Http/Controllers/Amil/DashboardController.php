@@ -20,7 +20,7 @@ class DashboardController extends Controller
 
         if (! $amil) {
             if ($user->isAdmin()) {
-                return redirect('/admin');
+                return redirect('/'.config('filament.admin_path', 'portal-internal-gsc'));
             }
 
             abort(403, 'Profil data Amil tidak ditemukan untuk akun ini.');

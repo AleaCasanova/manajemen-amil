@@ -118,7 +118,7 @@
                 </div>
 
                 <!-- Sisi Kanan: Tombol Login Admin -->
-                <a href="{{ url('/admin') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold text-xs shadow-sm hover:shadow transition shrink-0 self-start sm:self-auto cursor-pointer">
+                <a href="{{ url(config('filament.admin_path', 'portal-internal-gsc')) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold text-xs shadow-sm hover:shadow transition shrink-0 self-start sm:self-auto cursor-pointer">
                     <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>

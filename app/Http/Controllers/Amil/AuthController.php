@@ -21,7 +21,7 @@ class AuthController extends Controller
             }
 
             if (Auth::user()->isAdmin()) {
-                return redirect('/admin');
+                return redirect('/'.config('filament.admin_path', 'portal-internal-gsc'));
             }
         }
 
@@ -83,7 +83,7 @@ class AuthController extends Controller
                 Auth::guard('admin')->login($user, $request->boolean('remember'));
                 $request->session()->regenerate();
 
-                return redirect('/admin')
+                return redirect('/'.config('filament.admin_path', 'portal-internal-gsc'))
                     ->with('success', 'Selamat datang kembali di Panel Admin, '.$user->name.'!');
             }
 

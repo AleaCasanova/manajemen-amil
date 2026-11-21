@@ -10,12 +10,19 @@ Route::get('/', function () {
         }
 
         if (auth()->user()->isAdmin()) {
-            return redirect('/admin');
+            return redirect('/'.config('filament.admin_path', 'portal-internal-gsc'));
         }
     }
 
     return redirect()->route('login');
 });
+
+// Blokir total akses publik ke path default /admin demi keamanan data internal
+if (config('filament.admin_path', 'portal-internal-gsc') !== 'admin') {
+    Route::any('/admin/{any?}', function () {
+        abort(404);
+    })->where('any', '.*');
+}
 
 // Verifikasi & Download Kwitansi Resmi
 Route::get('/verifikasi-kwitansi/{no_kwitansi}', [KwitansiController::class, 'verify'])

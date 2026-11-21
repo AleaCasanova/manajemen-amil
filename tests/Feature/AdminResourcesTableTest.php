@@ -31,19 +31,22 @@ class AdminResourcesTableTest extends TestCase
 
     public function test_admin_can_access_absensi_amil_table(): void
     {
-        $response = $this->actingAs($this->admin, 'admin')->get('/admin/absensis');
+        $adminPath = config('filament.admin_path', 'portal-internal-gsc');
+        $response = $this->actingAs($this->admin, 'admin')->get('/'.$adminPath.'/absensis');
         $response->assertStatus(200);
     }
 
     public function test_admin_can_access_izin_cuti_table(): void
     {
-        $response = $this->actingAs($this->admin, 'admin')->get('/admin/izin-cutis');
+        $adminPath = config('filament.admin_path', 'portal-internal-gsc');
+        $response = $this->actingAs($this->admin, 'admin')->get('/'.$adminPath.'/izin-cutis');
         $response->assertStatus(200);
     }
 
     public function test_admin_can_access_aktivitas_harian_table(): void
     {
-        $response = $this->actingAs($this->admin, 'admin')->get('/admin/aktivitas-harians');
+        $adminPath = config('filament.admin_path', 'portal-internal-gsc');
+        $response = $this->actingAs($this->admin, 'admin')->get('/'.$adminPath.'/aktivitas-harians');
         $response->assertStatus(200);
     }
 
