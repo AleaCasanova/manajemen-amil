@@ -15,6 +15,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Route;
 
 class TransaksiKeuanganResource extends Resource
 {
@@ -31,6 +32,24 @@ class TransaksiKeuanganResource extends Resource
     protected static ?string $pluralModelLabel = 'Buku Kas & Keuangan';
 
     protected static ?int $navigationSort = 0;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        try {
+            return Route::has(static::getRouteBaseName().'.index');
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    public static function getNavigationUrl(): string
+    {
+        try {
+            return static::getUrl();
+        } catch (\Throwable) {
+            return url('/'.config('filament.admin_path', 'portal-internal-gsc').'/transaksi-keuangans');
+        }
+    }
 
     public static function form(Schema $schema): Schema
     {
