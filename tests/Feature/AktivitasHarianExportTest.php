@@ -42,7 +42,7 @@ class AktivitasHarianExportTest extends TestCase
             'status' => 'disetujui',
         ]);
 
-        $amils = Amil::with(['divisi', 'aktivitasHarians'])->get();
+        $amils = Amil::where('id', $amil->id)->with(['divisi', 'aktivitasHarians'])->get();
 
         $export = new AktivitasHarianExport($amils, now()->month, now()->year, 'semua');
         $sheets = $export->sheets();

@@ -43,6 +43,7 @@ class DatabaseSeeder extends Seeder
             'kelola-pengumuman',
             'kelola-mustahik',
             'kelola-penyaluran',
+            'kelola-keuangan',
             'kelola-settings',
         ];
 
