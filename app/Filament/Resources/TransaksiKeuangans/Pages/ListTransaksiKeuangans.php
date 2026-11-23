@@ -53,6 +53,7 @@ class ListTransaksiKeuangans extends ListRecords
                 ->color('gray')
                 ->modalHeading('Daftar Rekening & Akun Kas Yayasan')
                 ->modalDescription('Pantauan rincian saldo dan akumulasi mutasi setiap dompet / rekening bank yayasan.')
+                ->modalWidth('4xl')
                 ->modalContent(fn () => view('filament.modals.akun-keuangan-modal', [
                     'akuns' => AkunKeuangan::with('transaksiKeuangans')->where('is_active', true)->get(),
                 ]))

@@ -151,15 +151,13 @@ class BukuKasKeuanganTest extends TestCase
         $this->actingAs($this->adminUser, 'admin');
 
         Livewire::test(CreateTransaksiKeuangan::class)
-            ->fillForm([
-                'jenis' => 'masuk',
-                'akun_keuangan_id' => $akun->id,
-                'kategori_keuangan_id' => $kategori->id,
-                'nominal' => 350000,
-                'tgl_transaksi' => now()->toDateString(),
-                'pihak_terkait' => 'Donatur Hamba Allah',
-                'keterangan' => 'Pemasukan Kas ZISWAF langsung di kasir',
-            ])
+            ->set('data.jenis', 'masuk')
+            ->set('data.akun_keuangan_id', $akun->id)
+            ->set('data.kategori_keuangan_id', $kategori->id)
+            ->set('data.nominal', 350000)
+            ->set('data.tgl_transaksi', now()->toDateString())
+            ->set('data.pihak_terkait', 'Donatur Hamba Allah')
+            ->set('data.keterangan', 'Pemasukan Kas ZISWAF langsung di kasir')
             ->call('create')
             ->assertHasNoFormErrors();
 
