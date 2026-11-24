@@ -126,32 +126,20 @@
                                 <!-- Captured Snapshot Image Preview -->
                                 <img id="photoPreview" class="hidden w-full h-full object-cover absolute inset-0 z-10" alt="Selfie Amil">
 
-                                <!-- Badges Info Kamera & Status Mirror -->
+                                <!-- Badges Info Kamera -->
                                 <div id="camInfoBadges" class="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 hidden">
-                                    <span id="badgeFacingMode" class="text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
+                                    <span id="badgeFacingMode" class="text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs px-2.5 py-1 rounded-lg border border-white/20">
                                         Kamera Depan
-                                    </span>
-                                    <span id="badgeMirror" class="text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
-                                        Normal
                                     </span>
                                 </div>
 
-                                <!-- Floating Quick Actions inside Video (Switch Camera & Mirror Toggle) -->
+                                <!-- Floating Quick Action: Switch Kamera Depan/Belakang -->
                                 <div id="camFloatingControls" class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 hidden">
-                                    <!-- Tombol Switch Kamera Depan/Belakang -->
-                                    <button type="button" onclick="switchCamera()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Ganti Kamera Depan / Belakang">
+                                    <button type="button" onclick="switchCamera()" class="p-1.5 px-2.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1.5 text-[11px] font-bold cursor-pointer" title="Ganti Kamera Depan / Belakang">
                                         <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                         </svg>
-                                        <span class="hidden sm:inline">Ganti Kamera</span>
-                                    </button>
-
-                                    <!-- Tombol Toggle Mirror -->
-                                    <button type="button" onclick="toggleMirror()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Balik Cermin (Mirror / Normal)">
-                                        <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                                        </svg>
-                                        <span id="btnMirrorText" class="hidden sm:inline">Cermin</span>
+                                        <span>Ganti Kamera</span>
                                     </button>
                                 </div>
 
@@ -998,10 +986,9 @@
         }
     }
 
-    // 3. Kamera WebRTC & Selfie (Dukungan Switch Kamera Depan/Belakang & Kontrol Mirror)
+    // 3. Kamera WebRTC & Selfie (Kamera Normal & Dukungan Switch Depan/Belakang)
     let stream = null;
     let currentFacingMode = 'user'; // 'user' (depan) atau 'environment' (belakang)
-    let isMirrored = false; // Default normal / tidak mirror (seperti kamera HP asli)
 
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('canvas');
@@ -1013,24 +1000,13 @@
     const camInfoBadges = document.getElementById('camInfoBadges');
     const camFloatingControls = document.getElementById('camFloatingControls');
     const badgeFacingMode = document.getElementById('badgeFacingMode');
-    const badgeMirror = document.getElementById('badgeMirror');
-    const btnMirrorText = document.getElementById('btnMirrorText');
 
     function updateCamUI() {
         if (video) {
-            video.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+            video.style.transform = 'none'; // Kamera selalu normal (tidak mirror)
         }
         if (badgeFacingMode) {
             badgeFacingMode.textContent = currentFacingMode === 'user' ? 'Kamera Depan' : 'Kamera Belakang';
-        }
-        if (badgeMirror) {
-            badgeMirror.textContent = isMirrored ? 'Mirror: Aktif' : 'Normal';
-            badgeMirror.className = isMirrored 
-                ? 'text-[10px] font-bold bg-amber-900/80 text-amber-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20'
-                : 'text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20';
-        }
-        if (btnMirrorText) {
-            btnMirrorText.textContent = isMirrored ? 'Mirror ON' : 'Mirror OFF';
         }
     }
 
@@ -1076,16 +1052,7 @@
 
     async function switchCamera() {
         currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-        // Otomatis matikan mirror jika beralih ke kamera belakang
-        if (currentFacingMode === 'environment') {
-            isMirrored = false;
-        }
         await startCamera();
-    }
-
-    function toggleMirror() {
-        isMirrored = !isMirrored;
-        updateCamUI();
     }
 
     function takeSnapshot() {
@@ -1095,17 +1062,12 @@
         canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
 
-        ctx.save();
-        if (isMirrored) {
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-        }
+        // Snapshot normal (tidak mirror)
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
 
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         photoPreview.src = dataUrl;
-        photoPreview.style.transform = 'none'; // Hasil snapshot canvas sudah sesuai
+        photoPreview.style.transform = 'none';
         photoPreview.classList.remove('hidden');
 
         const inFoto = document.getElementById('inputFoto');

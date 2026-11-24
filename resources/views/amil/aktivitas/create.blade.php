@@ -161,29 +161,20 @@
                     <canvas id="canvasAktivitas" class="hidden"></canvas>
                     <img id="photoPreviewAktivitas" class="hidden w-full h-full object-cover absolute inset-0 z-10" alt="Foto Kegiatan">
 
-                    <!-- Badges Info Kamera & Status Mirror -->
+                    <!-- Badges Info Kamera -->
                     <div id="camBadgesAktivitas" class="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 hidden">
-                        <span id="badgeFacingAktivitas" class="text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
+                        <span id="badgeFacingAktivitas" class="text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs px-2.5 py-1 rounded-lg border border-white/20">
                             Kamera Belakang
-                        </span>
-                        <span id="badgeMirrorAktivitas" class="text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
-                            Normal
                         </span>
                     </div>
 
-                    <!-- Floating Buttons (Ganti Kamera Depan/Belakang & Mirror) -->
+                    <!-- Floating Buttons (Ganti Kamera Depan/Belakang) -->
                     <div id="camFloatingAktivitas" class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 hidden">
-                        <button type="button" onclick="switchAktivitasCamera()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Ganti Kamera Depan / Belakang">
+                        <button type="button" onclick="switchAktivitasCamera()" class="p-1.5 px-2.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1.5 text-[11px] font-bold cursor-pointer" title="Ganti Kamera Depan / Belakang">
                             <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                             </svg>
-                            <span class="hidden sm:inline">Ganti Kamera</span>
-                        </button>
-                        <button type="button" onclick="toggleAktivitasMirror()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Balik Cermin">
-                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                            </svg>
-                            <span id="btnMirrorTextAktivitas" class="hidden sm:inline">Cermin</span>
+                            <span>Ganti Kamera</span>
                         </button>
                     </div>
 
@@ -254,7 +245,6 @@
     // ==========================================
     let streamAktivitas = null;
     let currentFacingModeAktivitas = 'environment'; // Default kamera belakang untuk foto kegiatan
-    let isMirroredAktivitas = false;
 
     const videoAktivitas = document.getElementById('webcamAktivitas');
     const canvasAktivitas = document.getElementById('canvasAktivitas');
@@ -266,8 +256,6 @@
     const camBadgesAktivitas = document.getElementById('camBadgesAktivitas');
     const camFloatingAktivitas = document.getElementById('camFloatingAktivitas');
     const badgeFacingAktivitas = document.getElementById('badgeFacingAktivitas');
-    const badgeMirrorAktivitas = document.getElementById('badgeMirrorAktivitas');
-    const btnMirrorTextAktivitas = document.getElementById('btnMirrorTextAktivitas');
 
     function switchAktivitasFotoMode(mode) {
         const tabCam = document.getElementById('tabAktivitasCam');
@@ -295,19 +283,10 @@
 
     function updateAktivitasCamUI() {
         if (videoAktivitas) {
-            videoAktivitas.style.transform = isMirroredAktivitas ? 'scaleX(-1)' : 'scaleX(1)';
+            videoAktivitas.style.transform = 'none'; // Kamera selalu normal (tidak mirror)
         }
         if (badgeFacingAktivitas) {
             badgeFacingAktivitas.textContent = currentFacingModeAktivitas === 'user' ? 'Kamera Depan' : 'Kamera Belakang';
-        }
-        if (badgeMirrorAktivitas) {
-            badgeMirrorAktivitas.textContent = isMirroredAktivitas ? 'Mirror: Aktif' : 'Normal';
-            badgeMirrorAktivitas.className = isMirroredAktivitas 
-                ? 'text-[10px] font-bold bg-amber-900/80 text-amber-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20'
-                : 'text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20';
-        }
-        if (btnMirrorTextAktivitas) {
-            btnMirrorTextAktivitas.textContent = isMirroredAktivitas ? 'Mirror ON' : 'Mirror OFF';
         }
     }
 
@@ -352,15 +331,7 @@
 
     async function switchAktivitasCamera() {
         currentFacingModeAktivitas = currentFacingModeAktivitas === 'user' ? 'environment' : 'user';
-        if (currentFacingModeAktivitas === 'environment') {
-            isMirroredAktivitas = false;
-        }
         await startAktivitasCamera();
-    }
-
-    function toggleAktivitasMirror() {
-        isMirroredAktivitas = !isMirroredAktivitas;
-        updateAktivitasCamUI();
     }
 
     function takeAktivitasSnapshot() {
@@ -370,13 +341,8 @@
         canvasAktivitas.height = videoAktivitas.videoHeight || 480;
         const ctx = canvasAktivitas.getContext('2d');
 
-        ctx.save();
-        if (isMirroredAktivitas) {
-            ctx.translate(canvasAktivitas.width, 0);
-            ctx.scale(-1, 1);
-        }
+        // Snapshot normal (tidak mirror)
         ctx.drawImage(videoAktivitas, 0, 0, canvasAktivitas.width, canvasAktivitas.height);
-        ctx.restore();
 
         const dataUrl = canvasAktivitas.toDataURL('image/jpeg', 0.85);
         photoPreviewAktivitas.src = dataUrl;
