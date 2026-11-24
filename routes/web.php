@@ -98,6 +98,7 @@ use App\Http\Controllers\Amil\DashboardController as AmilDashboardController;
 use App\Http\Controllers\Amil\DonasiController as AmilDonasiController;
 use App\Http\Controllers\Amil\DonaturController as AmilDonaturController;
 use App\Http\Controllers\Amil\IzinCutiController as AmilIzinCutiController;
+use App\Http\Controllers\Amil\PengajuanDanaController;
 use App\Http\Controllers\Amil\PengumumanController;
 use App\Http\Controllers\Amil\PenyaluranController;
 use App\Http\Controllers\Amil\ProfileController as AmilProfileController;
@@ -163,6 +164,13 @@ Route::middleware(['auth'])->prefix('amil')->name('amil.')->group(function () {
     Route::get('/penyaluran', [PenyaluranController::class, 'index'])->name('penyaluran.index');
     Route::get('/penyaluran/create', [PenyaluranController::class, 'create'])->name('penyaluran.create');
     Route::post('/penyaluran', [PenyaluranController::class, 'store'])->name('penyaluran.store');
+
+    // Modul Pengajuan Dana & Kasbon Kegiatan
+    Route::get('/pengajuan-dana', [PengajuanDanaController::class, 'index'])->name('pengajuan-dana.index');
+    Route::get('/pengajuan-dana/create', [PengajuanDanaController::class, 'create'])->name('pengajuan-dana.create');
+    Route::post('/pengajuan-dana', [PengajuanDanaController::class, 'store'])->name('pengajuan-dana.store');
+    Route::get('/pengajuan-dana/{pengajuanDana}', [PengajuanDanaController::class, 'show'])->name('pengajuan-dana.show');
+    Route::get('/pengajuan-dana/{pengajuanDana}/cetak', [PengajuanDanaController::class, 'cetak'])->name('pengajuan-dana.cetak');
 
     // Profil Amil & Pengaturan Akun (Self-Service Profile & Password)
     Route::get('/profile', [AmilProfileController::class, 'index'])->name('profile');

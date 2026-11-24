@@ -188,6 +188,13 @@
                             <span>Penyaluran (8 Asnaf)</span>
                         </a>
 
+                        <a href="{{ route('amil.pengajuan-dana.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.pengajuan-dana.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>Pengajuan Dana</span>
+                        </a>
+
                         <a href="{{ route('amil.absensi.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.absensi.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
                             <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -318,6 +325,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
                             <span>Penyaluran (8 Asnaf)</span>
+                        </a>
+
+                        <a href="{{ route('amil.pengajuan-dana.index') }}" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap {{ request()->routeIs('amil.pengajuan-dana.*') ? 'bg-emerald-900 text-white shadow-inner' : 'text-emerald-100 hover:bg-emerald-700 hover:text-white' }}">
+                            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>Pengajuan Dana</span>
                         </a>
 
                         <!-- Dropdown: Agenda & Info -->
@@ -496,6 +510,11 @@
                 <a href="{{ route('amil.penyaluran.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
                     <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     <span>Penyaluran ZISWAF</span>
+                </a>
+
+                <a href="{{ route('amil.pengajuan-dana.index') }}" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Pengajuan Dana</span>
                 </a>
             @endif
 
