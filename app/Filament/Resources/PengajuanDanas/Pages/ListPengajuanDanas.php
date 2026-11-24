@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\PengajuanDanas\Pages;
 
+use App\Exports\PengajuanDanaExport;
 use App\Filament\Resources\PengajuanDanas\PengajuanDanaResource;
 use App\Models\PengajuanDana;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ListPengajuanDanas extends ListRecords
 {
@@ -48,6 +51,17 @@ class ListPengajuanDanas extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('exportExcel')
+                ->label('Ekspor Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->action(function () {
+                    return Excel::download(
+                        new PengajuanDanaExport,
+                        'rekap-pengajuan-dana-'.date('Ymd-His').'.xlsx'
+                    );
+                }),
+
             CreateAction::make()
                 ->label('+ Buat Pengajuan Baru')
                 ->icon('heroicon-o-plus'),
