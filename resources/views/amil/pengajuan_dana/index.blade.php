@@ -28,7 +28,10 @@
     <!-- Stat Cards Overview (Beranda-Style Cards) -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <!-- Card 1: Total Diajukan -->
-        <a href="{{ route('amil.pengajuan-dana.index', ['q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border {{ !request('status') ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200/80' }} shadow-sm hover:border-emerald-500 hover:shadow-md transition group text-center flex flex-col items-center justify-center" title="Tampilkan semua pengajuan">
+        <a href="{{ route('amil.pengajuan-dana.index', ['q' => request('q')]) }}" 
+           style="{{ !request('status') ? 'border: 1.5px solid #10b981; background-color: #f0fdf4;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
+           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           title="Tampilkan semua pengajuan">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -39,7 +42,10 @@
         </a>
 
         <!-- Card 2: Menunggu Review -->
-        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diajukan', 'q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border {{ request('status') === 'diajukan' ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-200/80' }} shadow-sm hover:border-amber-500 hover:shadow-md transition group text-center flex flex-col items-center justify-center" title="Filter pengajuan menunggu review">
+        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diajukan', 'q' => request('q')]) }}" 
+           style="{{ request('status') === 'diajukan' ? 'border: 1.5px solid #f59e0b; background-color: #fffbeb;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
+           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           title="Filter pengajuan menunggu review">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -50,7 +56,10 @@
         </a>
 
         <!-- Card 3: Disetujui (ACC) -->
-        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'disetujui', 'q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border {{ request('status') === 'disetujui' ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200/80' }} shadow-sm hover:border-blue-500 hover:shadow-md transition group text-center flex flex-col items-center justify-center" title="Filter pengajuan telah di-ACC">
+        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'disetujui', 'q' => request('q')]) }}" 
+           style="{{ request('status') === 'disetujui' ? 'border: 1.5px solid #3b82f6; background-color: #eff6ff;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
+           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           title="Filter pengajuan telah di-ACC">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -61,7 +70,10 @@
         </a>
 
         <!-- Card 4: Telah Dicairkan -->
-        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'dicairkan', 'q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border {{ request('status') === 'dicairkan' ? 'border-purple-500 ring-2 ring-purple-500/20' : 'border-slate-200/80' }} shadow-sm hover:border-purple-500 hover:shadow-md transition group text-center flex flex-col items-center justify-center" title="Filter pengajuan yang telah dicairkan">
+        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'dicairkan', 'q' => request('q')]) }}" 
+           style="{{ request('status') === 'dicairkan' ? 'border: 1.5px solid #a855f7; background-color: #faf5ff;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
+           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           title="Filter pengajuan yang telah dicairkan">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
