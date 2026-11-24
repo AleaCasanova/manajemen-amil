@@ -532,9 +532,9 @@
                 </a>
             @endif
 
-            <a href="{{ route('amil.pengumuman.index') }}" class="col-span-2 p-3 rounded-xl bg-emerald-800/90 hover:bg-emerald-700 flex items-center justify-center gap-2 text-center border border-emerald-700/50 shadow-xs transition">
+            <a href="{{ route('amil.pengumuman.index') }}" style="grid-column: 1 / -1; width: 100%;" class="p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 flex items-center justify-center gap-2 text-center transition">
                 <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                <span>Pengumuman Lembaga</span>
+                <span>Pengumuman</span>
             </a>
         </div>
     </div>
