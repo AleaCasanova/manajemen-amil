@@ -3,7 +3,7 @@
 @section('title', 'Detail Pengajuan ' . $pengajuanDana->nomor_pengajuan)
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6 pb-28 sm:pb-12">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex items-center gap-3">
