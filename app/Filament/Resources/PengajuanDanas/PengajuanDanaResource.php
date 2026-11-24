@@ -22,7 +22,7 @@ class PengajuanDanaResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Fundraising & Donasi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Keuangan & Donasi';
 
     protected static ?string $navigationLabel = 'Pengajuan Dana Amil';
 
@@ -30,7 +30,7 @@ class PengajuanDanaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pengajuan Dana & Kasbon Amil';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
     public static function shouldRegisterNavigation(): bool
     {

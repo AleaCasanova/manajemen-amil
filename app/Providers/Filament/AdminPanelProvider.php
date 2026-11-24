@@ -58,9 +58,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 'Manajemen Amil & SDM',
+                'Keuangan & Donasi',
+                'Program & Penyaluran',
                 'Agenda & Komunikasi',
-                'Fundraising & Donasi',
-                'Penyaluran & Mustahik',
                 'Master Data & Pengaturan',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

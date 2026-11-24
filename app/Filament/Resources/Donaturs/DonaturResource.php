@@ -21,7 +21,7 @@ class DonaturResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-heart';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Fundraising & Donasi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Keuangan & Donasi';
 
     protected static ?string $navigationLabel = 'Manajemen Donatur (CRM)';
 
@@ -29,7 +29,7 @@ class DonaturResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Data Donatur';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {

@@ -21,7 +21,7 @@ class PenyaluranResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Penyaluran & Mustahik';
+    protected static string|\UnitEnum|null $navigationGroup = 'Program & Penyaluran';
 
     protected static ?string $navigationLabel = 'Penyaluran / Distribusi';
 
@@ -29,7 +29,7 @@ class PenyaluranResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Distribusi Bantuan Mustahik';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {

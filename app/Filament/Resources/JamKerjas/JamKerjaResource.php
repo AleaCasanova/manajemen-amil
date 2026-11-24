@@ -27,7 +27,7 @@ class JamKerjaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pengaturan Jam Kerja';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

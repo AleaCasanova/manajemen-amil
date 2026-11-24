@@ -19,7 +19,7 @@ class JenisDanaResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-wallet';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Master Data & Pengaturan';
+    protected static string|\UnitEnum|null $navigationGroup = 'Program & Penyaluran';
 
     protected static ?string $navigationLabel = 'Jenis Dana ZISWAF';
 

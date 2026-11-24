@@ -21,7 +21,7 @@ class DonasiResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Fundraising & Donasi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Keuangan & Donasi';
 
     protected static ?string $navigationLabel = 'Rekap Donasi';
 
@@ -29,7 +29,7 @@ class DonasiResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Rekap & Verifikasi Donasi';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

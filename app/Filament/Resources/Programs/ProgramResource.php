@@ -21,7 +21,7 @@ class ProgramResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Fundraising & Donasi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Program & Penyaluran';
 
     protected static ?string $navigationLabel = 'Program & Campaign';
 
@@ -29,7 +29,7 @@ class ProgramResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Program Donasi';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {
