@@ -71,8 +71,10 @@ class PengajuanDanaController extends Controller
         }
 
         $programs = Program::where('status', 'aktif')->orderBy('nama')->get();
-        $kategoriKeuangans = KategoriKeuangan::where('jenis', 'keluar')
-            ->where('is_active', true)
+        $kategoriKeuangans = KategoriKeuangan::active()
+            ->postable()
+            ->untukArahKas('keluar')
+            ->orderBy('kode_coa')
             ->orderBy('nama')
             ->get();
 

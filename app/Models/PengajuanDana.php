@@ -218,8 +218,14 @@ class PengajuanDana extends Model
             $kategoriId = $this->kategori_keuangan_id;
             if (! $kategoriId) {
                 $kat = KategoriKeuangan::where('jenis', 'keluar')
+                    ->where('is_postable', true)
+                    ->where('is_active', true)
                     ->where('nama', 'like', '%Penyaluran%')
-                    ->first() ?? KategoriKeuangan::where('jenis', 'keluar')->first();
+                    ->first()
+                    ?? KategoriKeuangan::where('jenis', 'keluar')
+                        ->where('is_postable', true)
+                        ->where('is_active', true)
+                        ->first();
                 $kategoriId = $kat?->id;
             }
 

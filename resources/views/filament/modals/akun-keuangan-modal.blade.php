@@ -76,6 +76,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
             margin-bottom: 12px;
         }
         .gsc-badge {
@@ -112,11 +113,21 @@
             background: rgba(16, 185, 129, 0.2);
             color: #6ee7b7;
         }
+        .gsc-badge-fungsi {
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 10px;
+        }
+        .dark .gsc-badge-fungsi {
+            background: #1e293b;
+            color: #cbd5e1;
+        }
 
         .gsc-card-id {
-            font-size: 12px;
+            font-size: 11px;
             color: #64748b;
             font-weight: 600;
+            font-family: ui-monospace, monospace;
         }
         .dark .gsc-card-id {
             color: #94a3b8;
@@ -228,6 +239,22 @@
             color: #f87171;
         }
 
+        .gsc-rekon-box {
+            margin-top: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dark .gsc-rekon-box {
+            background: #0f172a;
+            border-color: #334155;
+        }
+
         .gsc-empty {
             text-align: center;
             padding: 32px 16px;
@@ -237,10 +264,7 @@
     </style>
 
     @php
-        $totalSemuaSaldo = 0;
-        foreach($akuns as $a) {
-            $totalSemuaSaldo += $a->saldo_sekarang;
-        }
+        $totalSemuaSaldo = $akuns->sum(fn ($a) => $a->saldo_sekarang);
     @endphp
 
     <!-- Top Total Saldo Banner -->
@@ -250,7 +274,7 @@
             <div class="gsc-akun-summary-value">Rp {{ number_format($totalSemuaSaldo, 0, ',', '.') }}</div>
         </div>
         <div class="gsc-akun-summary-count">
-            {{ count($akuns) }} Akun Aktif
+            {{ $akuns->count() }} Akun Aktif
         </div>
     </div>
 
@@ -258,9 +282,10 @@
     <div class="gsc-akun-grid">
         @forelse($akuns as $akun)
             @php
-                $masuk = (float) $akun->transaksiKeuangans()->where('jenis', 'masuk')->sum('nominal');
-                $keluar = (float) $akun->transaksiKeuangans()->where('jenis', 'keluar')->sum('nominal');
-                $saldo = ((float) $akun->saldo_awal) + $masuk - $keluar;
+                $masuk = $akun->total_masuk_computed;
+                $keluar = $akun->total_keluar_computed;
+                $saldo = $akun->saldo_sekarang;
+                $selisih = $akun->selisih_rekonsiliasi;
                 $badgeClass = match($akun->tipe) {
                     'kas' => 'gsc-badge-kas',
                     'bank' => 'gsc-badge-bank',
@@ -268,19 +293,23 @@
                     default => 'gsc-badge-bank',
                 };
                 $badgeText = match($akun->tipe) {
-                    'kas' => 'Kas Tunai Fisik',
-                    'bank' => 'Rekening Bank',
-                    'e_wallet' => 'E-Wallet / QRIS',
+                    'kas' => 'Kas Tunai',
+                    'bank' => 'Bank',
+                    'e_wallet' => 'E-Wallet',
                     default => strtoupper($akun->tipe),
                 };
+                $fungsiText = $akun->fungsi ? (\App\Models\AkunKeuangan::FUNGSI_LABELS[$akun->fungsi] ?? $akun->fungsi) : null;
             @endphp
             <div class="gsc-card">
                 <div>
                     <div class="gsc-card-header">
-                        <span class="gsc-badge {{ $badgeClass }}">
-                            {{ $badgeText }}
-                        </span>
-                        <span class="gsc-card-id">#{{ $akun->id }}</span>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <span class="gsc-badge {{ $badgeClass }}">{{ $badgeText }}</span>
+                            @if($fungsiText)
+                                <span class="gsc-badge gsc-badge-fungsi">{{ $fungsiText }}</span>
+                            @endif
+                        </div>
+                        <span class="gsc-card-id">{{ $akun->kode_coa ?: ('#' . $akun->id) }}</span>
                     </div>
 
                     <h4 class="gsc-card-title">{{ $akun->nama }}</h4>
@@ -307,19 +336,36 @@
                 </div>
 
                 <div class="gsc-saldo-box">
-                    <div class="gsc-saldo-label">Saldo Riil Terkini</div>
+                    <div class="gsc-saldo-label">Saldo Buku Terkini</div>
                     <div class="gsc-saldo-num">Rp {{ number_format($saldo, 0, ',', '.') }}</div>
 
                     <div class="gsc-mutasi-row">
                         <div>
-                            <div class="gsc-mutasi-label">Total Masuk</div>
+                            <div class="gsc-mutasi-label">Total Masuk (Debet)</div>
                             <div class="gsc-mutasi-in">+ Rp {{ number_format($masuk, 0, ',', '.') }}</div>
                         </div>
                         <div>
-                            <div class="gsc-mutasi-label">Total Keluar</div>
+                            <div class="gsc-mutasi-label">Total Keluar (Kredit)</div>
                             <div class="gsc-mutasi-out">- Rp {{ number_format($keluar, 0, ',', '.') }}</div>
                         </div>
                     </div>
+
+                    @if($akun->saldo_riil_terakhir !== null)
+                        <div class="gsc-rekon-box">
+                            <div>
+                                <div class="gsc-mutasi-label">Saldo Riil ({{ $akun->tgl_rekonsiliasi_terakhir?->format('d/m/Y') ?? '-' }})</div>
+                                <div class="gsc-meta-val">Rp {{ number_format((float) $akun->saldo_riil_terakhir, 0, ',', '.') }}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="gsc-mutasi-label">Selisih</div>
+                                @if(abs((float) $selisih) < 0.01)
+                                    <span style="font-weight:700; color:#059669;">Balance (Rp 0)</span>
+                                @else
+                                    <span style="font-weight:700; color:#dc2626;">Rp {{ number_format((float) $selisih, 0, ',', '.') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @empty

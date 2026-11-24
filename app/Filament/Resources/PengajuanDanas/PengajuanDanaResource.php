@@ -30,7 +30,7 @@ class PengajuanDanaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pengajuan Dana & Kasbon Amil';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 5;
 
     public static function shouldRegisterNavigation(): bool
     {

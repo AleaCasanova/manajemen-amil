@@ -65,11 +65,15 @@ class PengajuanDanaForm
                                     ->minValue(1000),
 
                                 Select::make('kategori_keuangan_id')
-                                    ->label('Pos Kategori Pengeluaran')
+                                    ->label('Pos Kategori Pengeluaran (COA)')
                                     ->options(function () {
-                                        return KategoriKeuangan::where('jenis', 'keluar')
-                                            ->where('is_active', true)
-                                            ->pluck('nama', 'id');
+                                        return KategoriKeuangan::active()
+                                            ->postable()
+                                            ->untukArahKas('keluar')
+                                            ->orderBy('kode_coa')
+                                            ->orderBy('nama')
+                                            ->get()
+                                            ->pluck('label_lengkap', 'id');
                                     })
                                     ->searchable()
                                     ->preload(),

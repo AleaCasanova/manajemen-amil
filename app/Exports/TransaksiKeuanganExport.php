@@ -24,7 +24,7 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
 
     public function title(): string
     {
-        return 'Buku Kas & Keuangan';
+        return 'Buku Kas & Bank';
     }
 
     public function headings(): array
@@ -32,14 +32,21 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
         return [
             'No.',
             'Kode Transaksi',
+            'No. Voucher',
             'Tanggal',
+            'Tipe',
             'Jenis',
-            'Kategori Pos',
+            'No. COA',
+            'Uraian COA',
             'Akun Kas / Bank',
-            'Pihak Terkait (Penyetor/Penerima)',
+            'Uraian / Pihak Terkait',
+            'Reff',
             'Nominal Masuk (Rp)',
             'Nominal Keluar (Rp)',
             'Program Terkait',
+            'Sub-Program',
+            'PJ',
+            'Departemen',
             'Keterangan',
             'Dicatat Oleh',
         ];
@@ -48,10 +55,11 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
     public function array(): array
     {
         $waktuCetak = Carbon::now('Asia/Jakarta')->format('d/m/Y H:i').' WIB';
+        $relations = ['akunKeuangan', 'kategoriKeuangan', 'creator', 'program', 'pjAmil', 'divisi'];
 
         $items = $this->query
-            ? $this->query->with(['akunKeuangan', 'kategoriKeuangan', 'creator', 'program'])->orderBy('tgl_transaksi', 'desc')->orderBy('id', 'desc')->get()
-            : TransaksiKeuangan::with(['akunKeuangan', 'kategoriKeuangan', 'creator', 'program'])->orderBy('tgl_transaksi', 'desc')->orderBy('id', 'desc')->get();
+            ? $this->query->with($relations)->orderBy('tgl_transaksi', 'desc')->orderBy('id', 'desc')->get()
+            : TransaksiKeuangan::with($relations)->orderBy('tgl_transaksi', 'desc')->orderBy('id', 'desc')->get();
 
         $this->rowCount = $items->count();
 
@@ -64,8 +72,8 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
         $saldoMutasiFmt = number_format($saldoMutasi, 0, ',', '.');
 
         $rows = [
-            ['BUKU KAS & LAPORAN KEUANGAN — LAZ GERAK SEDEKAH CILACAP'],
-            ["Dicetak pada: {$waktuCetak}  |  Total: {$this->rowCount} Transaksi  |  Total Masuk: Rp {$totalMasukFmt}  |  Total Keluar: Rp {$totalKeluarFmt}  |  Surplus/Defisit: Rp {$saldoMutasiFmt}"],
+            ['BUKU KAS & LAPORAN MUTASI REKENING — LAZ GERAK SEDEKAH CILACAP'],
+            ["Dicetak pada: {$waktuCetak}  |  Total: {$this->rowCount} Transaksi  |  Total Masuk: Rp {$totalMasukFmt}  |  Total Keluar: Rp {$totalKeluarFmt}  |  Selisih Mutasi: Rp {$saldoMutasiFmt}"],
             $this->headings(),
         ];
 
@@ -74,14 +82,21 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
             $rows[] = [
                 $no++,
                 $trx->kode_transaksi,
+                $trx->no_voucher ?? '-',
                 $trx->tgl_transaksi ? $trx->tgl_transaksi->format('d/m/Y') : '-',
+                TransaksiKeuangan::TIPE_LABELS[$trx->tipe_transaksi] ?? ucfirst((string) $trx->tipe_transaksi),
                 $trx->jenis === 'masuk' ? 'KAS MASUK' : 'KAS KELUAR',
+                $trx->kategoriKeuangan?->kode_coa ?? '-',
                 $trx->kategoriKeuangan?->nama ?? '-',
                 $trx->akunKeuangan?->nama ?? '-',
                 $trx->pihak_terkait ?? '-',
+                $trx->reff ?? '-',
                 $trx->jenis === 'masuk' ? (float) $trx->nominal : 0,
                 $trx->jenis === 'keluar' ? (float) $trx->nominal : 0,
                 $trx->program?->nama ?? '-',
+                $trx->sub_program ?? '-',
+                $trx->pjAmil?->nama ?? '-',
+                $trx->divisi?->nama ?? '-',
                 $trx->keterangan ?? '-',
                 $trx->creator?->name ?? 'Sistem',
             ];
@@ -96,8 +111,15 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
             '',
             '',
             '',
+            '',
+            '',
+            '',
+            '',
             $totalMasuk,
             $totalKeluar,
+            '',
+            '',
+            '',
             '',
             '',
             '',
@@ -111,8 +133,8 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
         $lastDataRow = 3 + $this->rowCount;
         $totalRow = $lastDataRow + 1;
 
-        $sheet->mergeCells('A1:L1');
-        $sheet->mergeCells('A2:L2');
+        $sheet->mergeCells('A1:S1');
+        $sheet->mergeCells('A2:S2');
 
         // Style Judul Banner (Hijau Tua)
         $sheet->getStyle('A1')->applyFromArray([
@@ -127,7 +149,7 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
         ]);
 
         // Style Table Header (Baris 3) - Hijau Emerald
-        $sheet->getStyle('A3:L3')->applyFromArray([
+        $sheet->getStyle('A3:S3')->applyFromArray([
             'font' => ['bold' => true, 'size' => 10, 'color' => ['argb' => 'FFFFFFFF']],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -142,7 +164,7 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
 
         // Style Grid Data Rows & Total
         if ($this->rowCount > 0) {
-            $sheet->getStyle("A3:L{$totalRow}")->applyFromArray([
+            $sheet->getStyle("A3:S{$totalRow}")->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
@@ -156,16 +178,16 @@ class TransaksiKeuanganExport implements FromArray, ShouldAutoSize, WithStrictNu
 
             // Alignment kolom
             $sheet->getStyle("A4:A{$lastDataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("B4:D{$lastDataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("L4:L{$lastDataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("B4:G{$lastDataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("S4:S{$lastDataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Format Rupiah angka
-            $sheet->getStyle("H4:I{$totalRow}")->getNumberFormat()->setFormatCode('#,##0');
-            $sheet->getStyle("H4:I{$totalRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle("L4:M{$totalRow}")->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle("L4:M{$totalRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
             // Style Baris Total
-            $sheet->mergeCells("A{$totalRow}:G{$totalRow}");
-            $sheet->getStyle("A{$totalRow}:L{$totalRow}")->applyFromArray([
+            $sheet->mergeCells("A{$totalRow}:K{$totalRow}");
+            $sheet->getStyle("A{$totalRow}:S{$totalRow}")->applyFromArray([
                 'font' => ['bold' => true, 'size' => 10, 'color' => ['argb' => 'FF0F172A']],
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,

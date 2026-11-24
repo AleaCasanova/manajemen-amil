@@ -225,9 +225,10 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 9. Data Pegawai Real GSC & Pembersihan Data Dummy
+        // 9. Data Pegawai Real GSC & Master COA/Rekening Keuangan
         $this->call([
             RealDataSeeder::class,
+            KeuanganSeeder::class,
         ]);
     }
 }

@@ -15,6 +15,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Route;
 
 class TransaksiKeuanganResource extends Resource
@@ -25,11 +26,11 @@ class TransaksiKeuanganResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Keuangan & Donasi';
 
-    protected static ?string $navigationLabel = 'Buku Kas & Keuangan';
+    protected static ?string $navigationLabel = 'Buku Kas & Bank';
 
     protected static ?string $modelLabel = 'Transaksi Keuangan';
 
-    protected static ?string $pluralModelLabel = 'Buku Kas & Keuangan';
+    protected static ?string $pluralModelLabel = 'Buku Kas & Bank';
 
     protected static ?int $navigationSort = 1;
 
@@ -49,6 +50,20 @@ class TransaksiKeuanganResource extends Resource
         } catch (\Throwable) {
             return url('/'.config('filament.admin_path', 'portal-internal-gsc').'/transaksi-keuangans');
         }
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with([
+            'akunKeuangan',
+            'kategoriKeuangan',
+            'program',
+            'pjAmil',
+            'divisi',
+            'creator',
+            'transferPasangan.akunKeuangan',
+            'cashAdvance',
+        ]);
     }
 
     public static function form(Schema $schema): Schema
