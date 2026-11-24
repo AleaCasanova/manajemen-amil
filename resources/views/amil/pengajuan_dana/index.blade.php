@@ -29,8 +29,8 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <!-- Card 1: Total Diajukan -->
         <a href="{{ route('amil.pengajuan-dana.index', ['q' => request('q')]) }}" 
-           style="{{ !request('status') ? 'border: 1.5px solid #10b981; background-color: #f0fdf4;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
-           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           style="{{ !request('status') ? 'border: 1.5px solid #10b981;' : 'border: 1px solid #e2e8f0;' }} background-color: #ffffff;"
+           class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
            title="Tampilkan semua pengajuan">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,8 +43,8 @@
 
         <!-- Card 2: Menunggu Review -->
         <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diajukan', 'q' => request('q')]) }}" 
-           style="{{ request('status') === 'diajukan' ? 'border: 1.5px solid #f59e0b; background-color: #fffbeb;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
-           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           style="{{ request('status') === 'diajukan' ? 'border: 1.5px solid #10b981;' : 'border: 1px solid #e2e8f0;' }} background-color: #ffffff;"
+           class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
            title="Filter pengajuan menunggu review">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,8 +57,8 @@
 
         <!-- Card 3: Disetujui (ACC) -->
         <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'disetujui', 'q' => request('q')]) }}" 
-           style="{{ request('status') === 'disetujui' ? 'border: 1.5px solid #3b82f6; background-color: #eff6ff;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
-           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           style="{{ request('status') === 'disetujui' ? 'border: 1.5px solid #10b981;' : 'border: 1px solid #e2e8f0;' }} background-color: #ffffff;"
+           class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
            title="Filter pengajuan telah di-ACC">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,8 +71,8 @@
 
         <!-- Card 4: Telah Dicairkan -->
         <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'dicairkan', 'q' => request('q')]) }}" 
-           style="{{ request('status') === 'dicairkan' ? 'border: 1.5px solid #a855f7; background-color: #faf5ff;' : 'border: 1px solid #e2e8f0; background-color: #ffffff;' }}"
-           class="p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
+           style="{{ request('status') === 'dicairkan' ? 'border: 1.5px solid #10b981;' : 'border: 1px solid #e2e8f0;' }} background-color: #ffffff;"
+           class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-xs hover:shadow-sm transition group text-center flex flex-col items-center justify-center" 
            title="Filter pengajuan yang telah dicairkan">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
