@@ -3,7 +3,7 @@
 @section('title', 'Buat Pengajuan Dana Baru')
 
 @section('content')
-<div class="max-w-3xl mx-auto space-y-6 pb-28 sm:pb-12">
+<div class="max-w-3xl mx-auto space-y-6">
     <!-- Header Bar -->
     <div class="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs flex items-center gap-3.5">
         <a href="{{ route('amil.pengajuan-dana.index') }}" class="p-2 sm:p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0" title="Kembali ke Daftar Pengajuan">
