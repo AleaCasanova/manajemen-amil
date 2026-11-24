@@ -429,20 +429,59 @@
         </div>
     </div>
 
-    <!-- RIWAYAT ABSENSI AMIL (30 HARI TERAKHIR) -->
+    <!-- RIWAYAT ABSENSI AMIL (BERDASARKAN KALENDER ASLI PER BULAN) -->
     <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-200">
-        <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
             <div>
                 <h3 class="font-bold text-slate-800 text-sm sm:text-base">Riwayat Kehadiran</h3>
-                <p class="text-[11px] text-slate-400">Catatan 30 hari kalender terakhir</p>
+                <p class="text-[11px] text-slate-400">Periode: <strong class="text-slate-700 font-semibold">{{ $namaBulanTerpilih }} {{ $selectedTahun }}</strong></p>
             </div>
-            <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
-                {{ $history->count() }} Hari
-            </span>
+
+            <!-- Form Filter Kalender Riil (Bulan & Tahun) -->
+            <form action="{{ route('amil.absensi.index') }}" method="GET" class="flex items-center gap-2">
+                <div class="relative">
+                    <select name="bulan" onchange="this.form.submit()" class="text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-teal-500 focus:outline-none cursor-pointer">
+                        @foreach ($namaBulanList as $mNum => $mName)
+                            <option value="{{ $mNum }}" {{ $selectedBulan === $mNum ? 'selected' : '' }}>
+                                {{ $mName }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="relative">
+                    <select name="tahun" onchange="this.form.submit()" class="text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-teal-500 focus:outline-none cursor-pointer">
+                        @for ($y = now('Asia/Jakarta')->year; $y >= 2025; $y--)
+                            <option value="{{ $y }}" {{ $selectedTahun === $y ? 'selected' : '' }}>
+                                {{ $y }}
+                            </option>
+                        @endfor
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Ringkasan Statistik Bulan Terpilih -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Tepat Waktu</span>
+                <span class="text-sm font-extrabold text-emerald-600">{{ $bulanStats['tepat_waktu'] }} Hari</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Terlambat</span>
+                <span class="text-sm font-extrabold text-rose-500">{{ $bulanStats['terlambat'] }} Hari</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Izin / Cuti</span>
+                <span class="text-sm font-extrabold text-blue-600">{{ $bulanStats['izin_cuti'] }} Hari</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Total Jam</span>
+                <span class="text-sm font-extrabold text-teal-700">{{ $bulanStats['jam_kerja']['formatted'] }}</span>
+            </div>
         </div>
 
         @if ($history->isEmpty())
-            <p class="text-xs text-slate-400 py-6 text-center">Belum ada riwayat absensi yang tercatat.</p>
+            <p class="text-xs text-slate-400 py-6 text-center">Belum ada riwayat presensi pada bulan {{ $namaBulanTerpilih }} {{ $selectedTahun }}.</p>
         @else
             <!-- 1. Tampilan Mobile Responsive List (< md) -->
             <div class="md:hidden divide-y divide-slate-100">

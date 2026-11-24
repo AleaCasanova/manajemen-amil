@@ -415,7 +415,7 @@ class RealDataSeeder extends Seeder
                 'divisi_id' => $divisiModel?->id,
                 'no_hp' => $p['no_wa'],
                 'alamat' => $p['alamat'],
-                'tgl_bergabung' => '2026-01-01',
+                'tgl_bergabung' => '2026-11-03',
                 'target_bulanan' => $p['target_bulanan'] ?? 0,
                 'status' => 'aktif',
             ]);

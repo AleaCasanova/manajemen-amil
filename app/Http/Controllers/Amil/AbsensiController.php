@@ -21,7 +21,7 @@ class AbsensiController extends Controller
     /**
      * Tampilan utama absensi amil
      */
-    public function index()
+    public function index(Request $request)
     {
         $amil = Auth::user()->amil;
 
@@ -38,15 +38,58 @@ class AbsensiController extends Controller
         $kantor = LokasiKantor::where('is_active', true)->first();
         $kantorAktif = LokasiKantor::where('is_active', true)->get();
 
-        // Riwayat absensi 30 hari terakhir
+        // Filter Kalender Riil (Bulan & Tahun Asli)
+        $nowJakarta = Carbon::now('Asia/Jakarta');
+        $selectedBulan = (int) $request->input('bulan', $nowJakarta->month);
+        $selectedTahun = (int) $request->input('tahun', $nowJakarta->year);
+
+        if ($selectedBulan < 1 || $selectedBulan > 12) {
+            $selectedBulan = (int) $nowJakarta->month;
+        }
+        if ($selectedTahun < 2024 || $selectedTahun > (int) $nowJakarta->year + 1) {
+            $selectedTahun = (int) $nowJakarta->year;
+        }
+
+        $namaBulanList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+        $namaBulanTerpilih = $namaBulanList[$selectedBulan] ?? 'Bulan';
+
+        // Riwayat absensi berdasarkan kalender asli bulan & tahun yang dipilih
         $history = Absensi::where('amil_id', $amil->id)
-            ->latest('tanggal')
-            ->take(30)
+            ->whereYear('tanggal', $selectedTahun)
+            ->whereMonth('tanggal', $selectedBulan)
+            ->orderByDesc('tanggal')
             ->get();
 
-        $clockOutEligibility = $this->absensiService->checkClockOutEligibility(Carbon::now('Asia/Jakarta'));
+        // Statistik bulanan amil pada periode kalender terpilih
+        $bulanStats = [
+            'tepat_waktu' => $history->where('status', 'hadir')->count(),
+            'terlambat' => $history->where('status', 'terlambat')->count(),
+            'izin_cuti' => $history->whereIn('status', ['izin', 'cuti'])->count(),
+            'alpa' => $history->where('status', 'alpa')->count(),
+            'total_hari' => $history->count(),
+            'jam_kerja' => $amil->getTotalJamKerjaBulan($selectedBulan, $selectedTahun),
+        ];
 
-        return view('amil.absensi.index', compact('amil', 'absensiToday', 'jamKerja', 'kantor', 'kantorAktif', 'history', 'clockOutEligibility'));
+        $clockOutEligibility = $this->absensiService->checkClockOutEligibility($nowJakarta);
+
+        return view('amil.absensi.index', compact(
+            'amil',
+            'absensiToday',
+            'jamKerja',
+            'kantor',
+            'kantorAktif',
+            'history',
+            'clockOutEligibility',
+            'selectedBulan',
+            'selectedTahun',
+            'namaBulanList',
+            'namaBulanTerpilih',
+            'bulanStats'
+        ));
     }
 
     /**

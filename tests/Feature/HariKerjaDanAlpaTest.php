@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Absensi;
 use App\Models\Amil;
 use App\Models\User;
+use App\Services\AbsensiService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Spatie\Permission\Models\Role;
@@ -153,5 +154,84 @@ class HariKerjaDanAlpaTest extends TestCase
             ->whereDate('tanggal', $monday)
             ->first();
         $this->assertNull($relawanAbsen);
+    }
+
+    /**
+     * Uji amil baru yang tanggal bergabungnya di masa mendatang atau setelah tanggal pemeriksaan:
+     * - Tidak boleh ditandai ALPA untuk tanggal sebelum dia bergabung.
+     */
+    public function test_amil_not_joined_yet_is_not_marked_as_alpa(): void
+    {
+        $testDate = '2026-11-10';
+
+        // Buat amil baru yang baru bergabung tanggal 23 November 2026
+        $newUser = User::factory()->create([
+            'email' => 'new_intern_'.uniqid().'@amilgsc.com',
+            'is_active' => true,
+        ]);
+        $newUser->assignRole('Amil');
+
+        $newMagang = Amil::create([
+            'user_id' => $newUser->id,
+            'nip' => 'MGN-NEW-'.rand(100, 999),
+            'nama' => 'Magang Baru Masuk',
+            'jabatan' => 'magang',
+            'status' => 'aktif',
+            'tgl_bergabung' => '2026-11-23',
+        ]);
+
+        $this->artisan('amil:mark-alpa', ['--date' => $testDate])
+            ->assertSuccessful();
+
+        $absen = Absensi::where('amil_id', $newMagang->id)
+            ->whereDate('tanggal', $testDate)
+            ->first();
+
+        $this->assertNull($absen, 'Amil yang belum bergabung tidak boleh ditandai Alpa');
+    }
+
+    /**
+     * Uji autoSyncPastAlpa membersihkan data Alpa yang tidak valid (sebelum tanggal bergabung).
+     */
+    public function test_autosync_cleans_alpa_prior_to_join_date(): void
+    {
+        $newUser = User::factory()->create([
+            'email' => 'cleanup_test_'.uniqid().'@amilgsc.com',
+            'is_active' => true,
+        ]);
+        $newUser->assignRole('Amil');
+
+        $newAmil = Amil::create([
+            'user_id' => $newUser->id,
+            'nip' => 'CLN-'.rand(100, 999),
+            'nama' => 'Amil Uji Pembersihan',
+            'jabatan' => 'staff',
+            'status' => 'aktif',
+            'tgl_bergabung' => '2026-11-23',
+        ]);
+
+        // Simulasikan alpa salah yang masuk sebelum tanggal bergabung
+        Absensi::create([
+            'amil_id' => $newAmil->id,
+            'tanggal' => '2026-11-05',
+            'status' => 'alpa',
+            'keterangan' => 'Alpa lama yang salah',
+        ]);
+
+        $this->assertDatabaseHas('absensis', [
+            'amil_id' => $newAmil->id,
+            'tanggal' => '2026-11-05',
+            'status' => 'alpa',
+        ]);
+
+        // Jalankan autoSyncPastAlpa
+        app(AbsensiService::class)->autoSyncPastAlpa();
+
+        // Alpa sebelum tgl_bergabung harus sudah terhapus
+        $this->assertDatabaseMissing('absensis', [
+            'amil_id' => $newAmil->id,
+            'tanggal' => '2026-11-05',
+            'status' => 'alpa',
+        ]);
     }
 }

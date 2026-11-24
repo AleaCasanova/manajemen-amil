@@ -116,7 +116,13 @@ class AbsensiRekapBulananSheet implements FromArray, ShouldAutoSize, WithStrictN
                 $tingkatKehadiranLabel = '-';
             } else {
                 $skemaLabel = $isMagang ? '5 Hari Kerja (Sen-Jum)' : '6 Hari Kerja (Sen-Sab)';
-                $cursor = $startOfMonth->copy();
+
+                // Titik awal perhitungan hari kerja menyesuaikan tanggal bergabung amil
+                $effectiveStart = ($amil->tgl_bergabung && $amil->tgl_bergabung->gt($startOfMonth))
+                    ? $amil->tgl_bergabung->copy()->startOfDay()
+                    : $startOfMonth->copy();
+
+                $cursor = $effectiveStart->copy();
                 $workingDays = 0;
 
                 while ($cursor->lte($endOfPeriod)) {

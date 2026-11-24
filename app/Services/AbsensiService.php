@@ -8,6 +8,7 @@ use App\Models\IzinCuti;
 use App\Models\JamKerja;
 use App\Models\LokasiKantor;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AbsensiService
 {
@@ -165,6 +166,17 @@ class AbsensiService
                 'jam_pulang' => null,
             ]);
 
+        // Bersihkan otomatis rekaman Alpa yang tanggalnya mendahului tanggal resmi amil bergabung
+        Absensi::where('status', 'alpa')
+            ->whereExists(function ($query): void {
+                $query->select(DB::raw(1))
+                    ->from('amils')
+                    ->whereColumn('amils.id', 'absensis.amil_id')
+                    ->whereNotNull('amils.tgl_bergabung')
+                    ->whereColumn('absensis.tanggal', '<', 'amils.tgl_bergabung');
+            })
+            ->delete();
+
         $now = Carbon::now('Asia/Jakarta');
 
         // Cari tanggal pertama absensi tercatat di bulan berjalan sebagai titik awal operasional bulan ini
@@ -223,6 +235,11 @@ class AbsensiService
 
             foreach ($activeAmils as $amil) {
                 if (! $amil->needsAttendance()) {
+                    continue;
+                }
+
+                // Amil belum bergabung pada tanggal ini
+                if ($amil->tgl_bergabung && $cursor->lt($amil->tgl_bergabung->copy()->startOfDay())) {
                     continue;
                 }
 

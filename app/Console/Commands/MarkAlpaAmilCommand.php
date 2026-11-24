@@ -54,6 +54,13 @@ class MarkAlpaAmilCommand extends Command
                 continue;
             }
 
+            // Amil belum bergabung pada tanggal target
+            if ($amil->tgl_bergabung && $targetDate->lt($amil->tgl_bergabung->copy()->startOfDay())) {
+                $this->line("[i] Amil: {$amil->nama} ({$amil->nip}) dilewati (Belum resmi bergabung pada tanggal {$dateString}).");
+
+                continue;
+            }
+
             // Aturan Hari Kerja: Anak Magang 5 hari kerja (Senin - Jumat). Hari Sabtu libur untuk Magang.
             if ($targetDate->isSaturday() && $amil->isMagang() && ! $this->option('include-weekend')) {
                 $this->line("[i] Amil: {$amil->nama} ({$amil->nip}) dilewati (Libur Sabtu Mahasiswa Magang).");
