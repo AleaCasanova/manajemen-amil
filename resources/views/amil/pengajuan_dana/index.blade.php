@@ -52,37 +52,136 @@
         </div>
     </div>
 
-    <!-- Filter & Search Bar -->
-    <div class="bg-white rounded-2xl p-4 shadow-xs border border-slate-200 space-y-3">
-        <!-- Filter Tabs -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none">
-            <a href="{{ route('amil.pengajuan-dana.index') }}" class="px-3 py-1.5 rounded-xl whitespace-nowrap {{ !request('status') ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Semua</a>
-            <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diajukan']) }}" class="px-3 py-1.5 rounded-xl whitespace-nowrap {{ request('status') === 'diajukan' ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Review Bendahara</a>
-            <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diverifikasi_bendahara']) }}" class="px-3 py-1.5 rounded-xl whitespace-nowrap {{ request('status') === 'diverifikasi_bendahara' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">ACC Manager</a>
-            <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'disetujui']) }}" class="px-3 py-1.5 rounded-xl whitespace-nowrap {{ request('status') === 'disetujui' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Siap Cair</a>
-            <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'dicairkan']) }}" class="px-3 py-1.5 rounded-xl whitespace-nowrap {{ request('status') === 'dicairkan' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Dicairkan</a>
-            <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'ditolak']) }}" class="px-3 py-1.5 rounded-xl whitespace-nowrap {{ request('status') === 'ditolak' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Ditolak</a>
-        </div>
-
-        <form action="{{ route('amil.pengajuan-dana.index') }}" method="GET" class="flex gap-2">
+    <!-- Search Bar with Filter Icon Button -->
+    <div class="bg-white rounded-2xl p-3 sm:p-4 shadow-xs border border-slate-200">
+        <form action="{{ route('amil.pengajuan-dana.index') }}" method="GET" class="flex items-center gap-2">
             @if(request('status'))
                 <input type="hidden" name="status" value="{{ request('status') }}">
             @endif
+
+            <!-- Search Input -->
             <div class="relative flex-1">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nomor pengajuan, keperluan, atau nomor memo/proposal..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nomor, keperluan, atau memo..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
+                @if (request()->filled('q'))
+                    <a href="{{ route('amil.pengajuan-dana.index', ['status' => request('status')]) }}" class="absolute right-2.5 top-2.5 p-0.5 text-slate-400 hover:text-slate-600 transition" title="Hapus teks pencarian">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </a>
+                @endif
             </div>
-            <button type="submit" class="py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition">
-                Cari
+
+            <!-- Tombol Cari -->
+            <button type="submit" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0 shadow-xs cursor-pointer">
+                <span>Cari</span>
             </button>
-            @if (request()->filled('q'))
-                <a href="{{ route('amil.pengajuan-dana.index', ['status' => request('status')]) }}" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                </a>
-            @endif
+
+            <!-- Tombol Icon Filter di Samping Tombol Cari -->
+            <div class="relative shrink-0">
+                <button type="button" id="filterDropdownBtn" onclick="toggleFilterDropdown(event)" class="relative p-2.5 rounded-xl border transition flex items-center justify-center cursor-pointer {{ request('status') ? 'bg-emerald-50 border-emerald-400 text-emerald-700 ring-2 ring-emerald-500/20' : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700' }}" title="Filter Status Pengajuan">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    @if(request('status'))
+                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-600 rounded-full border-2 border-white"></span>
+                    @endif
+                </button>
+
+                <!-- Popover Dropdown Menu Filter Status -->
+                <div id="filterDropdownMenu" class="hidden absolute right-0 top-full mt-2 w-56 sm:w-60 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 divide-y divide-slate-100">
+                    <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                        <span>Filter Status</span>
+                        @if(request('status'))
+                            <a href="{{ route('amil.pengajuan-dana.index', ['q' => request('q')]) }}" class="text-rose-600 hover:underline normal-case text-[11px] font-bold">Reset</a>
+                        @endif
+                    </div>
+                    <div class="py-1 space-y-0.5">
+                        <a href="{{ route('amil.pengajuan-dana.index', ['q' => request('q')]) }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold {{ !request('status') ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <span>Semua Status</span>
+                            @if(!request('status'))
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diajukan', 'q' => request('q')]) }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold {{ request('status') === 'diajukan' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <span class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <span>Review Bendahara</span>
+                            </span>
+                            @if(request('status') === 'diajukan')
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diverifikasi_bendahara', 'q' => request('q')]) }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold {{ request('status') === 'diverifikasi_bendahara' ? 'bg-blue-50 text-blue-800 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <span class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <span>ACC Manager</span>
+                            </span>
+                            @if(request('status') === 'diverifikasi_bendahara')
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'disetujui', 'q' => request('q')]) }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold {{ request('status') === 'disetujui' ? 'bg-indigo-50 text-indigo-800 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <span class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                <span>Siap Cair</span>
+                            </span>
+                            @if(request('status') === 'disetujui')
+                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'dicairkan', 'q' => request('q')]) }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold {{ request('status') === 'dicairkan' ? 'bg-emerald-50 text-emerald-800 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <span class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>Dicairkan</span>
+                            </span>
+                            @if(request('status') === 'dicairkan')
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'ditolak', 'q' => request('q')]) }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold {{ request('status') === 'ditolak' ? 'bg-rose-50 text-rose-800 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <span class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                <span>Ditolak</span>
+                            </span>
+                            @if(request('status') === 'ditolak')
+                                <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </a>
+                    </div>
+                </div>
+            </div>
         </form>
+
+        <!-- Active Filter Chip -->
+        @if(request('status'))
+            <div class="flex items-center gap-2 pt-2.5 mt-2.5 border-t border-slate-100 text-xs">
+                <span class="text-slate-400 font-medium text-[11px]">Filter aktif:</span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-bold text-[11px] border 
+                    {{ match(request('status')) {
+                        'diajukan' => 'bg-amber-50 text-amber-800 border-amber-200',
+                        'diverifikasi_bendahara' => 'bg-blue-50 text-blue-800 border-blue-200',
+                        'disetujui' => 'bg-indigo-50 text-indigo-800 border-indigo-200',
+                        'dicairkan' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                        'ditolak' => 'bg-rose-50 text-rose-800 border-rose-200',
+                        default => 'bg-slate-100 text-slate-800 border-slate-200'
+                    } }}">
+                    <span>
+                        {{ match(request('status')) {
+                            'diajukan' => 'Review Bendahara',
+                            'diverifikasi_bendahara' => 'ACC Manager',
+                            'disetujui' => 'Siap Cair',
+                            'dicairkan' => 'Dicairkan',
+                            'ditolak' => 'Ditolak',
+                            default => request('status')
+                        } }}
+                    </span>
+                    <a href="{{ route('amil.pengajuan-dana.index', ['q' => request('q')]) }}" class="hover:opacity-75 transition" title="Hapus filter ini">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </a>
+                </span>
+            </div>
+        @endif
     </div>
 
     <!-- List Pengajuan Cards -->
@@ -186,4 +285,25 @@
         </div>
     @endif
 </div>
+
+<script>
+    function toggleFilterDropdown(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('filterDropdownMenu');
+        if (menu) {
+            menu.classList.toggle('hidden');
+        }
+    }
+
+    // Tutup dropdown filter saat user mengklik area lain
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('filterDropdownMenu');
+        const btn = document.getElementById('filterDropdownBtn');
+        if (menu && !menu.classList.contains('hidden')) {
+            if (!menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        }
+    });
+</script>
 @endsection
