@@ -25,31 +25,63 @@
         </div>
     @endif
 
-    <!-- Stat Cards Overview -->
+    <!-- Stat Cards Overview (Interactive Cards) -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Diajukan</div>
-            <div class="text-base sm:text-lg font-extrabold text-slate-800 mt-1">Rp {{ number_format($totalNominalDiajukan, 0, ',', '.') }}</div>
-            <div class="text-[10px] text-slate-500 mt-0.5">Akumulasi permohonan</div>
-        </div>
+        <!-- Card 1: Total Diajukan -->
+        <a href="{{ route('amil.pengajuan-dana.index', ['q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-slate-300 hover:shadow-md transition block group {{ !request('status') ? 'ring-2 ring-emerald-500/30' : '' }}" title="Tampilkan semua pengajuan">
+            <div class="flex items-center justify-between gap-1.5">
+                <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Diajukan</span>
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="text-base sm:text-xl font-black text-slate-900 mt-2 tracking-tight">Rp {{ number_format($totalNominalDiajukan, 0, ',', '.') }}</div>
+            <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">Semua permohonan</div>
+        </a>
 
-        <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/80 shadow-xs">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Menunggu Review</div>
-            <div class="text-base sm:text-lg font-extrabold text-amber-900 mt-1">{{ $countMenunggu }} Pengajuan</div>
-            <div class="text-[10px] text-amber-700/80 mt-0.5">Bendahara / Manager</div>
-        </div>
+        <!-- Card 2: Menunggu Review -->
+        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'diajukan', 'q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-amber-300 hover:shadow-md transition block group {{ request('status') === 'diajukan' ? 'ring-2 ring-amber-500 bg-amber-50/20' : '' }}" title="Filter pengajuan menunggu review">
+            <div class="flex items-center justify-between gap-1.5">
+                <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-700">Menunggu Review</span>
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-100/80 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="text-base sm:text-xl font-black text-amber-900 mt-2 tracking-tight">{{ $countMenunggu }} <span class="text-xs sm:text-sm font-semibold text-amber-700">Pengajuan</span></div>
+            <div class="text-[10px] sm:text-[11px] text-amber-700/80 mt-0.5 truncate">Bendahara & Manager</div>
+        </a>
 
-        <div class="bg-blue-50/60 p-4 rounded-2xl border border-blue-200/80 shadow-xs">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Disetujui (ACC)</div>
-            <div class="text-base sm:text-lg font-extrabold text-blue-900 mt-1">{{ $countDisetujui }} Pengajuan</div>
-            <div class="text-[10px] text-blue-700/80 mt-0.5">Siap dicairkan bendahara</div>
-        </div>
+        <!-- Card 3: Disetujui (ACC) -->
+        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'disetujui', 'q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-indigo-300 hover:shadow-md transition block group {{ request('status') === 'disetujui' ? 'ring-2 ring-indigo-500 bg-indigo-50/20' : '' }}" title="Filter pengajuan telah di-ACC">
+            <div class="flex items-center justify-between gap-1.5">
+                <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-indigo-700">Disetujui (ACC)</span>
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-100/80 text-indigo-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="text-base sm:text-xl font-black text-indigo-900 mt-2 tracking-tight">{{ $countDisetujui }} <span class="text-xs sm:text-sm font-semibold text-indigo-700">Pengajuan</span></div>
+            <div class="text-[10px] sm:text-[11px] text-indigo-700/80 mt-0.5 truncate">Siap dicairkan</div>
+        </a>
 
-        <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200/80 shadow-xs">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Telah Dicairkan</div>
-            <div class="text-base sm:text-lg font-extrabold text-emerald-900 mt-1">{{ $countDicairkan }} Selesai</div>
-            <div class="text-[10px] text-emerald-700/80 mt-0.5">Dana masuk ke kasbon</div>
-        </div>
+        <!-- Card 4: Telah Dicairkan -->
+        <a href="{{ route('amil.pengajuan-dana.index', ['status' => 'dicairkan', 'q' => request('q')]) }}" class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-emerald-300 hover:shadow-md transition block group {{ request('status') === 'dicairkan' ? 'ring-2 ring-emerald-500 bg-emerald-50/20' : '' }}" title="Filter pengajuan yang telah dicairkan">
+            <div class="flex items-center justify-between gap-1.5">
+                <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-700">Telah Dicairkan</span>
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="text-base sm:text-xl font-black text-emerald-900 mt-2 tracking-tight">{{ $countDicairkan }} <span class="text-xs sm:text-sm font-semibold text-emerald-700">Selesai</span></div>
+            <div class="text-[10px] sm:text-[11px] text-emerald-700/80 mt-0.5 truncate">Dana masuk kasbon</div>
+        </a>
     </div>
 
     <!-- Search Bar with Filter Icon Button -->
