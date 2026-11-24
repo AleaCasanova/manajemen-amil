@@ -121,10 +121,39 @@
                         <div id="panelCam" class="space-y-3">
                             <div class="relative rounded-2xl overflow-hidden bg-slate-900 aspect-video flex items-center justify-center border border-slate-200">
                                 <!-- Video WebRTC -->
-                                <video id="webcam" autoplay playsinline class="w-full h-full object-cover"></video>
+                                <video id="webcam" autoplay playsinline class="w-full h-full object-cover transition-transform duration-200"></video>
                                 <canvas id="canvas" class="hidden"></canvas>
                                 <!-- Captured Snapshot Image Preview -->
                                 <img id="photoPreview" class="hidden w-full h-full object-cover absolute inset-0 z-10" alt="Selfie Amil">
+
+                                <!-- Badges Info Kamera & Status Mirror -->
+                                <div id="camInfoBadges" class="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 hidden">
+                                    <span id="badgeFacingMode" class="text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
+                                        Kamera Depan
+                                    </span>
+                                    <span id="badgeMirror" class="text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
+                                        Normal
+                                    </span>
+                                </div>
+
+                                <!-- Floating Quick Actions inside Video (Switch Camera & Mirror Toggle) -->
+                                <div id="camFloatingControls" class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 hidden">
+                                    <!-- Tombol Switch Kamera Depan/Belakang -->
+                                    <button type="button" onclick="switchCamera()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Ganti Kamera Depan / Belakang">
+                                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                        </svg>
+                                        <span class="hidden sm:inline">Ganti Kamera</span>
+                                    </button>
+
+                                    <!-- Tombol Toggle Mirror -->
+                                    <button type="button" onclick="toggleMirror()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Balik Cermin (Mirror / Normal)">
+                                        <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                        </svg>
+                                        <span id="btnMirrorText" class="hidden sm:inline">Cermin</span>
+                                    </button>
+                                </div>
 
                                 <!-- Placeholder Overlay jika belum start kamera -->
                                 <div id="camPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center bg-slate-900/90 z-20">
@@ -139,15 +168,15 @@
 
                             <!-- Camera Action Buttons -->
                             <div class="flex items-center gap-2">
-                                <button type="button" id="btnStartCam" onclick="startCamera()" class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5">
+                                <button type="button" id="btnStartCam" onclick="startCamera()" class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                                     <span>Buka Kamera</span>
                                 </button>
-                                <button type="button" id="btnCapture" onclick="takeSnapshot()" disabled class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-xs transition flex items-center justify-center gap-1.5">
+                                <button type="button" id="btnCapture" onclick="takeSnapshot()" disabled class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     <span>Ambil Foto</span>
                                 </button>
-                                <button type="button" id="btnRetake" onclick="retakeSnapshot()" class="hidden py-2 px-3 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 transition">
+                                <button type="button" id="btnRetake" onclick="retakeSnapshot()" class="hidden py-2 px-3 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 transition cursor-pointer">
                                     Ulangi
                                 </button>
                             </div>
@@ -969,8 +998,11 @@
         }
     }
 
-    // 3. Kamera WebRTC & Selfie
+    // 3. Kamera WebRTC & Selfie (Dukungan Switch Kamera Depan/Belakang & Kontrol Mirror)
     let stream = null;
+    let currentFacingMode = 'user'; // 'user' (depan) atau 'environment' (belakang)
+    let isMirrored = false; // Default normal / tidak mirror (seperti kamera HP asli)
+
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('canvas');
     const photoPreview = document.getElementById('photoPreview');
@@ -978,21 +1010,82 @@
     const btnCapture = document.getElementById('btnCapture');
     const btnRetake = document.getElementById('btnRetake');
     const camPlaceholder = document.getElementById('camPlaceholder');
+    const camInfoBadges = document.getElementById('camInfoBadges');
+    const camFloatingControls = document.getElementById('camFloatingControls');
+    const badgeFacingMode = document.getElementById('badgeFacingMode');
+    const badgeMirror = document.getElementById('badgeMirror');
+    const btnMirrorText = document.getElementById('btnMirrorText');
+
+    function updateCamUI() {
+        if (video) {
+            video.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+        }
+        if (badgeFacingMode) {
+            badgeFacingMode.textContent = currentFacingMode === 'user' ? 'Kamera Depan' : 'Kamera Belakang';
+        }
+        if (badgeMirror) {
+            badgeMirror.textContent = isMirrored ? 'Mirror: Aktif' : 'Normal';
+            badgeMirror.className = isMirrored 
+                ? 'text-[10px] font-bold bg-amber-900/80 text-amber-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20'
+                : 'text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20';
+        }
+        if (btnMirrorText) {
+            btnMirrorText.textContent = isMirrored ? 'Mirror ON' : 'Mirror OFF';
+        }
+    }
 
     async function startCamera() {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+
+            const constraints = {
+                video: {
+                    facingMode: currentFacingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
                 audio: false
-            });
+            };
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (errConstraint) {
+                // Fallback jika browser/device tidak support facingMode spesifik
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                });
+            }
+
             video.srcObject = stream;
+            updateCamUI();
+
             camPlaceholder.classList.add('hidden');
             btnStartCam.classList.add('hidden');
             btnCapture.disabled = false;
+            if (camInfoBadges) camInfoBadges.classList.remove('hidden');
+            if (camFloatingControls) camFloatingControls.classList.remove('hidden');
         } catch (err) {
-            alert('Tidak dapat mengakses webcam/kamera selfie: ' + err.message + '\n\nSilakan beralih ke tab "Choose File" untuk memilih foto dari perangkat Anda.');
+            alert('Tidak dapat mengakses kamera: ' + err.message + '\n\nSilakan pastikan izin kamera diizinkan di browser, atau beralih ke tab "Pilih File" untuk memilih foto dari perangkat Anda.');
             switchFotoMode('file');
         }
+    }
+
+    async function switchCamera() {
+        currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+        // Otomatis matikan mirror jika beralih ke kamera belakang
+        if (currentFacingMode === 'environment') {
+            isMirrored = false;
+        }
+        await startCamera();
+    }
+
+    function toggleMirror() {
+        isMirrored = !isMirrored;
+        updateCamUI();
     }
 
     function takeSnapshot() {
@@ -1001,10 +1094,18 @@
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
+
+        ctx.save();
+        if (isMirrored) {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
 
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         photoPreview.src = dataUrl;
+        photoPreview.style.transform = 'none'; // Hasil snapshot canvas sudah sesuai
         photoPreview.classList.remove('hidden');
 
         const inFoto = document.getElementById('inputFoto');
@@ -1016,6 +1117,7 @@
         hasSnapshot = true;
         btnCapture.classList.add('hidden');
         btnRetake.classList.remove('hidden');
+        if (camFloatingControls) camFloatingControls.classList.add('hidden');
 
         // Stop stream
         stream.getTracks().forEach(track => track.stop());

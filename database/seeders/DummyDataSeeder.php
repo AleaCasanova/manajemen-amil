@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Absensi;
 use App\Models\Agenda;
 use App\Models\AktivitasHarian;
+use App\Models\AkunKeuangan;
 use App\Models\Amil;
 use App\Models\Donasi;
 use App\Models\DonasiBarang;
@@ -12,11 +13,14 @@ use App\Models\Donatur;
 use App\Models\DonaturKategori;
 use App\Models\IzinCuti;
 use App\Models\JenisDana;
+use App\Models\KategoriKeuangan;
 use App\Models\Mustahik;
 use App\Models\Notifikasi;
+use App\Models\PengajuanDana;
 use App\Models\Pengumuman;
 use App\Models\Penyaluran;
 use App\Models\Program;
+use App\Models\TransaksiKeuangan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -1564,6 +1568,332 @@ class DummyDataSeeder extends Seeder
                 ],
                 $notif
             );
+        }
+
+        // ========================================================
+        // 13. KEUANGAN & BUKU KAS (10 Data Transaksi Keuangan)
+        // ========================================================
+        (new KeuanganSeeder)->run();
+
+        $akunKas = AkunKeuangan::where('tipe', 'kas')->first() ?? AkunKeuangan::first();
+        $akunBsi = AkunKeuangan::where('nama', 'LIKE', '%BSI%')->first() ?? AkunKeuangan::first();
+        $akunMandiri = AkunKeuangan::where('nama', 'LIKE', '%Mandiri%')->first() ?? AkunKeuangan::first();
+
+        $katMasukDonasi = KategoriKeuangan::where('jenis', 'masuk')->first() ?? KategoriKeuangan::first();
+        $katKeluarProgram = KategoriKeuangan::where('jenis', 'keluar')->first() ?? KategoriKeuangan::first();
+        $katKeluarOperasional = KategoriKeuangan::where('jenis', 'keluar')->skip(1)->first() ?? $katKeluarProgram;
+
+        $programPangan = $allPrograms->where('nama', 'Pangan Berkah Lansia Dhuafa')->first() ?? $allPrograms->first();
+        $programAmbulans = $allPrograms->where('nama', 'Layanan Ambulans Siaga Gratis')->first() ?? $allPrograms->first();
+        $programBeasiswa = $allPrograms->where('nama', 'Beasiswa Generasi Cerdas Mandiri')->first() ?? $allPrograms->first();
+
+        $transaksiData = [
+            [
+                'kode_transaksi' => 'TRX-202611-0001',
+                'jenis' => 'masuk',
+                'kategori_keuangan_id' => $katMasukDonasi->id,
+                'akun_keuangan_id' => $akunBsi->id,
+                'program_id' => $programBeasiswa->id,
+                'nominal' => 15000000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 5),
+                'pihak_terkait' => 'Bpk. H. Hendra Wijaya',
+                'keterangan' => 'Penerimaan donasi Zakat Maal via transfer Bank BSI untuk program beasiswa anak yatim dhuafa.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0002',
+                'jenis' => 'masuk',
+                'kategori_keuangan_id' => $katMasukDonasi->id,
+                'akun_keuangan_id' => $akunBsi->id,
+                'program_id' => $programAmbulans->id,
+                'nominal' => 10000000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 8),
+                'pihak_terkait' => 'PT Sinar Cilacap Mandiri',
+                'keterangan' => 'Bantuan CSR donasi operasional armada ambulans siaga gratis.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0003',
+                'jenis' => 'masuk',
+                'kategori_keuangan_id' => $katMasukDonasi->id,
+                'akun_keuangan_id' => $akunKas->id,
+                'program_id' => null,
+                'nominal' => 2500000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 10),
+                'pihak_terkait' => 'Jamaah Masjid Darussalam',
+                'keterangan' => 'Penghimpunan infak sedekah tunai kotak tromol keliling.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0004',
+                'jenis' => 'masuk',
+                'kategori_keuangan_id' => $katMasukDonasi->id,
+                'akun_keuangan_id' => $akunBsi->id,
+                'program_id' => $programPangan->id,
+                'nominal' => 5000000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 12),
+                'pihak_terkait' => 'Ibu Siti Aminah',
+                'keterangan' => 'Sedekah infak terikat beras pangan berkah lansia.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0005',
+                'jenis' => 'masuk',
+                'kategori_keuangan_id' => $katMasukDonasi->id,
+                'akun_keuangan_id' => $akunKas->id,
+                'program_id' => null,
+                'nominal' => 3500000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 14),
+                'pihak_terkait' => 'Hamba Allah (Anonim)',
+                'keterangan' => 'Donasi titipan langsung di meja kasir kantor yayasan.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0006',
+                'jenis' => 'keluar',
+                'kategori_keuangan_id' => $katKeluarProgram->id,
+                'akun_keuangan_id' => $akunKas->id,
+                'program_id' => $programPangan->id,
+                'nominal' => 4500000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 15),
+                'pihak_terkait' => 'Toko Sembako Berkah Cilacap',
+                'keterangan' => 'Pembelian 50 paket sembako beras, minyak goreng, dan telur untuk lansia dhuafa.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0007',
+                'jenis' => 'keluar',
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'akun_keuangan_id' => $akunMandiri->id,
+                'program_id' => $programAmbulans->id,
+                'nominal' => 1250000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 16),
+                'pihak_terkait' => 'Bengkel Mobil Sentosa Cilacap',
+                'keterangan' => 'Servis rutin berkala, ganti oli mesin, dan filter ambulans siaga GSC.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0008',
+                'jenis' => 'keluar',
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'akun_keuangan_id' => $akunMandiri->id,
+                'program_id' => null,
+                'nominal' => 850000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 18),
+                'pihak_terkait' => 'PLN & Telkom Indonesia',
+                'keterangan' => 'Pembayaran tagihan listrik kantor yayasan dan wifi internet periode November 2026.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0009',
+                'jenis' => 'keluar',
+                'kategori_keuangan_id' => $katKeluarProgram->id,
+                'akun_keuangan_id' => $akunBsi->id,
+                'program_id' => $programBeasiswa->id,
+                'nominal' => 3000000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 20),
+                'pihak_terkait' => '10 Anak Yatim Berprestasi',
+                'keterangan' => 'Penyaluran santunan uang saku dan pembinaan bulanan anak yatim.',
+                'created_by' => $adminId,
+            ],
+            [
+                'kode_transaksi' => 'TRX-202611-0010',
+                'jenis' => 'keluar',
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'akun_keuangan_id' => $akunKas->id,
+                'program_id' => null,
+                'nominal' => 650000,
+                'tgl_transaksi' => Carbon::create(2026, 11, 22),
+                'pihak_terkait' => 'Percetakan Abadi Cilacap',
+                'keterangan' => 'Cetak banner spanduk sosialisasi program layanan ambulans dan ZISWAF.',
+                'created_by' => $adminId,
+            ],
+        ];
+
+        foreach ($transaksiData as $t) {
+            TransaksiKeuangan::firstOrCreate(['kode_transaksi' => $t['kode_transaksi']], $t);
+        }
+
+        // ========================================================
+        // 14. PENGAJUAN DANA AMIL (10 Data Pengajuan Dana)
+        // ========================================================
+        $bendaharaAmil = $amils->firstWhere('nama', 'Kholifatun Mualfiyah') ?? $amils->first();
+        $managerAmil = $amils->firstWhere('nama', 'Endang Kuswanto') ?? $amils->first();
+
+        $bendaharaUserId = $bendaharaAmil->user_id;
+        $managerUserId = $managerAmil->user_id;
+
+        $pengajuanData = [
+            [
+                'nomor_pengajuan' => 'PJD-202611-0001',
+                'amil_id' => $amil8->id, // Rista (Program)
+                'divisi_id' => $amil8->divisi_id,
+                'program_id' => $programPangan->id,
+                'kategori_keuangan_id' => $katKeluarProgram->id,
+                'judul' => 'Pengadaan 50 Paket Sembako Pangan Berkah Lansia',
+                'deskripsi' => 'Pengadaan bahan pangan sembako (beras, minyak, telur, sarden) untuk dibagikan ke 50 lansia dhuafa di wilayah Cilacap Selatan.',
+                'nominal_diajukan' => 4500000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 14),
+                'status' => 'dicairkan',
+                'bendahara_id' => $bendaharaUserId,
+                'tgl_verifikasi_bendahara' => Carbon::create(2026, 11, 14, 10, 0),
+                'catatan_bendahara' => 'Anggaran program pangan tersedia mencukupi di kas.',
+                'manager_id' => $managerUserId,
+                'tgl_acc_manager' => Carbon::create(2026, 11, 14, 13, 0),
+                'catatan_manager' => 'Disetujui untuk segera disalurkan ke mustahik terverifikasi.',
+                'nominal_disetujui' => 4500000,
+                'akun_keuangan_id' => $akunKas->id,
+                'tgl_pencairan' => Carbon::create(2026, 11, 15),
+                'metode_pencairan' => 'tunai',
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0002',
+                'amil_id' => $amil3->id, // Ujang (Kesehatan / Driver)
+                'divisi_id' => $amil3->divisi_id,
+                'program_id' => $programAmbulans->id,
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'judul' => 'Servis Berkala & Ganti Oli Armada Ambulans 01',
+                'deskripsi' => 'Servis 10.000 KM rutin armada ambulans siaga termasuk penggantian oli mesin, minyak rem, dan spooring balancing.',
+                'nominal_diajukan' => 1250000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 15),
+                'status' => 'dicairkan',
+                'bendahara_id' => $bendaharaUserId,
+                'tgl_verifikasi_bendahara' => Carbon::create(2026, 11, 15, 9, 30),
+                'catatan_bendahara' => 'Sesuai jadwal pemeliharaan rutin armada.',
+                'manager_id' => $managerUserId,
+                'tgl_acc_manager' => Carbon::create(2026, 11, 15, 11, 0),
+                'catatan_manager' => 'Lanjutkan servis agar ambulans tetap prima.',
+                'nominal_disetujui' => 1250000,
+                'akun_keuangan_id' => $akunMandiri->id,
+                'tgl_pencairan' => Carbon::create(2026, 11, 16),
+                'metode_pencairan' => 'transfer',
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0003',
+                'amil_id' => $amil2->id, // Wiji (Fundraising)
+                'divisi_id' => $amil2->divisi_id,
+                'program_id' => null,
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'judul' => 'Cetak Brosur & Kalender Dakwah ZISWAF 2027',
+                'deskripsi' => 'Pengadaan materi publikasi cetak 500 lembar brosur dan 200 eksemplar kalender dinding untuk donatur yayasan.',
+                'nominal_diajukan' => 1800000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 26),
+                'status' => 'disetujui',
+                'bendahara_id' => $bendaharaUserId,
+                'tgl_verifikasi_bendahara' => Carbon::create(2026, 11, 23, 14, 0),
+                'catatan_bendahara' => 'RAB wajar dan sesuai penawaran percetakan.',
+                'manager_id' => $managerUserId,
+                'tgl_acc_manager' => Carbon::create(2026, 11, 24, 9, 0),
+                'catatan_manager' => 'ACC, segera proses cetak.',
+                'nominal_disetujui' => 1800000,
+                'akun_keuangan_id' => $akunMandiri->id,
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0004',
+                'amil_id' => $amil10->id, // Faishal (Program)
+                'divisi_id' => $amil10->divisi_id,
+                'program_id' => $programBeasiswa->id,
+                'kategori_keuangan_id' => $katKeluarProgram->id,
+                'judul' => 'Santunan Beasiswa SPP Siswa Yatim Dhuafa',
+                'deskripsi' => 'Pembayaran SPP dan bantuan seragam sekolah untuk 5 siswa dhuafa tingkat MTs/SMP.',
+                'nominal_diajukan' => 2000000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 27),
+                'status' => 'disetujui',
+                'bendahara_id' => $bendaharaUserId,
+                'tgl_verifikasi_bendahara' => Carbon::create(2026, 11, 23, 16, 0),
+                'catatan_bendahara' => 'Telah diverifikasi sesuai daftar mustahik asnaf.',
+                'manager_id' => $managerUserId,
+                'tgl_acc_manager' => Carbon::create(2026, 11, 24, 10, 30),
+                'catatan_manager' => 'Disetujui.',
+                'nominal_disetujui' => 2000000,
+                'akun_keuangan_id' => $akunBsi->id,
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0005',
+                'amil_id' => $amil6->id, // Naffisa (Fundraising)
+                'divisi_id' => $amil6->divisi_id,
+                'program_id' => null,
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'judul' => 'Pengadaan Souvenir & Tumbler Apresiasi Donatur',
+                'deskripsi' => 'Pengadaan souvenir tumbler custom logo yayasan untuk apresiasi 50 donatur tetap korporat.',
+                'nominal_diajukan' => 1500000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 28),
+                'status' => 'diverifikasi_bendahara',
+                'bendahara_id' => $bendaharaUserId,
+                'tgl_verifikasi_bendahara' => Carbon::create(2026, 11, 24, 11, 0),
+                'catatan_bendahara' => 'Menunggu persetujuan akhir dari Manager.',
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0006',
+                'amil_id' => $amil5->id, // Ahmad (Kesehatan)
+                'divisi_id' => $amil5->divisi_id,
+                'program_id' => $programAmbulans->id,
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'judul' => 'Isi Ulang 4 Tabung Oksigen & Kelengkapan Medis Ambulans',
+                'deskripsi' => 'Refill isi tabung oksigen medis dan pembelian selang nasal kanul serta masker darurat.',
+                'nominal_diajukan' => 750000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 28),
+                'status' => 'diverifikasi_bendahara',
+                'bendahara_id' => $bendaharaUserId,
+                'tgl_verifikasi_bendahara' => Carbon::create(2026, 11, 24, 11, 30),
+                'catatan_bendahara' => 'Kebutuhan mendesak untuk armada siaga.',
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0007',
+                'amil_id' => $amil4->id, // Fahri (Fundraising)
+                'divisi_id' => $amil4->divisi_id,
+                'program_id' => null,
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'judul' => 'Biaya Akomodasi Kunjungan Audiensi Donatur CSR',
+                'deskripsi' => 'Operasional BBM dan konsumsi kunjungan kemitraan ke perusahaan industri di Cilacap.',
+                'nominal_diajukan' => 500000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 29),
+                'status' => 'diajukan',
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0008',
+                'amil_id' => $amil8->id, // Rista (Program)
+                'divisi_id' => $amil8->divisi_id,
+                'program_id' => $programPangan->id,
+                'kategori_keuangan_id' => $katKeluarProgram->id,
+                'judul' => 'Bantuan Pangan Tambahan Balita Beresiko Stunting',
+                'deskripsi' => 'Penyaluran paket gizi berupa telur, biskuit balita, dan susu pertumbuhan anak prasejahtera.',
+                'nominal_diajukan' => 2200000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 30),
+                'status' => 'diajukan',
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0009',
+                'amil_id' => $amil10->id, // Faishal (Program)
+                'divisi_id' => $amil10->divisi_id,
+                'program_id' => null,
+                'kategori_keuangan_id' => $katKeluarProgram->id,
+                'judul' => 'Bantuan Permodalan Usaha Gerobak Bakso Dhuafa',
+                'deskripsi' => 'Pengadaan sarana gerobak usaha mustahik binaan untuk memulai kembali mata pencaharian.',
+                'nominal_diajukan' => 3500000,
+                'tgl_kebutuhan' => Carbon::create(2026, 12, 1),
+                'status' => 'diajukan',
+            ],
+            [
+                'nomor_pengajuan' => 'PJD-202611-0010',
+                'amil_id' => $amil3->id, // Ujang (Kesehatan / Driver)
+                'divisi_id' => $amil3->divisi_id,
+                'program_id' => null,
+                'kategori_keuangan_id' => $katKeluarOperasional->id,
+                'judul' => 'Pembelian Mesin Cuci Mobil Ambulans Tekanan Tinggi',
+                'deskripsi' => 'Pengadaan alat cuci steam mobil untuk disinfeksi dan pembersihan mandiri armada ambulans.',
+                'nominal_diajukan' => 2800000,
+                'tgl_kebutuhan' => Carbon::create(2026, 11, 20),
+                'status' => 'ditolak',
+                'bendahara_id' => $bendaharaUserId,
+                'tgl_verifikasi_bendahara' => Carbon::create(2026, 11, 20, 14, 0),
+                'catatan_bendahara' => 'Alokasi anggaran belum tersedia pada RKAT bulan berjalan.',
+                'alasan_penolakan' => 'Ditolak karena belum termasuk prioritas anggaran operasional bulan ini.',
+            ],
+        ];
+
+        foreach ($pengajuanData as $pj) {
+            PengajuanDana::firstOrCreate(['nomor_pengajuan' => $pj['nomor_pengajuan']], $pj);
         }
     }
 }

@@ -130,12 +130,96 @@
             <textarea name="deskripsi" rows="4" required placeholder="Ceritakan rincian aktivitas yang Anda lakukan, hasil pertemuan, tindak lanjut, atau kendala di lapangan..." class="w-full rounded-xl border border-slate-300 py-2.5 px-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">{{ old('deskripsi') }}</textarea>
         </div>
 
-        <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Foto Dokumentasi Kegiatan</label>
-            <p class="text-[11px] text-slate-400 mb-2">Unggah foto saat kunjungan, serah terima, atau rapat (Format: JPG, PNG maksimal 5MB)</p>
-            <input type="file" name="foto" id="inputFotoAktivitas" accept="image/*" onchange="previewImg(this, 'previewAktivitasBox', 'previewAktivitasImg')" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
-            <div id="previewAktivitasBox" class="hidden mt-3 p-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/40 inline-block">
-                <img id="previewAktivitasImg" src="" alt="Preview Dokumentasi" class="max-h-48 rounded-xl object-contain">
+        <!-- FOTO DOKUMENTASI KEGIATAN (KAMERA LANGSUNG & PILIH FILE) -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700">Foto Dokumentasi Kegiatan</label>
+                    <p class="text-[11px] text-slate-400">Jepret foto langsung di lokasi kegiatan atau pilih dari galeri</p>
+                </div>
+
+                <!-- Tab Selector: Kamera vs File -->
+                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                    <button type="button" id="tabAktivitasCam" onclick="switchAktivitasFotoMode('cam')" class="py-1 px-2.5 rounded-lg bg-white text-emerald-700 shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Kamera</span>
+                    </button>
+                    <button type="button" id="tabAktivitasFile" onclick="switchAktivitasFotoMode('file')" class="py-1 px-2.5 rounded-lg text-slate-600 hover:text-slate-800 transition flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span>Pilih File</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hidden input untuk menampung data foto base64 dari kamera -->
+            <input type="hidden" name="foto_base64" id="inputAktivitasFotoBase64">
+
+            <!-- MODE 1: KAMERA WEBRTC LANGSUNG -->
+            <div id="panelAktivitasCam" class="space-y-3">
+                <div class="relative rounded-2xl overflow-hidden bg-slate-900 aspect-video flex items-center justify-center border border-slate-200">
+                    <video id="webcamAktivitas" autoplay playsinline class="w-full h-full object-cover transition-transform duration-200"></video>
+                    <canvas id="canvasAktivitas" class="hidden"></canvas>
+                    <img id="photoPreviewAktivitas" class="hidden w-full h-full object-cover absolute inset-0 z-10" alt="Foto Kegiatan">
+
+                    <!-- Badges Info Kamera & Status Mirror -->
+                    <div id="camBadgesAktivitas" class="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 hidden">
+                        <span id="badgeFacingAktivitas" class="text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
+                            Kamera Belakang
+                        </span>
+                        <span id="badgeMirrorAktivitas" class="text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20">
+                            Normal
+                        </span>
+                    </div>
+
+                    <!-- Floating Buttons (Ganti Kamera Depan/Belakang & Mirror) -->
+                    <div id="camFloatingAktivitas" class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 hidden">
+                        <button type="button" onclick="switchAktivitasCamera()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Ganti Kamera Depan / Belakang">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span class="hidden sm:inline">Ganti Kamera</span>
+                        </button>
+                        <button type="button" onclick="toggleAktivitasMirror()" class="p-1.5 rounded-xl bg-slate-900/80 text-white hover:bg-slate-800 backdrop-blur-xs border border-white/20 transition active:scale-95 shadow-md flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Balik Cermin">
+                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                            <span id="btnMirrorTextAktivitas" class="hidden sm:inline">Cermin</span>
+                        </button>
+                    </div>
+
+                    <!-- Placeholder Sebelum Start -->
+                    <div id="camPlaceholderAktivitas" class="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center bg-slate-900/90 z-20">
+                        <svg class="w-10 h-10 text-emerald-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="text-xs font-bold">Kamera Belum Aktif</span>
+                        <span class="text-[11px] text-slate-300 mt-0.5">Nyalakan kamera untuk mengambil dokumentasi di lokasi kegiatan</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Kamera -->
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btnStartCamAktivitas" onclick="startAktivitasCamera()" class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        <span>Buka Kamera</span>
+                    </button>
+                    <button type="button" id="btnCaptureAktivitas" onclick="takeAktivitasSnapshot()" disabled class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Jepret Foto</span>
+                    </button>
+                    <button type="button" id="btnRetakeAktivitas" onclick="retakeAktivitasSnapshot()" class="hidden py-2 px-3 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 transition cursor-pointer">
+                        Ulangi Foto
+                    </button>
+                </div>
+            </div>
+
+            <!-- MODE 2: PILIH FILE BIASA DARI PERANGKAT -->
+            <div id="panelAktivitasFile" class="hidden space-y-3">
+                <input type="file" name="foto" id="inputFotoAktivitas" accept="image/*" onchange="previewImg(this, 'previewAktivitasBox', 'previewAktivitasImg')" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                <div id="previewAktivitasBox" class="hidden mt-3 p-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/40 inline-block">
+                    <img id="previewAktivitasImg" src="" alt="Preview Dokumentasi" class="max-h-48 rounded-xl object-contain">
+                </div>
             </div>
         </div>
 
@@ -164,6 +248,165 @@
     let defaultLngAmil = 109.0270034;
     let currentLatAmil = defaultLatAmil;
     let currentLngAmil = defaultLngAmil;
+
+    // ==========================================
+    // LOGIKA KAMERA AKTIVITAS & SWITCH KAMERA
+    // ==========================================
+    let streamAktivitas = null;
+    let currentFacingModeAktivitas = 'environment'; // Default kamera belakang untuk foto kegiatan
+    let isMirroredAktivitas = false;
+
+    const videoAktivitas = document.getElementById('webcamAktivitas');
+    const canvasAktivitas = document.getElementById('canvasAktivitas');
+    const photoPreviewAktivitas = document.getElementById('photoPreviewAktivitas');
+    const btnStartCamAktivitas = document.getElementById('btnStartCamAktivitas');
+    const btnCaptureAktivitas = document.getElementById('btnCaptureAktivitas');
+    const btnRetakeAktivitas = document.getElementById('btnRetakeAktivitas');
+    const camPlaceholderAktivitas = document.getElementById('camPlaceholderAktivitas');
+    const camBadgesAktivitas = document.getElementById('camBadgesAktivitas');
+    const camFloatingAktivitas = document.getElementById('camFloatingAktivitas');
+    const badgeFacingAktivitas = document.getElementById('badgeFacingAktivitas');
+    const badgeMirrorAktivitas = document.getElementById('badgeMirrorAktivitas');
+    const btnMirrorTextAktivitas = document.getElementById('btnMirrorTextAktivitas');
+
+    function switchAktivitasFotoMode(mode) {
+        const tabCam = document.getElementById('tabAktivitasCam');
+        const tabFile = document.getElementById('tabAktivitasFile');
+        const panelCam = document.getElementById('panelAktivitasCam');
+        const panelFile = document.getElementById('panelAktivitasFile');
+
+        if (mode === 'cam') {
+            tabCam.className = 'py-1 px-2.5 rounded-lg bg-white text-emerald-700 shadow-xs transition flex items-center gap-1.5 cursor-pointer';
+            tabFile.className = 'py-1 px-2.5 rounded-lg text-slate-600 hover:text-slate-800 transition flex items-center gap-1.5 cursor-pointer';
+            panelCam.classList.remove('hidden');
+            panelFile.classList.add('hidden');
+        } else {
+            tabFile.className = 'py-1 px-2.5 rounded-lg bg-white text-emerald-700 shadow-xs transition flex items-center gap-1.5 cursor-pointer';
+            tabCam.className = 'py-1 px-2.5 rounded-lg text-slate-600 hover:text-slate-800 transition flex items-center gap-1.5 cursor-pointer';
+            panelFile.classList.remove('hidden');
+            panelCam.classList.add('hidden');
+
+            if (streamAktivitas) {
+                streamAktivitas.getTracks().forEach(t => t.stop());
+                streamAktivitas = null;
+            }
+        }
+    }
+
+    function updateAktivitasCamUI() {
+        if (videoAktivitas) {
+            videoAktivitas.style.transform = isMirroredAktivitas ? 'scaleX(-1)' : 'scaleX(1)';
+        }
+        if (badgeFacingAktivitas) {
+            badgeFacingAktivitas.textContent = currentFacingModeAktivitas === 'user' ? 'Kamera Depan' : 'Kamera Belakang';
+        }
+        if (badgeMirrorAktivitas) {
+            badgeMirrorAktivitas.textContent = isMirroredAktivitas ? 'Mirror: Aktif' : 'Normal';
+            badgeMirrorAktivitas.className = isMirroredAktivitas 
+                ? 'text-[10px] font-bold bg-amber-900/80 text-amber-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20'
+                : 'text-[10px] font-bold bg-slate-900/80 text-emerald-300 backdrop-blur-xs px-2 py-0.5 rounded-md border border-white/20';
+        }
+        if (btnMirrorTextAktivitas) {
+            btnMirrorTextAktivitas.textContent = isMirroredAktivitas ? 'Mirror ON' : 'Mirror OFF';
+        }
+    }
+
+    async function startAktivitasCamera() {
+        try {
+            if (streamAktivitas) {
+                streamAktivitas.getTracks().forEach(t => t.stop());
+                streamAktivitas = null;
+            }
+
+            const constraints = {
+                video: {
+                    facingMode: currentFacingModeAktivitas,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            };
+
+            try {
+                streamAktivitas = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (errConstraint) {
+                streamAktivitas = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                });
+            }
+
+            videoAktivitas.srcObject = streamAktivitas;
+            updateAktivitasCamUI();
+
+            camPlaceholderAktivitas.classList.add('hidden');
+            btnStartCamAktivitas.classList.add('hidden');
+            btnCaptureAktivitas.disabled = false;
+            if (camBadgesAktivitas) camBadgesAktivitas.classList.remove('hidden');
+            if (camFloatingAktivitas) camFloatingAktivitas.classList.remove('hidden');
+        } catch (err) {
+            alert('Tidak dapat mengakses kamera: ' + err.message + '\n\nSilakan pastikan izin kamera aktif, atau gunakan tab "Pilih File" untuk mengunggah dari galeri.');
+            switchAktivitasFotoMode('file');
+        }
+    }
+
+    async function switchAktivitasCamera() {
+        currentFacingModeAktivitas = currentFacingModeAktivitas === 'user' ? 'environment' : 'user';
+        if (currentFacingModeAktivitas === 'environment') {
+            isMirroredAktivitas = false;
+        }
+        await startAktivitasCamera();
+    }
+
+    function toggleAktivitasMirror() {
+        isMirroredAktivitas = !isMirroredAktivitas;
+        updateAktivitasCamUI();
+    }
+
+    function takeAktivitasSnapshot() {
+        if (!streamAktivitas) return;
+
+        canvasAktivitas.width = videoAktivitas.videoWidth || 640;
+        canvasAktivitas.height = videoAktivitas.videoHeight || 480;
+        const ctx = canvasAktivitas.getContext('2d');
+
+        ctx.save();
+        if (isMirroredAktivitas) {
+            ctx.translate(canvasAktivitas.width, 0);
+            ctx.scale(-1, 1);
+        }
+        ctx.drawImage(videoAktivitas, 0, 0, canvasAktivitas.width, canvasAktivitas.height);
+        ctx.restore();
+
+        const dataUrl = canvasAktivitas.toDataURL('image/jpeg', 0.85);
+        photoPreviewAktivitas.src = dataUrl;
+        photoPreviewAktivitas.style.transform = 'none';
+        photoPreviewAktivitas.classList.remove('hidden');
+
+        const inFotoBase64 = document.getElementById('inputAktivitasFotoBase64');
+        if (inFotoBase64) inFotoBase64.value = dataUrl;
+
+        // Kosongkan file input biasa jika menggunakan kamera
+        const inFotoFile = document.getElementById('inputFotoAktivitas');
+        if (inFotoFile) inFotoFile.value = '';
+
+        btnCaptureAktivitas.classList.add('hidden');
+        btnRetakeAktivitas.classList.remove('hidden');
+        if (camFloatingAktivitas) camFloatingAktivitas.classList.add('hidden');
+
+        streamAktivitas.getTracks().forEach(t => t.stop());
+        streamAktivitas = null;
+    }
+
+    function retakeAktivitasSnapshot() {
+        photoPreviewAktivitas.classList.add('hidden');
+        btnRetakeAktivitas.classList.add('hidden');
+        btnCaptureAktivitas.classList.remove('hidden');
+        const inFotoBase64 = document.getElementById('inputAktivitasFotoBase64');
+        if (inFotoBase64) inFotoBase64.value = '';
+
+        startAktivitasCamera();
+    }
 
     function previewImg(input, boxId, imgId) {
         const box = document.getElementById(boxId);

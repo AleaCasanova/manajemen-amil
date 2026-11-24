@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AktivitasHarian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AktivitasController extends Controller
 {
@@ -85,12 +86,15 @@ class AktivitasController extends Controller
             'lokasi' => ['nullable', 'string', 'max:255'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
             'lng' => ['nullable', 'numeric', 'between:-180,180'],
-            'foto' => ['nullable', 'image', 'max:4096'],
+            'foto' => ['nullable', 'image', 'max:5120'],
+            'foto_base64' => ['nullable', 'string'],
         ]);
 
         $fotoPath = null;
         if ($request->hasFile('foto')) {
             $fotoPath = $request->file('foto')->store('aktivitas/foto', 'public');
+        } elseif ($request->filled('foto_base64')) {
+            $fotoPath = $this->storeBase64Image($request->input('foto_base64'), 'aktivitas/foto');
         }
 
         AktivitasHarian::create([
@@ -107,5 +111,25 @@ class AktivitasController extends Controller
 
         return redirect()->route('amil.aktivitas.index')
             ->with('success', 'Laporan aktivitas harian berhasil dikirim ke Administrator!');
+    }
+
+    /**
+     * Helper simpan foto base64 dari kamera ke disk public storage
+     */
+    protected function storeBase64Image(string $base64Data, string $folder): string
+    {
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
+            $base64Data = substr($base64Data, strpos($base64Data, ',') + 1);
+            $type = strtolower($type[1]);
+        } else {
+            $type = 'jpg';
+        }
+
+        $image = base64_decode($base64Data);
+        $fileName = $folder.'/'.uniqid().'_'.time().'.'.$type;
+
+        Storage::disk('public')->put($fileName, $image);
+
+        return $fileName;
     }
 }

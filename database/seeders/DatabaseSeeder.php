@@ -98,7 +98,7 @@ class DatabaseSeeder extends Seeder
             ['nama' => 'Jam Kerja Reguler'],
             [
                 'jam_masuk' => '08:00:00',
-                'jam_pulang' => '16:30:00',
+                'jam_pulang' => '16:00:00',
                 'toleransi_menit' => 15,
                 'is_active' => true,
             ]

@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Absensi;
+use App\Models\AktivitasHarian;
 use App\Models\Amil;
 use App\Models\Donasi;
 use App\Models\Donatur;
 use App\Models\DonaturKategori;
 use App\Models\IzinCuti;
+use App\Models\JamKerja;
 use App\Models\JenisDana;
 use App\Models\LokasiKantor;
 use App\Models\Mustahik;
@@ -16,6 +18,7 @@ use App\Models\SaldoCuti;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -73,6 +76,18 @@ class AmilWorkflowTest extends TestCase
                 'is_active' => true,
             ]
         );
+
+        // Siapkan jam kerja standar untuk pengujian (08:00 - 16:00)
+        $jamKerja = JamKerja::firstOrCreate(
+            ['nama' => 'Jam Kerja Reguler'],
+            [
+                'jam_masuk' => '08:00:00',
+                'jam_pulang' => '16:00:00',
+                'toleransi_menit' => 15,
+                'is_active' => true,
+            ]
+        );
+        $jamKerja->update(['jam_masuk' => '08:00:00', 'jam_pulang' => '16:00:00']);
     }
 
     /**
@@ -590,5 +605,36 @@ class AmilWorkflowTest extends TestCase
 
         $successResponse->assertRedirect(route('amil.profile'));
         $successResponse->assertSessionHas('success');
+    }
+
+    /**
+     * Uji Amil dapat mengirim laporan aktivitas harian dengan foto hasil jepretan kamera (base64)
+     */
+    public function test_amil_can_submit_aktivitas_with_camera_snapshot(): void
+    {
+        Storage::fake('public');
+
+        $base64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+        $response = $this->actingAs($this->user)->post(route('amil.aktivitas.store'), [
+            'tanggal' => now('Asia/Jakarta')->toDateString(),
+            'judul' => 'Kunjungan Dokumentasi Mustahik Binaan',
+            'deskripsi' => 'Melakukan serah terima paket sembako beras dan santunan dhuafa.',
+            'lokasi' => 'Desa Karangmangu RT 02/03',
+            'lat' => -7.7027157,
+            'lng' => 109.0270034,
+            'foto_base64' => $base64Image,
+        ]);
+
+        $response->assertRedirect(route('amil.aktivitas.index'));
+        $response->assertSessionHas('success');
+
+        $aktivitas = AktivitasHarian::where('amil_id', $this->amil->id)
+            ->where('judul', 'Kunjungan Dokumentasi Mustahik Binaan')
+            ->first();
+
+        $this->assertNotNull($aktivitas);
+        $this->assertNotNull($aktivitas->foto);
+        $this->assertTrue(Storage::disk('public')->exists($aktivitas->foto));
     }
 }
