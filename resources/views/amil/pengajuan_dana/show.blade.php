@@ -106,7 +106,7 @@
                 $isCair = $pengajuanDana->status === 'dicairkan';
                 $isSiapCair = $pengajuanDana->status === 'disetujui';
             @endphp
-            <div class="p-3.5 rounded-2xl border {{ $isCair ? 'bg-emerald-50/70 border-emerald-200' : ($isSiapCair ? 'bg-indigo-50/80 border-indigo-200 ring-2 ring-indigo-400/50' : 'bg-slate-50 border-slate-200 opacity-60')) }} flex flex-col justify-between">
+            <div class="p-3.5 rounded-2xl border {{ $isCair ? 'bg-emerald-50/70 border-emerald-200' : ($isSiapCair ? 'bg-indigo-50/80 border-indigo-200 ring-2 ring-indigo-400/50' : 'bg-slate-50 border-slate-200 opacity-60') }} flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <span class="text-[10px] font-bold {{ $isCair ? 'text-emerald-800' : ($isSiapCair ? 'text-indigo-800' : 'text-slate-400') }} uppercase">Tahap 4</span>

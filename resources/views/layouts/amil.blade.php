@@ -391,40 +391,50 @@
                         </a>
                     @endif
 
-                    <!-- User Profile Card & Interactive Dropdown -->
-                    <div class="relative group" id="profileDropdownContainer">
-                        <button type="button" id="profileDropdownBtn" onclick="toggleProfileDropdown(event)" class="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-700 text-white transition border border-emerald-600/50 cursor-pointer select-none">
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-950 text-emerald-200 font-extrabold text-xs flex items-center justify-center uppercase shadow-inner shrink-0">
+                    <!-- User Profile Card & Interactive Dropdown (Sleek Avatar Only) -->
+                    <div class="relative" id="profileDropdownContainer">
+                        <button type="button" id="profileDropdownBtn" onclick="toggleProfileDropdown(event)" class="flex items-center justify-center p-1 sm:p-1.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-700 text-white transition border border-emerald-600/50 hover:border-emerald-400 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-emerald-400/50" title="{{ Auth::user()->amil?->nama ?? Auth::user()->name }}">
+                            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-emerald-950 text-emerald-200 font-extrabold text-xs sm:text-sm flex items-center justify-center uppercase shadow-inner shrink-0 tracking-wider">
                                 {{ substr(Auth::user()->amil?->nama ?? Auth::user()->name, 0, 2) }}
                             </div>
-                            <div class="hidden sm:block text-left leading-tight">
-                                <span class="text-xs font-bold block max-w-[120px] truncate">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
-                                <span class="text-[10px] text-emerald-200 block font-mono">{{ $jabatanLabel }}</span>
-                            </div>
-                            <svg id="profileDropdownChevron" class="w-3.5 h-3.5 opacity-70 transition-transform duration-200 shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
                         </button>
 
                         <!-- Profile Dropdown Popup -->
-                        <div id="profileDropdownMenu" class="absolute right-0 top-full pt-1.5 w-64 hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                            <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 text-slate-800 text-xs">
+                        <div id="profileDropdownMenu" class="absolute right-0 top-full pt-2 hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150" style="width: 280px; min-width: 280px;">
+                            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200/80 p-4 text-slate-800 text-xs w-full box-border">
                                 <div class="pb-3 mb-3 border-b border-slate-100">
-                                    <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center justify-between mb-1.5">
                                         <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Akun Terdaftar</span>
-                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold {{ $isRelawan ? 'bg-amber-100 text-amber-800' : ($isMagang ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
+                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold whitespace-nowrap {{ $isRelawan ? 'bg-amber-100 text-amber-800' : ($isMagang ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800') }}">
                                             {{ $jabatanLabel }}
                                         </span>
                                     </div>
-                                    <span class="font-extrabold text-slate-900 text-sm block truncate">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
-                                    <span class="text-slate-500 font-mono text-[11px] block">{{ Auth::user()->amil?->nip ?? '-' }}</span>
-                                    <span class="inline-block mt-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px]">
-                                        {{ Auth::user()->amil?->divisi?->nama ?? 'Divisi Umum' }}
-                                    </span>
+                                    <span class="font-extrabold text-slate-900 text-sm block leading-snug">{{ Auth::user()->amil?->nama ?? Auth::user()->name }}</span>
+                                    <div class="flex items-center gap-1.5 mt-1.5 text-[11px] whitespace-nowrap">
+                                        <span class="text-slate-500 font-mono font-medium">{{ Auth::user()->amil?->nip ?? '-' }}</span>
+                                        <span class="text-slate-300">•</span>
+                                        <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold text-[10px]">
+                                            {{ Auth::user()->amil?->divisi?->nama ?? 'Divisi Umum' }}
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <!-- Menu Profil Saya -->
+                                <!-- Menu Akses -->
                                 <div class="space-y-1 mb-2">
+                                    @if(Auth::user()->isAdmin())
+                                        <a href="{{ url('/' . config('filament.admin_path', 'portal-internal-gsc')) }}" class="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition flex items-center gap-2.5 border border-amber-200/60">
+                                            <span class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                </svg>
+                                            </span>
+                                            <div class="text-left">
+                                                <span class="block text-amber-950 font-extrabold leading-tight whitespace-nowrap">Panel Admin</span>
+                                                <span class="text-[10px] text-amber-700/80 font-normal whitespace-nowrap">Akses Dashboard Pusat</span>
+                                            </div>
+                                        </a>
+                                    @endif
+
                                     <a href="{{ route('amil.profile') }}" class="w-full py-2.5 px-3 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 font-bold text-xs transition flex items-center gap-2.5">
                                         <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -432,8 +442,8 @@
                                             </svg>
                                         </span>
                                         <div class="text-left">
-                                            <span class="block text-slate-900 font-extrabold">Profil Saya</span>
-                                            <span class="text-[10px] text-slate-400 font-normal">Edit Biodata & Password</span>
+                                            <span class="block text-slate-900 font-extrabold leading-tight whitespace-nowrap">Profil Saya</span>
+                                            <span class="text-[10px] text-slate-400 font-normal whitespace-nowrap">Edit Biodata & Password</span>
                                         </div>
                                     </a>
                                 </div>
@@ -441,8 +451,8 @@
                                 <!-- Tombol Keluar (Logout) -->
                                 <form action="{{ route('amil.logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin keluar dari sistem?')" class="w-full py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin keluar dari sistem?')" class="w-full py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                         </svg>
                                         <span>Keluar (Logout)</span>
@@ -769,15 +779,22 @@
                 event.stopPropagation();
             }
             const menu = document.getElementById('profileDropdownMenu');
-            const chevron = document.getElementById('profileDropdownChevron');
             if (menu) {
                 const isHidden = menu.classList.contains('hidden');
                 if (isHidden) {
                     menu.classList.remove('hidden');
-                    if (chevron) chevron.classList.add('rotate-180');
+                    menu.style.right = '0px';
+                    // Pastikan posisi dropdown presisi dan aman dari tepi kanan layar
+                    requestAnimationFrame(() => {
+                        const rect = menu.getBoundingClientRect();
+                        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+                        if (rect.right > viewportWidth - 12) {
+                            const offset = rect.right - (viewportWidth - 12);
+                            menu.style.right = `${offset}px`;
+                        }
+                    });
                 } else {
                     menu.classList.add('hidden');
-                    if (chevron) chevron.classList.remove('rotate-180');
                 }
             }
         }
@@ -786,10 +803,8 @@
         document.addEventListener('click', function(e) {
             const container = document.getElementById('profileDropdownContainer');
             const menu = document.getElementById('profileDropdownMenu');
-            const chevron = document.getElementById('profileDropdownChevron');
             if (container && menu && !container.contains(e.target)) {
                 menu.classList.add('hidden');
-                if (chevron) chevron.classList.remove('rotate-180');
             }
         });
     </script>
