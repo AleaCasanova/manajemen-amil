@@ -57,7 +57,7 @@ class TransaksiKeuanganInfolist
                                     ->label('Akun Kas / Bank')
                                     ->badge()
                                     ->color('info')
-                                    ->description(fn (TransaksiKeuangan $record): ?string => $record->akunKeuangan?->kode_coa
+                                    ->helperText(fn (TransaksiKeuangan $record): ?string => $record->akunKeuangan?->kode_coa
                                         ? "{$record->akunKeuangan->kode_coa}".($record->akunKeuangan->nomor_rekening ? " • Rek: {$record->akunKeuangan->nomor_rekening}" : '')
                                         : null),
 
@@ -65,7 +65,7 @@ class TransaksiKeuanganInfolist
                                     ->label('Akun COA')
                                     ->badge()
                                     ->formatStateUsing(fn (TransaksiKeuangan $record): string => $record->kategoriKeuangan?->label_lengkap ?? '-')
-                                    ->description(fn (TransaksiKeuangan $record): ?string => $record->kategoriKeuangan?->pos_dana
+                                    ->helperText(fn (TransaksiKeuangan $record): ?string => $record->kategoriKeuangan?->pos_dana
                                         ? 'Pos: '.(KategoriKeuangan::POS_DANA_LABELS[$record->kategoriKeuangan->pos_dana] ?? $record->kategoriKeuangan->pos_dana)
                                         : null),
                             ]),

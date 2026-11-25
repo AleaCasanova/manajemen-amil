@@ -24,7 +24,7 @@ class PenyaluranInfolist
                                 TextEntry::make('mustahik.nama')
                                     ->label('Penerima Manfaat (Mustahik)')
                                     ->weight('bold')
-                                    ->description(fn ($record) => 'Asnaf: '.ucfirst($record->mustahik?->asnaf ?? '-')),
+                                    ->helperText(fn ($record) => 'Asnaf: '.ucfirst($record->mustahik?->asnaf ?? '-')),
                                 TextEntry::make('jumlah')
                                     ->label('Nominal Bantuan')
                                     ->money('IDR', locale: 'id')

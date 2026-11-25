@@ -57,7 +57,7 @@ class PengajuanDanaInfolist
                             ->components([
                                 TextEntry::make('amil.nama')
                                     ->label('Pemohon (Amil)')
-                                    ->description(fn (PengajuanDana $r) => $r->amil?->nip ? 'NIP: '.$r->amil->nip : null),
+                                    ->helperText(fn (PengajuanDana $r) => $r->amil?->nip ? 'NIP: '.$r->amil->nip : null),
 
                                 TextEntry::make('divisi.nama')
                                     ->label('Divisi / Bidang')
@@ -104,17 +104,17 @@ class PengajuanDanaInfolist
                                 TextEntry::make('bendahara.name')
                                     ->label('Verifikator (Bendahara)')
                                     ->default('Belum diverifikasi')
-                                    ->description(fn (PengajuanDana $r) => $r->tgl_verifikasi_bendahara ? $r->tgl_verifikasi_bendahara->format('d/m/Y H:i') : null),
+                                    ->helperText(fn (PengajuanDana $r) => $r->tgl_verifikasi_bendahara ? $r->tgl_verifikasi_bendahara->format('d/m/Y H:i') : null),
 
                                 TextEntry::make('manager.name')
                                     ->label('Penyetuju (Manager)')
                                     ->default('Belum di-ACC')
-                                    ->description(fn (PengajuanDana $r) => $r->tgl_acc_manager ? $r->tgl_acc_manager->format('d/m/Y H:i') : null),
+                                    ->helperText(fn (PengajuanDana $r) => $r->tgl_acc_manager ? $r->tgl_acc_manager->format('d/m/Y H:i') : null),
 
                                 TextEntry::make('akunKeuangan.nama')
                                     ->label('Rekening Kas Pencairan')
                                     ->default('Belum dicairkan')
-                                    ->description(fn (PengajuanDana $r) => $r->tgl_pencairan ? 'Cair: '.$r->tgl_pencairan->format('d/m/Y') : null),
+                                    ->helperText(fn (PengajuanDana $r) => $r->tgl_pencairan ? 'Cair: '.$r->tgl_pencairan->format('d/m/Y') : null),
                             ]),
 
                         TextEntry::make('catatan_bendahara')
