@@ -558,12 +558,22 @@
                             @endif
                         </div>
 
-                        <!-- Foto Masuk Thumbnail -->
-                        @if ($h->foto_masuk)
-                            <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}')" class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi">
-                                <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Selfie" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_masuk }}';">
-                            </button>
-                        @endif
+                        <!-- Foto Masuk & Pulang Thumbnail -->
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            @if ($h->foto_masuk)
+                                <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}', 'Masuk')" class="w-10 h-10 rounded-xl overflow-hidden border border-emerald-200 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer relative group" title="Lihat Foto Presensi Masuk">
+                                    <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Selfie Masuk" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_masuk }}';">
+                                    <span class="absolute bottom-0 inset-x-0 bg-emerald-900/80 text-white text-[8px] font-bold text-center leading-tight py-0.5">Masuk</span>
+                                </button>
+                            @endif
+
+                            @if ($h->foto_pulang)
+                                <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_pulang) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan_pulang ?? '') }}', 'Pulang')" class="w-10 h-10 rounded-xl overflow-hidden border border-blue-200 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer relative group" title="Lihat Foto Presensi Pulang">
+                                    <img src="{{ asset('storage/' . $h->foto_pulang) }}" class="w-full h-full object-cover" alt="Selfie Pulang" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_pulang }}';">
+                                    <span class="absolute bottom-0 inset-x-0 bg-blue-900/80 text-white text-[8px] font-bold text-center leading-tight py-0.5">Pulang</span>
+                                </button>
+                            @endif
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -579,6 +589,7 @@
                             <th class="py-3 px-4 text-center">Durasi Kerja</th>
                             <th class="py-3 px-4 text-center">Status</th>
                             <th class="py-3 px-4 text-center">Foto Masuk</th>
+                            <th class="py-3 px-4 text-center">Foto Pulang</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -647,8 +658,17 @@
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     @if ($h->foto_masuk)
-                                        <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}')" class="inline-block w-8 h-8 rounded-lg overflow-hidden border border-slate-200 hover:scale-110 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi">
-                                            <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Foto" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_masuk }}';">
+                                        <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}', 'Masuk')" class="inline-block w-8 h-8 rounded-lg overflow-hidden border border-emerald-200 hover:scale-110 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi Masuk">
+                                            <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Foto Masuk" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_masuk }}';">
+                                        </button>
+                                    @else
+                                        <span class="text-slate-300">-</span>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    @if ($h->foto_pulang)
+                                        <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_pulang) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan_pulang ?? '') }}', 'Pulang')" class="inline-block w-8 h-8 rounded-lg overflow-hidden border border-blue-200 hover:scale-110 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi Pulang">
+                                            <img src="{{ asset('storage/' . $h->foto_pulang) }}" class="w-full h-full object-cover" alt="Foto Pulang" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_pulang }}';">
                                         </button>
                                     @else
                                         <span class="text-slate-300">-</span>
@@ -674,7 +694,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
-                    <h4 class="font-extrabold text-sm">Foto Presensi Kehadiran</h4>
+                    <h4 id="modalPhotoTitle" class="font-extrabold text-sm">Foto Presensi Kehadiran</h4>
                 </div>
                 <button type="button" onclick="closeAttendancePhoto()" class="w-7 h-7 rounded-lg bg-emerald-700/60 hover:bg-emerald-700 text-emerald-200 hover:text-white flex items-center justify-center transition cursor-pointer">
                     ✕
@@ -1144,9 +1164,10 @@
     });
 
     // Modal Foto Presensi
-    function showAttendancePhoto(url, tanggal, jam, status, keterangan) {
+    function showAttendancePhoto(url, tanggal, jam, status, keterangan, tipe = 'Masuk') {
         const modal = document.getElementById('modalPhotoPreview');
         const img = document.getElementById('modalPhotoImage');
+        const title = document.getElementById('modalPhotoTitle');
         const time = document.getElementById('modalPhotoTime');
         const statusEl = document.getElementById('modalPhotoStatus');
         const ketContainer = document.getElementById('modalPhotoKetContainer');
@@ -1155,6 +1176,7 @@
 
         if (modal && img) {
             img.src = url;
+            if (title) title.textContent = `Foto Presensi ${tipe}`;
             if (time) time.textContent = `${tanggal} - ${jam}`;
             if (statusEl) statusEl.textContent = status;
             if (link) link.href = url;
