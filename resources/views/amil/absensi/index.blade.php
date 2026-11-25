@@ -561,16 +561,14 @@
                         <!-- Foto Masuk & Pulang Thumbnail -->
                         <div class="flex items-center gap-1.5 shrink-0">
                             @if ($h->foto_masuk)
-                                <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}', 'Masuk')" class="w-10 h-10 rounded-xl overflow-hidden border border-emerald-200 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer relative group" title="Lihat Foto Presensi Masuk">
+                                <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_masuk) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan ?? '') }}', 'Masuk')" class="w-10 h-10 rounded-xl overflow-hidden border-2 border-emerald-400 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi Masuk">
                                     <img src="{{ asset('storage/' . $h->foto_masuk) }}" class="w-full h-full object-cover" alt="Selfie Masuk" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_masuk }}';">
-                                    <span class="absolute bottom-0 inset-x-0 bg-emerald-900/80 text-white text-[8px] font-bold text-center leading-tight py-0.5">Masuk</span>
                                 </button>
                             @endif
 
                             @if ($h->foto_pulang)
-                                <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_pulang) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan_pulang ?? '') }}', 'Pulang')" class="w-10 h-10 rounded-xl overflow-hidden border border-blue-200 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer relative group" title="Lihat Foto Presensi Pulang">
+                                <button type="button" onclick="showAttendancePhoto('{{ asset('storage/' . $h->foto_pulang) }}', '{{ $h->tanggal ? $h->tanggal->translatedFormat('d M Y') : '-' }}', '{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) . ' WIB' : '--:--' }}', '{{ ucfirst($h->status) }}', '{{ addslashes($h->keterangan_pulang ?? '') }}', 'Pulang')" class="w-10 h-10 rounded-xl overflow-hidden border-2 border-blue-400 shrink-0 shadow-2xs block hover:scale-105 active:scale-95 transition cursor-pointer" title="Lihat Foto Presensi Pulang">
                                     <img src="{{ asset('storage/' . $h->foto_pulang) }}" class="w-full h-full object-cover" alt="Selfie Pulang" onerror="this.onerror=null; this.src='/storage/{{ $h->foto_pulang }}';">
-                                    <span class="absolute bottom-0 inset-x-0 bg-blue-900/80 text-white text-[8px] font-bold text-center leading-tight py-0.5">Pulang</span>
                                 </button>
                             @endif
                         </div>
@@ -1023,7 +1021,8 @@
 
     function updateCamUI() {
         if (video) {
-            video.style.transform = 'none'; // Kamera selalu normal (tidak mirror)
+            // Kamera depan dimirror seperti cermin HP asli; kamera belakang tetap normal
+            video.style.transform = currentFacingMode === 'user' ? 'scaleX(-1)' : 'none';
         }
         if (badgeFacingMode) {
             badgeFacingMode.textContent = currentFacingMode === 'user' ? 'Kamera Depan' : 'Kamera Belakang';
@@ -1082,7 +1081,11 @@
         canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
 
-        // Snapshot normal (tidak mirror)
+        // Jika kamera depan, simpan dengan orientasi mirror (persis seperti yang terlihat di layar HP)
+        if (currentFacingMode === 'user') {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);

@@ -283,7 +283,7 @@
 
     function updateAktivitasCamUI() {
         if (videoAktivitas) {
-            videoAktivitas.style.transform = 'none'; // Kamera selalu normal (tidak mirror)
+            videoAktivitas.style.transform = currentFacingModeAktivitas === 'user' ? 'scaleX(-1)' : 'none';
         }
         if (badgeFacingAktivitas) {
             badgeFacingAktivitas.textContent = currentFacingModeAktivitas === 'user' ? 'Kamera Depan' : 'Kamera Belakang';
@@ -341,7 +341,10 @@
         canvasAktivitas.height = videoAktivitas.videoHeight || 480;
         const ctx = canvasAktivitas.getContext('2d');
 
-        // Snapshot normal (tidak mirror)
+        if (currentFacingModeAktivitas === 'user') {
+            ctx.translate(canvasAktivitas.width, 0);
+            ctx.scale(-1, 1);
+        }
         ctx.drawImage(videoAktivitas, 0, 0, canvasAktivitas.width, canvasAktivitas.height);
 
         const dataUrl = canvasAktivitas.toDataURL('image/jpeg', 0.85);
