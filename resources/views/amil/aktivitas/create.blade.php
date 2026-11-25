@@ -91,12 +91,11 @@
                 <!-- Search Results List -->
                 <div id="searchResultsAmil" class="hidden p-2 bg-white rounded-xl border border-slate-200 max-h-36 overflow-y-auto space-y-1 text-xs"></div>
 
-                <!-- Square Map Container (TIDAK TERLALU BESAR) -->
-                <div class="flex justify-center w-full">
+                <!-- Square Map Container (Bentuk Persegi Proporsional 1:1) -->
+                <div class="w-full flex justify-center">
                     <div 
                         id="mapAmilAktivitas" 
-                        class="w-full max-w-[340px] aspect-square rounded-2xl border-2 border-emerald-500/30 overflow-hidden shadow-inner relative z-0"
-                        style="height: 300px; max-height: 300px;"
+                        class="w-full aspect-square max-w-[320px] rounded-2xl border-2 border-emerald-500/30 overflow-hidden shadow-inner relative z-0"
                     ></div>
                 </div>
 
