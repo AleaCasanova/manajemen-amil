@@ -39,26 +39,41 @@ class ListTransaksiKeuangans extends ListRecords
 
     public function getTabs(): array
     {
-        return [
-            'semua' => Tab::make('Semua Transaksi')
+        $akuns = AkunKeuangan::where('is_active', true)->orderBy('kode_coa')->get();
+
+        $tabs = [
+            'semua' => Tab::make('Semua Rekening')
                 ->badge(TransaksiKeuangan::count()),
-            'masuk' => Tab::make('Kas Masuk')
-                ->modifyQueryUsing(fn ($query) => $query->where('jenis', 'masuk')->where('is_transfer', false))
-                ->badge(TransaksiKeuangan::where('jenis', 'masuk')->where('is_transfer', false)->count())
-                ->badgeColor('success'),
-            'keluar' => Tab::make('Kas Keluar')
-                ->modifyQueryUsing(fn ($query) => $query->where('jenis', 'keluar')->where('is_transfer', false))
-                ->badge(TransaksiKeuangan::where('jenis', 'keluar')->where('is_transfer', false)->count())
-                ->badgeColor('danger'),
-            'transfer' => Tab::make('Transfer Antar Rekening')
-                ->modifyQueryUsing(fn ($query) => $query->where('is_transfer', true))
-                ->badge(TransaksiKeuangan::where('is_transfer', true)->count())
-                ->badgeColor('info'),
-            'cash_advance' => Tab::make('Mutasi CA & Kasbon')
-                ->modifyQueryUsing(fn ($query) => $query->whereNotNull('cash_advance_id'))
-                ->badge(TransaksiKeuangan::whereNotNull('cash_advance_id')->count())
-                ->badgeColor('warning'),
         ];
+
+        foreach ($akuns as $akun) {
+            $count = TransaksiKeuangan::where('akun_keuangan_id', $akun->id)->count();
+
+            $tabLabel = match ($akun->kode_coa) {
+                '101.01.001' => 'Kas Tunai (BKH)',
+                '101.02.001' => 'BRI Penerimaan',
+                '101.02.003' => 'BRI Operasional',
+                '101.02.004' => 'BRI Program',
+                '101.02.006' => 'Mandiri',
+                '101.02.007' => 'BSI',
+                '101.02.008' => 'Muamalat',
+                '101.02.005' => 'BRI Zakat',
+                '101.02.002' => 'BRI Penampung',
+                default => $akun->nama,
+            };
+
+            $tabs['rekening_'.$akun->id] = Tab::make($tabLabel)
+                ->modifyQueryUsing(fn ($query) => $query->where('akun_keuangan_id', $akun->id))
+                ->badge($count)
+                ->badgeColor($count > 0 ? 'primary' : 'gray');
+        }
+
+        $tabs['transfer'] = Tab::make('Transfer Antar Rekening')
+            ->modifyQueryUsing(fn ($query) => $query->where('is_transfer', true))
+            ->badge(TransaksiKeuangan::where('is_transfer', true)->count())
+            ->badgeColor('info');
+
+        return $tabs;
     }
 
     protected function getHeaderActions(): array

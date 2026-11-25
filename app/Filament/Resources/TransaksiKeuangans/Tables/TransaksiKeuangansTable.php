@@ -18,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -27,20 +28,35 @@ class TransaksiKeuangansTable
     {
         return $table
             ->defaultSort('tgl_transaksi', 'desc')
+            ->groups([
+                Group::make('akunKeuangan.nama')
+                    ->label('Rekening Kas / Bank')
+                    ->collapsible(),
+                Group::make('tgl_transaksi')
+                    ->label('Tanggal')
+                    ->date(),
+                Group::make('kategoriKeuangan.nama')
+                    ->label('Akun COA'),
+            ])
             ->columns([
-                TextColumn::make('kode_transaksi')
-                    ->label('Kode TRX')
-                    ->searchable()
-                    ->sortable()
-                    ->weight('bold')
-                    ->copyable()
-                    ->color('primary')
-                    ->description(fn (TransaksiKeuangan $r): ?string => $r->no_voucher ? "Voucher: {$r->no_voucher}" : null),
+                TextColumn::make('no')
+                    ->label('No')
+                    ->rowIndex()
+                    ->alignCenter(),
 
                 TextColumn::make('tgl_transaksi')
                     ->label('Tanggal')
                     ->date('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn (TransaksiKeuangan $r): ?string => $r->no_voucher ? "Voucher: {$r->no_voucher}" : $r->kode_transaksi),
+
+                TextColumn::make('kode_transaksi')
+                    ->label('Kode TRX')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable()
+                    ->color('gray')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('tipe_transaksi')
                     ->label('Jenis / Tipe')
