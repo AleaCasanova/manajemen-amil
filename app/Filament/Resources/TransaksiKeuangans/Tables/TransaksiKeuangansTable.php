@@ -13,6 +13,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -21,6 +22,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class TransaksiKeuangansTable
 {
@@ -152,6 +154,63 @@ class TransaksiKeuangansTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Filter::make('periode_bulan')
+                    ->label('Filter Bulan & Tahun')
+                    ->form([
+                        Select::make('bulan')
+                            ->label('Pilih Bulan')
+                            ->options([
+                                '1' => 'Januari',
+                                '2' => 'Februari',
+                                '3' => 'Maret',
+                                '4' => 'April',
+                                '5' => 'Mei',
+                                '6' => 'Juni',
+                                '7' => 'Juli',
+                                '8' => 'Agustus',
+                                '9' => 'September',
+                                '10' => 'Oktober',
+                                '11' => 'November',
+                                '12' => 'Desember',
+                            ])
+                            ->placeholder('Semua Bulan'),
+
+                        Select::make('tahun')
+                            ->label('Pilih Tahun')
+                            ->options(function () {
+                                $years = TransaksiKeuangan::selectRaw('DISTINCT YEAR(tgl_transaksi) as tahun')
+                                    ->orderByDesc('tahun')
+                                    ->pluck('tahun', 'tahun')
+                                    ->all();
+
+                                return ! empty($years) ? $years : [2026 => '2026', 2025 => '2025'];
+                            })
+                            ->placeholder('Semua Tahun'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                filled($data['bulan'] ?? null),
+                                fn (Builder $q) => $q->whereMonth('tgl_transaksi', (int) $data['bulan'])
+                            )
+                            ->when(
+                                filled($data['tahun'] ?? null),
+                                fn (Builder $q) => $q->whereYear('tgl_transaksi', (int) $data['tahun'])
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if (filled($data['bulan'] ?? null)) {
+                            $namaBulan = Carbon::create()->month((int) $data['bulan'])->translatedFormat('F');
+                            $indicators[] = "Bulan: {$namaBulan}";
+                        }
+                        if (filled($data['tahun'] ?? null)) {
+                            $indicators[] = "Tahun: {$data['tahun']}";
+                        }
+
+                        return $indicators;
+                    }),
+
                 SelectFilter::make('jenis')
                     ->label('Arah Kas')
                     ->options([

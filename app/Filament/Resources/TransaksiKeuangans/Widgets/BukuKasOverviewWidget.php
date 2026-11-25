@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TransaksiKeuangans\Widgets;
 use App\Models\AkunKeuangan;
 use App\Models\CashAdvance;
 use App\Models\TransaksiKeuangan;
+use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -16,17 +17,33 @@ class BukuKasOverviewWidget extends StatsOverviewWidget
         $akuns = AkunKeuangan::withMutasiTotals()->where('is_active', true)->get();
         $totalSaldo = $akuns->sum(fn (AkunKeuangan $a) => $a->saldo_sekarang);
 
-        // 2. Total Pemasukan Riil Bulan Ini (non-transfer & non-pengembalian CA/Kasbon)
+        // 2 & 3. Tentukan periode dinamis untuk ringkasan arus kas riil
+        // Jika bulan berjalan ada transaksi, pakai bulan berjalan. Jika belum ada, gunakan periode data mutasi terbaru.
+        $targetDate = now();
+        $hasCurrentMonth = TransaksiKeuangan::whereMonth('tgl_transaksi', $targetDate->month)
+            ->whereYear('tgl_transaksi', $targetDate->year)
+            ->exists();
+
+        if (! $hasCurrentMonth) {
+            $latestTrxDate = TransaksiKeuangan::max('tgl_transaksi');
+            if ($latestTrxDate) {
+                $targetDate = Carbon::parse($latestTrxDate);
+            }
+        }
+
         $masukBulanIni = (float) TransaksiKeuangan::arusKasRiil()
             ->masuk()
-            ->bulanIni()
+            ->whereMonth('tgl_transaksi', $targetDate->month)
+            ->whereYear('tgl_transaksi', $targetDate->year)
             ->sum('nominal');
 
-        // 3. Total Pengeluaran Riil Bulan Ini (non-transfer & non-pencairan CA/Kasbon)
         $keluarBulanIni = (float) TransaksiKeuangan::arusKasRiil()
             ->keluar()
-            ->bulanIni()
+            ->whereMonth('tgl_transaksi', $targetDate->month)
+            ->whereYear('tgl_transaksi', $targetDate->year)
             ->sum('nominal');
+
+        $periodeNama = $targetDate->translatedFormat('F Y');
 
         // 4. Outstanding Cash Advance & Cash Bon Aktif
         $caAktifList = CashAdvance::aktif()->get();
@@ -40,12 +57,12 @@ class BukuKasOverviewWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('primary'),
 
-            Stat::make('Pemasukan Riil Bulan Ini', 'Rp '.number_format($masukBulanIni, 0, ',', '.'))
-                ->description('Periode '.now()->translatedFormat('F Y').' (non-transfer)')
+            Stat::make('Pemasukan Riil ('.$periodeNama.')', 'Rp '.number_format($masukBulanIni, 0, ',', '.'))
+                ->description('Periode '.$periodeNama.' (non-transfer)')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success'),
 
-            Stat::make('Pengeluaran Riil Bulan Ini', 'Rp '.number_format($keluarBulanIni, 0, ',', '.'))
+            Stat::make('Pengeluaran Riil ('.$periodeNama.')', 'Rp '.number_format($keluarBulanIni, 0, ',', '.'))
                 ->description('Penyaluran, operasional, SDM & adm bank')
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('danger'),
